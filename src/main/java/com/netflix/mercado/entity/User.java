@@ -14,20 +14,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "users", indexes = {
         @Index(name = "idx_user_email", columnList = "email", unique = true),
@@ -106,4 +98,154 @@ public class User extends BaseEntity {
     public void removeRole(Role role) {
         this.roles.remove(role);
     }
+    public User() {
+    }
+
+    public User(String email, String passwordHash, String fullName, String cpf, String phone, String avatarUrl, String bio, LocalDate birthDate, Boolean emailVerified, Boolean twoFactorEnabled, LocalDateTime lastLogin, Set<Role> roles, Set<Favorito> favoritos, Set<Avaliacao> avaliacoes, Set<Notificacao> notificacoes, Set<RefreshToken> refreshTokens) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.avatarUrl = avatarUrl;
+        this.bio = bio;
+        this.birthDate = birthDate;
+        this.emailVerified = emailVerified;
+        this.twoFactorEnabled = twoFactorEnabled;
+        this.lastLogin = lastLogin;
+        this.roles = roles;
+        this.favoritos = favoritos;
+        this.avaliacoes = avaliacoes;
+        this.notificacoes = notificacoes;
+        this.refreshTokens = refreshTokens;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return this.passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getFullName() {
+        return this.fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getCpf() {
+        return this.cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAvatarUrl() {
+        return this.avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getBio() {
+        return this.bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public LocalDate getBirthDate() {
+        return this.birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Boolean getEmailVerified() {
+        return this.emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public Boolean getTwoFactorEnabled() {
+        return this.twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(Boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return this.lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public Set<Role> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<Favorito> getFavoritos() {
+        return this.favoritos;
+    }
+
+    public void setFavoritos(Set<Favorito> favoritos) {
+        this.favoritos = favoritos;
+    }
+
+    public Set<Avaliacao> getAvaliacoes() {
+        return this.avaliacoes;
+    }
+
+    public void setAvaliacoes(Set<Avaliacao> avaliacoes) {
+        this.avaliacoes = avaliacoes;
+    }
+
+    public Set<Notificacao> getNotificacoes() {
+        return this.notificacoes;
+    }
+
+    public void setNotificacoes(Set<Notificacao> notificacoes) {
+        this.notificacoes = notificacoes;
+    }
+
+    public Set<RefreshToken> getRefreshTokens() {
+        return this.refreshTokens;
+    }
+
+    public void setRefreshTokens(Set<RefreshToken> refreshTokens) {
+        this.refreshTokens = refreshTokens;
+    }
+
 }

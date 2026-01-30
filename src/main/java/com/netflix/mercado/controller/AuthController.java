@@ -1,13 +1,13 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.auth.request.LoginRequest;
-import com.netflix.mercados.dto.auth.request.RegisterRequest;
-import com.netflix.mercados.dto.auth.request.RefreshTokenRequest;
-import com.netflix.mercados.dto.auth.response.JwtAuthenticationResponse;
-import com.netflix.mercados.dto.auth.response.UserResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.AuthService;
+import com.netflix.mercado.dto.auth.LoginRequest;
+import com.netflix.mercado.dto.auth.RegisterRequest;
+import com.netflix.mercado.dto.auth.RefreshTokenRequest;
+import com.netflix.mercado.dto.auth.JwtAuthenticationResponse;
+import com.netflix.mercado.dto.auth.UserResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Autenticação", description = "Endpoints de autenticação e autorização")

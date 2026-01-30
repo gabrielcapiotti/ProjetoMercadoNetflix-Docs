@@ -1,19 +1,11 @@
 package com.netflix.mercado.dto.promocao;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para atualizar promoção")
 public class UpdatePromocaoRequest {
 
@@ -46,4 +38,64 @@ public class UpdatePromocaoRequest {
     @Schema(description = "Máximo de vezes que a promoção pode ser utilizada", example = "200")
     @JsonProperty("maxUtilizacoes")
     private Integer maxUtilizacoes;
+    public UpdatePromocaoRequest() {
+    }
+
+    public UpdatePromocaoRequest(String descricao, BigDecimal percentualDesconto, BigDecimal valorDescontoMaximo, BigDecimal valorMinimoCompra, LocalDateTime dataValidade, Integer maxUtilizacoes) {
+        this.descricao = descricao;
+        this.percentualDesconto = percentualDesconto;
+        this.valorDescontoMaximo = valorDescontoMaximo;
+        this.valorMinimoCompra = valorMinimoCompra;
+        this.dataValidade = dataValidade;
+        this.maxUtilizacoes = maxUtilizacoes;
+    }
+
+    public String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public BigDecimal getPercentualDesconto() {
+        return this.percentualDesconto;
+    }
+
+    public void setPercentualDesconto(BigDecimal percentualDesconto) {
+        this.percentualDesconto = percentualDesconto;
+    }
+
+    public BigDecimal getValorDescontoMaximo() {
+        return this.valorDescontoMaximo;
+    }
+
+    public void setValorDescontoMaximo(BigDecimal valorDescontoMaximo) {
+        this.valorDescontoMaximo = valorDescontoMaximo;
+    }
+
+    public BigDecimal getValorMinimoCompra() {
+        return this.valorMinimoCompra;
+    }
+
+    public void setValorMinimoCompra(BigDecimal valorMinimoCompra) {
+        this.valorMinimoCompra = valorMinimoCompra;
+    }
+
+    public LocalDateTime getDataValidade() {
+        return this.dataValidade;
+    }
+
+    public void setDataValidade(LocalDateTime dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public Integer getMaxUtilizacoes() {
+        return this.maxUtilizacoes;
+    }
+
+    public void setMaxUtilizacoes(Integer maxUtilizacoes) {
+        this.maxUtilizacoes = maxUtilizacoes;
+    }
+
 }

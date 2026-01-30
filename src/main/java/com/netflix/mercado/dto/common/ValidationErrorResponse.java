@@ -1,18 +1,10 @@
 package com.netflix.mercado.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta de erro de validação com detalhes de campos")
 public class ValidationErrorResponse {
 
@@ -34,11 +26,7 @@ public class ValidationErrorResponse {
     /**
      * Classe interna para representar erro de campo
      */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Schema(description = "Erro de validação de um campo específico")
+                    @Schema(description = "Erro de validação de um campo específico")
     public static class FieldError {
 
         @Schema(description = "Nome do campo com erro", example = "email")
@@ -54,4 +42,72 @@ public class ValidationErrorResponse {
         @Schema(description = "Código do erro de validação", example = "Email.invalid")
         private String codigo;
     }
+
+    public ValidationErrorResponse() {
+    }
+
+    public ValidationErrorResponse(String mensagem, String codigo, Integer status, List<FieldError> erros, LocalDateTime timestamp) {
+        this.mensagem = mensagem;
+        this.codigo = codigo;
+        this.status = status;
+        this.erros = erros;
+        this.timestamp = timestamp;
+    }
+
+    public String getMensagem() {
+        return this.mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public List<FieldError> getErros() {
+        return this.erros;
+    }
+
+    public void setErros(List<FieldError> erros) {
+        this.erros = erros;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getField() {
+        return this.field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    public Object getRejectedValue() {
+        return this.rejectedValue;
+    }
+
+    public void setRejectedValue(Object rejectedValue) {
+        this.rejectedValue = rejectedValue;
+    }
+
 }

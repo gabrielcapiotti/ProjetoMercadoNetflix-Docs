@@ -9,8 +9,8 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
 import com.netflix.mercado.repository.ComentarioRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
+import com.netflix.mercado.dto.comentario.CreateComentarioRequest;
+import com.netflix.mercado.dto.comentario.UpdateComentarioRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,6 @@ import java.util.HashSet;
  * Service responsável por gerenciar comentários em avaliações.
  * Implementa lógica de criação, resposta, moderação e gerenciamento de curtidas.
  */
-@Slf4j
 @Service
 @Transactional
 public class ComentarioService {
@@ -339,4 +338,37 @@ public class ComentarioService {
     private boolean isAdmin(User usuario) {
         return usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+    public ComentarioService() {
+    }
+
+    public ComentarioService(ComentarioRepository comentarioRepository, AuditLogRepository auditLogRepository, AvaliacaoService avaliacaoService) {
+        this.comentarioRepository = comentarioRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.avaliacaoService = avaliacaoService;
+    }
+
+    public ComentarioRepository getComentarioRepository() {
+        return this.comentarioRepository;
+    }
+
+    public void setComentarioRepository(ComentarioRepository comentarioRepository) {
+        this.comentarioRepository = comentarioRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public AvaliacaoService getAvaliacaoService() {
+        return this.avaliacaoService;
+    }
+
+    public void setAvaliacaoService(AvaliacaoService avaliacaoService) {
+        this.avaliacaoService = avaliacaoService;
+    }
+
 }

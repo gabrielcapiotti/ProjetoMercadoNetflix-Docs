@@ -13,19 +13,11 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "promocoes", indexes = {
         @Index(name = "idx_promocao_mercado", columnList = "mercado_id"),
@@ -109,4 +101,109 @@ public class Promocao extends BaseEntity {
             this.utilizacoesAtuais++;
         }
     }
+    public Promocao() {
+    }
+
+    public Promocao(String codigo, String descricao, BigDecimal percentualDesconto, BigDecimal valorDescontoMaximo, BigDecimal valorMinimoCompra, LocalDateTime dataValidade, LocalDateTime dataInicio, Long maxUtilizacoes, Long utilizacoesAtuais, Boolean ativa, Mercado mercado) {
+        this.codigo = codigo;
+        this.descricao = descricao;
+        this.percentualDesconto = percentualDesconto;
+        this.valorDescontoMaximo = valorDescontoMaximo;
+        this.valorMinimoCompra = valorMinimoCompra;
+        this.dataValidade = dataValidade;
+        this.dataInicio = dataInicio;
+        this.maxUtilizacoes = maxUtilizacoes;
+        this.utilizacoesAtuais = utilizacoesAtuais;
+        this.ativa = ativa;
+        this.mercado = mercado;
+    }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public BigDecimal getPercentualDesconto() {
+        return this.percentualDesconto;
+    }
+
+    public void setPercentualDesconto(BigDecimal percentualDesconto) {
+        this.percentualDesconto = percentualDesconto;
+    }
+
+    public BigDecimal getValorDescontoMaximo() {
+        return this.valorDescontoMaximo;
+    }
+
+    public void setValorDescontoMaximo(BigDecimal valorDescontoMaximo) {
+        this.valorDescontoMaximo = valorDescontoMaximo;
+    }
+
+    public BigDecimal getValorMinimoCompra() {
+        return this.valorMinimoCompra;
+    }
+
+    public void setValorMinimoCompra(BigDecimal valorMinimoCompra) {
+        this.valorMinimoCompra = valorMinimoCompra;
+    }
+
+    public LocalDateTime getDataValidade() {
+        return this.dataValidade;
+    }
+
+    public void setDataValidade(LocalDateTime dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public LocalDateTime getDataInicio() {
+        return this.dataInicio;
+    }
+
+    public void setDataInicio(LocalDateTime dataInicio) {
+        this.dataInicio = dataInicio;
+    }
+
+    public Long getMaxUtilizacoes() {
+        return this.maxUtilizacoes;
+    }
+
+    public void setMaxUtilizacoes(Long maxUtilizacoes) {
+        this.maxUtilizacoes = maxUtilizacoes;
+    }
+
+    public Long getUtilizacoesAtuais() {
+        return this.utilizacoesAtuais;
+    }
+
+    public void setUtilizacoesAtuais(Long utilizacoesAtuais) {
+        this.utilizacoesAtuais = utilizacoesAtuais;
+    }
+
+    public Boolean getAtiva() {
+        return this.ativa;
+    }
+
+    public void setAtiva(Boolean ativa) {
+        this.ativa = ativa;
+    }
+
+    public Mercado getMercado() {
+        return this.mercado;
+    }
+
+    public void setMercado(Mercado mercado) {
+        this.mercado = mercado;
+    }
+
 }

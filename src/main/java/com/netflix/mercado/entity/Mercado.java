@@ -14,20 +14,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "mercados", indexes = {
         @Index(name = "idx_mercado_email", columnList = "email", unique = true),
@@ -148,4 +140,199 @@ public class Mercado extends BaseEntity {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return r * c;
     }
+    public Mercado() {
+    }
+
+    public Mercado(String nome, String descricao, String cnpj, String email, String telefone, String endereco, String numero, String complemento, String bairro, String cidade, String estado, String cep, BigDecimal latitude, BigDecimal longitude, String fotoPrincipalUrl, BigDecimal avaliacaoMedia, Long totalAvaliacoes, Set<Avaliacao> avaliacoes, Set<Favorito> favoritos, Set<Promocao> promocoes, Set<HorarioFuncionamento> horariosFuncionamento) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.cnpj = cnpj;
+        this.email = email;
+        this.telefone = telefone;
+        this.endereco = endereco;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.cep = cep;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.fotoPrincipalUrl = fotoPrincipalUrl;
+        this.avaliacaoMedia = avaliacaoMedia;
+        this.totalAvaliacoes = totalAvaliacoes;
+        this.avaliacoes = avaliacoes;
+        this.favoritos = favoritos;
+        this.promocoes = promocoes;
+        this.horariosFuncionamento = horariosFuncionamento;
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getCnpj() {
+        return this.cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return this.telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getEndereco() {
+        return this.endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getNumero() {
+        return this.numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getComplemento() {
+        return this.complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public String getBairro() {
+        return this.bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getCidade() {
+        return this.cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return this.estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getCep() {
+        return this.cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public BigDecimal getLatitude() {
+        return this.latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return this.longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getFotoPrincipalUrl() {
+        return this.fotoPrincipalUrl;
+    }
+
+    public void setFotoPrincipalUrl(String fotoPrincipalUrl) {
+        this.fotoPrincipalUrl = fotoPrincipalUrl;
+    }
+
+    public BigDecimal getAvaliacaoMedia() {
+        return this.avaliacaoMedia;
+    }
+
+    public void setAvaliacaoMedia(BigDecimal avaliacaoMedia) {
+        this.avaliacaoMedia = avaliacaoMedia;
+    }
+
+    public Long getTotalAvaliacoes() {
+        return this.totalAvaliacoes;
+    }
+
+    public void setTotalAvaliacoes(Long totalAvaliacoes) {
+        this.totalAvaliacoes = totalAvaliacoes;
+    }
+
+    public Set<Avaliacao> getAvaliacoes() {
+        return this.avaliacoes;
+    }
+
+    public void setAvaliacoes(Set<Avaliacao> avaliacoes) {
+        this.avaliacoes = avaliacoes;
+    }
+
+    public Set<Favorito> getFavoritos() {
+        return this.favoritos;
+    }
+
+    public void setFavoritos(Set<Favorito> favoritos) {
+        this.favoritos = favoritos;
+    }
+
+    public Set<Promocao> getPromocoes() {
+        return this.promocoes;
+    }
+
+    public void setPromocoes(Set<Promocao> promocoes) {
+        this.promocoes = promocoes;
+    }
+
+    public Set<HorarioFuncionamento> getHorariosFuncionamento() {
+        return this.horariosFuncionamento;
+    }
+
+    public void setHorariosFuncionamento(Set<HorarioFuncionamento> horariosFuncionamento) {
+        this.horariosFuncionamento = horariosFuncionamento;
+    }
+
 }

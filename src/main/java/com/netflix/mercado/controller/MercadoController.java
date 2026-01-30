@@ -1,14 +1,14 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.mercado.request.CreateMercadoRequest;
-import com.netflix.mercados.dto.mercado.request.UpdateMercadoRequest;
-import com.netflix.mercados.dto.mercado.request.CreateHorarioRequest;
-import com.netflix.mercados.dto.mercado.response.MercadoResponse;
-import com.netflix.mercados.dto.mercado.response.MercadoDetailResponse;
-import com.netflix.mercados.dto.horario.response.HorarioFuncionamentoResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.MercadoService;
+import com.netflix.mercado.dto.mercado.CreateMercadoRequest;
+import com.netflix.mercado.dto.mercado.UpdateMercadoRequest;
+import com.netflix.mercado.dto.horario.CreateHorarioRequest;
+import com.netflix.mercado.dto.mercado.MercadoResponse;
+import com.netflix.mercado.dto.mercado.MercadoDetailResponse;
+import com.netflix.mercado.dto.horario.HorarioResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.MercadoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +33,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/mercados")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Mercados", description = "Gerenciamento de mercados/lojas")

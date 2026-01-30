@@ -8,9 +8,10 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.UserRepository;
 import com.netflix.mercado.repository.RefreshTokenRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
+import com.netflix.mercado.dto.auth.RegisterRequest;
+import com.netflix.mercado.dto.auth.LoginRequest;
+import com.netflix.mercado.dto.auth.JwtAuthenticationResponse;
 import com.netflix.mercado.security.JwtTokenProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +26,6 @@ import java.time.LocalDateTime;
  * Service responsável por autenticação, autorização e gerenciamento de tokens JWT.
  * Implementa lógica de login, registro, refresh token e logout.
  */
-@Slf4j
 @Service
 @Transactional
 public class AuthService {
@@ -236,4 +236,73 @@ public class AuthService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
+    public AuthService() {
+    }
+
+    public AuthService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, AuditLogRepository auditLogRepository, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager, UserService userService, RefreshTokenService refreshTokenService) {
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManager = authenticationManager;
+        this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
+    }
+
+    public UserRepository getUserRepository() {
+        return this.userRepository;
+    }
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public RefreshTokenRepository getRefreshTokenRepository() {
+        return this.refreshTokenRepository;
+    }
+
+    public void setRefreshTokenRepository(RefreshTokenRepository refreshTokenRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public JwtTokenProvider getJwtTokenProvider() {
+        return this.jwtTokenProvider;
+    }
+
+    public void setJwtTokenProvider(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public AuthenticationManager getAuthenticationManager() {
+        return this.authenticationManager;
+    }
+
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
+    public UserService getUserService() {
+        return this.userService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public RefreshTokenService getRefreshTokenService() {
+        return this.refreshTokenService;
+    }
+
+    public void setRefreshTokenService(RefreshTokenService refreshTokenService) {
+        this.refreshTokenService = refreshTokenService;
+    }
+
 }

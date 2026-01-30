@@ -1,11 +1,11 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.comentario.request.CreateComentarioRequest;
-import com.netflix.mercados.dto.comentario.request.UpdateComentarioRequest;
-import com.netflix.mercados.dto.comentario.response.ComentarioResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.ComentarioService;
+import com.netflix.mercado.dto.comentario.request.CreateComentarioRequest;
+import com.netflix.mercado.dto.comentario.request.UpdateComentarioRequest;
+import com.netflix.mercado.dto.comentario.response.ComentarioResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.ComentarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Comentários", description = "Gerenciamento de comentários em avaliações")

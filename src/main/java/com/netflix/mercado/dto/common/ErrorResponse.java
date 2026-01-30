@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta de erro padronizada")
 public class ErrorResponse {
 
@@ -32,4 +24,64 @@ public class ErrorResponse {
 
     @Schema(description = "Timestamp do erro")
     private LocalDateTime timestamp;
+    public ErrorResponse() {
+    }
+
+    public ErrorResponse(String codigo, String mensagem, String detalhes, String path, Integer status, LocalDateTime timestamp) {
+        this.codigo = codigo;
+        this.mensagem = mensagem;
+        this.detalhes = detalhes;
+        this.path = path;
+        this.status = status;
+        this.timestamp = timestamp;
+    }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getMensagem() {
+        return this.mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public String getDetalhes() {
+        return this.detalhes;
+    }
+
+    public void setDetalhes(String detalhes) {
+        this.detalhes = detalhes;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }

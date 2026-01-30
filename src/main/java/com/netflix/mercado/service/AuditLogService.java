@@ -4,7 +4,6 @@ import com.netflix.mercado.entity.AuditLog;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.AuditLogRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ import java.util.List;
  * Service responsável por gerenciar logs de auditoria.
  * Implementa lógica de registro, consulta e análise de ações de usuários no sistema.
  */
-@Slf4j
 @Service
 @Transactional
 public class AuditLogService {
@@ -260,4 +258,19 @@ public class AuditLogService {
 
         return auditLogRepository.findAtividadesPorTipo(dataInicio, dataFim);
     }
+    public AuditLogService() {
+    }
+
+    public AuditLogService(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
 }

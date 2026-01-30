@@ -1,10 +1,10 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.favorito.request.CreateFavoritoRequest;
-import com.netflix.mercados.dto.favorito.response.FavoritoResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.FavoritoService;
+import com.netflix.mercado.dto.favorito.CreateFavoritoRequest;
+import com.netflix.mercado.dto.favorito.FavoritoResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.FavoritoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +27,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/favoritos")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Favoritos", description = "Gerenciamento de mercados favoritos")

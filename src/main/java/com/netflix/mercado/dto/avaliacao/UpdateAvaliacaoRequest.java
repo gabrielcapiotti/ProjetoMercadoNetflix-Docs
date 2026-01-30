@@ -3,16 +3,8 @@ package com.netflix.mercado.dto.avaliacao;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para atualizar uma avaliação")
 public class UpdateAvaliacaoRequest {
 
@@ -24,4 +16,28 @@ public class UpdateAvaliacaoRequest {
     @Size(min = 10, max = 1000, message = "Comentário deve ter entre 10 e 1000 caracteres")
     @Schema(description = "Comentário sobre o mercado", example = "Experiência excelente!")
     private String comentario;
+    public UpdateAvaliacaoRequest() {
+    }
+
+    public UpdateAvaliacaoRequest(Integer estrelas, String comentario) {
+        this.estrelas = estrelas;
+        this.comentario = comentario;
+    }
+
+    public Integer getEstrelas() {
+        return this.estrelas;
+    }
+
+    public void setEstrelas(Integer estrelas) {
+        this.estrelas = estrelas;
+    }
+
+    public String getComentario() {
+        return this.comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
 }

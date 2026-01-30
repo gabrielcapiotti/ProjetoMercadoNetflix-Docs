@@ -8,8 +8,9 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.UserRepository;
 import com.netflix.mercado.repository.RoleRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
+import com.netflix.mercado.dto.auth.RegisterRequest;
+import com.netflix.mercado.dto.auth.UserResponse;
+import com.netflix.mercado.dto.auth.ChangePasswordRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
  * Service responsável por gerenciar operações relacionadas a usuários.
  * Implementa lógica de negócio para criar, atualizar, buscar e gerenciar usuários.
  */
-@Slf4j
 @Service
 @Transactional
 public class UserService {
@@ -322,4 +322,46 @@ public class UserService {
                 user.getUpdatedAt()
         );
     }
+    public UserService() {
+    }
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuditLogRepository auditLogRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public UserRepository getUserRepository() {
+        return this.userRepository;
+    }
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public RoleRepository getRoleRepository() {
+        return this.roleRepository;
+    }
+
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+
+    public PasswordEncoder getPasswordEncoder() {
+        return this.passwordEncoder;
+    }
+
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
 }

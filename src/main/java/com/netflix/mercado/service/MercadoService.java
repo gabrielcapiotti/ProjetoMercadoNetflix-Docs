@@ -8,8 +8,9 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
 import com.netflix.mercado.repository.MercadoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
+import com.netflix.mercado.dto.mercado.CreateMercadoRequest;
+import com.netflix.mercado.dto.mercado.UpdateMercadoRequest;
+import com.netflix.mercado.dto.mercado.MercadoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,6 @@ import java.util.List;
  * Service responsável por gerenciar mercados.
  * Implementa lógica de criação, atualização, busca e aprovação de mercados.
  */
-@Slf4j
 @Service
 @Transactional
 public class MercadoService {
@@ -388,4 +388,37 @@ public class MercadoService {
                 mercado.getCreatedAt()
         );
     }
+    public MercadoService() {
+    }
+
+    public MercadoService(MercadoRepository mercadoRepository, AuditLogRepository auditLogRepository, NotificacaoService notificacaoService) {
+        this.mercadoRepository = mercadoRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.notificacaoService = notificacaoService;
+    }
+
+    public MercadoRepository getMercadoRepository() {
+        return this.mercadoRepository;
+    }
+
+    public void setMercadoRepository(MercadoRepository mercadoRepository) {
+        this.mercadoRepository = mercadoRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public NotificacaoService getNotificacaoService() {
+        return this.notificacaoService;
+    }
+
+    public void setNotificacaoService(NotificacaoService notificacaoService) {
+        this.notificacaoService = notificacaoService;
+    }
+
 }

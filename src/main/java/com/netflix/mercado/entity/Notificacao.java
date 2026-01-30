@@ -11,17 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "notificacoes", indexes = {
         @Index(name = "idx_notificacao_usuario", columnList = "usuario_id"),
@@ -84,4 +76,82 @@ public class Notificacao extends BaseEntity {
         this.lida = false;
         this.dataLeitura = null;
     }
+    public Notificacao() {
+    }
+
+    public Notificacao(final String descricao, User user, String titulo, String conteudo, TipoNotificacao tipo, Boolean lida, String urlAcao, LocalDateTime dataLeitura) {
+        this.descricao = descricao;
+        this.user = user;
+        this.titulo = titulo;
+        this.conteudo = conteudo;
+        this.tipo = tipo;
+        this.lida = lida;
+        this.urlAcao = urlAcao;
+        this.dataLeitura = dataLeitura;
+    }
+
+    public final String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(final String descricao) {
+        this.descricao = descricao;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getTitulo() {
+        return this.titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getConteudo() {
+        return this.conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public TipoNotificacao getTipo() {
+        return this.tipo;
+    }
+
+    public void setTipo(TipoNotificacao tipo) {
+        this.tipo = tipo;
+    }
+
+    public Boolean getLida() {
+        return this.lida;
+    }
+
+    public void setLida(Boolean lida) {
+        this.lida = lida;
+    }
+
+    public String getUrlAcao() {
+        return this.urlAcao;
+    }
+
+    public void setUrlAcao(String urlAcao) {
+        this.urlAcao = urlAcao;
+    }
+
+    public LocalDateTime getDataLeitura() {
+        return this.dataLeitura;
+    }
+
+    public void setDataLeitura(LocalDateTime dataLeitura) {
+        this.dataLeitura = dataLeitura;
+    }
+
 }

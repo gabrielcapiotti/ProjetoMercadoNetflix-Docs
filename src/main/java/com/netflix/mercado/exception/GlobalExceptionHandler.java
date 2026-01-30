@@ -1,6 +1,5 @@
 package com.netflix.mercado.exception;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -19,7 +18,6 @@ import java.util.Map;
  * Tratador global de exceções para a aplicação.
  * Centraliza o tratamento de erros em toda a API.
  */
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

@@ -9,7 +9,6 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.FavoritoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.FavoritoResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
  * Service responsável por gerenciar favoritos de usuários.
  * Implementa lógica de adicionar, remover e consultar mercados favoritos.
  */
-@Slf4j
 @Service
 @Transactional
 public class FavoritoService {
@@ -217,4 +215,37 @@ public class FavoritoService {
 
         log.debug("Prioridade do favorito ID: {} definida para: {}", favoritoId, prioridade);
     }
+    public FavoritoService() {
+    }
+
+    public FavoritoService(FavoritoRepository favoritoRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService) {
+        this.favoritoRepository = favoritoRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.mercadoService = mercadoService;
+    }
+
+    public FavoritoRepository getFavoritoRepository() {
+        return this.favoritoRepository;
+    }
+
+    public void setFavoritoRepository(FavoritoRepository favoritoRepository) {
+        this.favoritoRepository = favoritoRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public MercadoService getMercadoService() {
+        return this.mercadoService;
+    }
+
+    public void setMercadoService(MercadoService mercadoService) {
+        this.mercadoService = mercadoService;
+    }
+
 }

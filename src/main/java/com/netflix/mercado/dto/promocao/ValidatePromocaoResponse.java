@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.promocao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta da validação de promoção")
 public class ValidatePromocaoResponse {
 
@@ -30,4 +22,55 @@ public class ValidatePromocaoResponse {
     @Schema(description = "Utilizações restantes", example = "55")
     @JsonProperty("utilizacoesRestantes")
     private Integer utilizacoesRestantes;
+    public ValidatePromocaoResponse() {
+    }
+
+    public ValidatePromocaoResponse(Boolean valida, BigDecimal desconto, String mensagem, String motivo, Integer utilizacoesRestantes) {
+        this.valida = valida;
+        this.desconto = desconto;
+        this.mensagem = mensagem;
+        this.motivo = motivo;
+        this.utilizacoesRestantes = utilizacoesRestantes;
+    }
+
+    public Boolean getValida() {
+        return this.valida;
+    }
+
+    public void setValida(Boolean valida) {
+        this.valida = valida;
+    }
+
+    public BigDecimal getDesconto() {
+        return this.desconto;
+    }
+
+    public void setDesconto(BigDecimal desconto) {
+        this.desconto = desconto;
+    }
+
+    public String getMensagem() {
+        return this.mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public String getMotivo() {
+        return this.motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+
+    public Integer getUtilizacoesRestantes() {
+        return this.utilizacoesRestantes;
+    }
+
+    public void setUtilizacoesRestantes(Integer utilizacoesRestantes) {
+        this.utilizacoesRestantes = utilizacoesRestantes;
+    }
+
 }

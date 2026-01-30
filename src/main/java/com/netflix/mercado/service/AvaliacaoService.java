@@ -9,8 +9,9 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
 import com.netflix.mercado.repository.AvaliacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
+import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,6 @@ import java.time.LocalDateTime;
  * Service responsável por gerenciar avaliações de mercados.
  * Implementa lógica de criação, atualização, exclusão e cálculo de estatísticas de avaliações.
  */
-@Slf4j
 @Service
 @Transactional
 public class AvaliacaoService {
@@ -321,4 +321,46 @@ public class AvaliacaoService {
     private boolean isAdmin(User usuario) {
         return usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+    public AvaliacaoService() {
+    }
+
+    public AvaliacaoService(AvaliacaoRepository avaliacaoRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService, NotificacaoService notificacaoService) {
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.mercadoService = mercadoService;
+        this.notificacaoService = notificacaoService;
+    }
+
+    public AvaliacaoRepository getAvaliacaoRepository() {
+        return this.avaliacaoRepository;
+    }
+
+    public void setAvaliacaoRepository(AvaliacaoRepository avaliacaoRepository) {
+        this.avaliacaoRepository = avaliacaoRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public MercadoService getMercadoService() {
+        return this.mercadoService;
+    }
+
+    public void setMercadoService(MercadoService mercadoService) {
+        this.mercadoService = mercadoService;
+    }
+
+    public NotificacaoService getNotificacaoService() {
+        return this.notificacaoService;
+    }
+
+    public void setNotificacaoService(NotificacaoService notificacaoService) {
+        this.notificacaoService = notificacaoService;
+    }
+
 }

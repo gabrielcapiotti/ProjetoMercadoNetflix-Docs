@@ -8,7 +8,6 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.NotificacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.CreateNotificacaoRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +22,6 @@ import java.time.temporal.ChronoUnit;
  * Service responsável por gerenciar notificações de usuários.
  * Implementa lógica de criação, envio, leitura e limpeza de notificações.
  */
-@Slf4j
 @Service
 @Transactional
 public class NotificacaoService {
@@ -234,4 +232,28 @@ public class NotificacaoService {
 
         log.info("Limpeza automática concluída. {} notificações deletadas", deletadas);
     }
+    public NotificacaoService() {
+    }
+
+    public NotificacaoService(NotificacaoRepository notificacaoRepository, AuditLogRepository auditLogRepository) {
+        this.notificacaoRepository = notificacaoRepository;
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public NotificacaoRepository getNotificacaoRepository() {
+        return this.notificacaoRepository;
+    }
+
+    public void setNotificacaoRepository(NotificacaoRepository notificacaoRepository) {
+        this.notificacaoRepository = notificacaoRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
 }

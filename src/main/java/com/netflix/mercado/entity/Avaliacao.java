@@ -14,18 +14,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "avaliacoes", indexes = {
         @Index(name = "idx_avaliacao_mercado", columnList = "mercado_id"),
@@ -74,4 +66,82 @@ public class Avaliacao extends BaseEntity {
         }
         return (double) uteis / total * 100;
     }
+    public Avaliacao() {
+    }
+
+    public Avaliacao(User user, Mercado mercado, Integer estrelas, String comentario, Boolean verificado, Long uteis, Long inutils, Set<Comentario> comentarios) {
+        this.user = user;
+        this.mercado = mercado;
+        this.estrelas = estrelas;
+        this.comentario = comentario;
+        this.verificado = verificado;
+        this.uteis = uteis;
+        this.inutils = inutils;
+        this.comentarios = comentarios;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Mercado getMercado() {
+        return this.mercado;
+    }
+
+    public void setMercado(Mercado mercado) {
+        this.mercado = mercado;
+    }
+
+    public Integer getEstrelas() {
+        return this.estrelas;
+    }
+
+    public void setEstrelas(Integer estrelas) {
+        this.estrelas = estrelas;
+    }
+
+    public String getComentario() {
+        return this.comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    public Boolean getVerificado() {
+        return this.verificado;
+    }
+
+    public void setVerificado(Boolean verificado) {
+        this.verificado = verificado;
+    }
+
+    public Long getUteis() {
+        return this.uteis;
+    }
+
+    public void setUteis(Long uteis) {
+        this.uteis = uteis;
+    }
+
+    public Long getInutils() {
+        return this.inutils;
+    }
+
+    public void setInutils(Long inutils) {
+        this.inutils = inutils;
+    }
+
+    public Set<Comentario> getComentarios() {
+        return this.comentarios;
+    }
+
+    public void setComentarios(Set<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
 }

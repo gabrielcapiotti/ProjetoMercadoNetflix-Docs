@@ -2,17 +2,9 @@ package com.netflix.mercado.dto.favorito;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para adicionar mercado aos favoritos")
 public class CreateFavoritoRequest {
 
@@ -27,4 +19,37 @@ public class CreateFavoritoRequest {
 
     @Schema(description = "Prioridade do favorito (1-5, sendo 1 menor)", example = "3")
     private Integer prioridade;
+    public CreateFavoritoRequest() {
+    }
+
+    public CreateFavoritoRequest(Long mercadoId, String observacoes, Integer prioridade) {
+        this.mercadoId = mercadoId;
+        this.observacoes = observacoes;
+        this.prioridade = prioridade;
+    }
+
+    public Long getMercadoId() {
+        return this.mercadoId;
+    }
+
+    public void setMercadoId(Long mercadoId) {
+        this.mercadoId = mercadoId;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public Integer getPrioridade() {
+        return this.prioridade;
+    }
+
+    public void setPrioridade(Integer prioridade) {
+        this.prioridade = prioridade;
+    }
+
 }

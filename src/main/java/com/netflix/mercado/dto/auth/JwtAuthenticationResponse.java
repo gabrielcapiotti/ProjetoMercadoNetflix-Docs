@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com tokens JWT de autenticação")
 public class JwtAuthenticationResponse {
 
@@ -33,4 +25,55 @@ public class JwtAuthenticationResponse {
 
     @Schema(description = "Dados do usuário autenticado")
     private UserResponse user;
+    public JwtAuthenticationResponse() {
+    }
+
+    public JwtAuthenticationResponse(String accessToken, String refreshToken, String tokenType, Long expiresIn, UserResponse user) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.tokenType = tokenType;
+        this.expiresIn = expiresIn;
+        this.user = user;
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return this.refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getTokenType() {
+        return this.tokenType;
+    }
+
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Long getExpiresIn() {
+        return this.expiresIn;
+    }
+
+    public void setExpiresIn(Long expiresIn) {
+        this.expiresIn = expiresIn;
+    }
+
+    public UserResponse getUser() {
+        return this.user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
+    }
+
 }

@@ -12,19 +12,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "horarios_funcionamento", indexes = {
         @Index(name = "idx_horario_mercado", columnList = "mercado_id"),
@@ -101,4 +93,82 @@ public class HorarioFuncionamento extends BaseEntity {
         }
         return ChronoUnit.MINUTES.between(agora, horaAbertura);
     }
+    public HorarioFuncionamento() {
+    }
+
+    public HorarioFuncionamento(final int numero, final String descricao, Mercado mercado, DiaSemana diaSemana, LocalTime horaAbertura, LocalTime horaFechamento, Boolean aberto, String observacoes) {
+        this.numero = numero;
+        this.descricao = descricao;
+        this.mercado = mercado;
+        this.diaSemana = diaSemana;
+        this.horaAbertura = horaAbertura;
+        this.horaFechamento = horaFechamento;
+        this.aberto = aberto;
+        this.observacoes = observacoes;
+    }
+
+    public final int getNumero() {
+        return this.numero;
+    }
+
+    public void setNumero(final int numero) {
+        this.numero = numero;
+    }
+
+    public final String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(final String descricao) {
+        this.descricao = descricao;
+    }
+
+    public Mercado getMercado() {
+        return this.mercado;
+    }
+
+    public void setMercado(Mercado mercado) {
+        this.mercado = mercado;
+    }
+
+    public DiaSemana getDiaSemana() {
+        return this.diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
+    }
+
+    public LocalTime getHoraAbertura() {
+        return this.horaAbertura;
+    }
+
+    public void setHoraAbertura(LocalTime horaAbertura) {
+        this.horaAbertura = horaAbertura;
+    }
+
+    public LocalTime getHoraFechamento() {
+        return this.horaFechamento;
+    }
+
+    public void setHoraFechamento(LocalTime horaFechamento) {
+        this.horaFechamento = horaFechamento;
+    }
+
+    public Boolean getAberto() {
+        return this.aberto;
+    }
+
+    public void setAberto(Boolean aberto) {
+        this.aberto = aberto;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
 }

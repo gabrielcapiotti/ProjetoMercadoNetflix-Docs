@@ -8,7 +8,6 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.HorarioFuncionamentoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ import java.util.List;
  * Service responsável por gerenciar horários de funcionamento de mercados.
  * Implementa lógica de criação, atualização e consulta de horários.
  */
-@Slf4j
 @Service
 @Transactional
 public class HorarioFuncionamentoService {
@@ -282,4 +280,37 @@ public class HorarioFuncionamentoService {
                 horario.isAberto()
         );
     }
+    public HorarioFuncionamentoService() {
+    }
+
+    public HorarioFuncionamentoService(HorarioFuncionamentoRepository horarioRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService) {
+        this.horarioRepository = horarioRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.mercadoService = mercadoService;
+    }
+
+    public HorarioFuncionamentoRepository getHorarioRepository() {
+        return this.horarioRepository;
+    }
+
+    public void setHorarioRepository(HorarioFuncionamentoRepository horarioRepository) {
+        this.horarioRepository = horarioRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public MercadoService getMercadoService() {
+        return this.mercadoService;
+    }
+
+    public void setMercadoService(MercadoService mercadoService) {
+        this.mercadoService = mercadoService;
+    }
+
 }

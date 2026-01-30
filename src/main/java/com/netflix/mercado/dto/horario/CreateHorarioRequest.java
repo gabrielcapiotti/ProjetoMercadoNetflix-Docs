@@ -4,17 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para criar horário de funcionamento")
 public class CreateHorarioRequest {
 
@@ -46,4 +38,55 @@ public class CreateHorarioRequest {
     @Size(max = 255, message = "Observações devem ter no máximo 255 caracteres")
     @Schema(description = "Observações sobre o horário (opcional)", example = "Encerra mais cedo nos finais de semana")
     private String observacoes;
+    public CreateHorarioRequest() {
+    }
+
+    public CreateHorarioRequest(String diaSemana, String horaAbertura, String horaFechamento, Boolean aberto, String observacoes) {
+        this.diaSemana = diaSemana;
+        this.horaAbertura = horaAbertura;
+        this.horaFechamento = horaFechamento;
+        this.aberto = aberto;
+        this.observacoes = observacoes;
+    }
+
+    public String getDiaSemana() {
+        return this.diaSemana;
+    }
+
+    public void setDiaSemana(String diaSemana) {
+        this.diaSemana = diaSemana;
+    }
+
+    public String getHoraAbertura() {
+        return this.horaAbertura;
+    }
+
+    public void setHoraAbertura(String horaAbertura) {
+        this.horaAbertura = horaAbertura;
+    }
+
+    public String getHoraFechamento() {
+        return this.horaFechamento;
+    }
+
+    public void setHoraFechamento(String horaFechamento) {
+        this.horaFechamento = horaFechamento;
+    }
+
+    public Boolean getAberto() {
+        return this.aberto;
+    }
+
+    public void setAberto(Boolean aberto) {
+        this.aberto = aberto;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
 }

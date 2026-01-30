@@ -6,15 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "roles", indexes = {
         @Index(name = "idx_role_name", columnList = "name", unique = true)
@@ -32,4 +24,28 @@ public class Role extends BaseEntity {
 
     @Column(name = "description", length = 255)
     private String description;
+    public Role() {
+    }
+
+    public Role(RoleName name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public RoleName getName() {
+        return this.name;
+    }
+
+    public void setName(RoleName name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

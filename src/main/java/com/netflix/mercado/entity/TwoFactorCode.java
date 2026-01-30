@@ -9,17 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "two_factor_codes", indexes = {
         @Index(name = "idx_2fa_usuario", columnList = "usuario_id"),
@@ -70,4 +62,82 @@ public class TwoFactorCode extends BaseEntity {
     public boolean podeReusar() {
         return this.tentativas < this.maxTentativas;
     }
+    public TwoFactorCode() {
+    }
+
+    public TwoFactorCode(String codigo, User user, LocalDateTime dataExpiracao, Boolean utilizado, LocalDateTime dataUtilizacao, String metodoEnvio, Integer tentativas, Integer maxTentativas) {
+        this.codigo = codigo;
+        this.user = user;
+        this.dataExpiracao = dataExpiracao;
+        this.utilizado = utilizado;
+        this.dataUtilizacao = dataUtilizacao;
+        this.metodoEnvio = metodoEnvio;
+        this.tentativas = tentativas;
+        this.maxTentativas = maxTentativas;
+    }
+
+    public String getCodigo() {
+        return this.codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getDataExpiracao() {
+        return this.dataExpiracao;
+    }
+
+    public void setDataExpiracao(LocalDateTime dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Boolean getUtilizado() {
+        return this.utilizado;
+    }
+
+    public void setUtilizado(Boolean utilizado) {
+        this.utilizado = utilizado;
+    }
+
+    public LocalDateTime getDataUtilizacao() {
+        return this.dataUtilizacao;
+    }
+
+    public void setDataUtilizacao(LocalDateTime dataUtilizacao) {
+        this.dataUtilizacao = dataUtilizacao;
+    }
+
+    public String getMetodoEnvio() {
+        return this.metodoEnvio;
+    }
+
+    public void setMetodoEnvio(String metodoEnvio) {
+        this.metodoEnvio = metodoEnvio;
+    }
+
+    public Integer getTentativas() {
+        return this.tentativas;
+    }
+
+    public void setTentativas(Integer tentativas) {
+        this.tentativas = tentativas;
+    }
+
+    public Integer getMaxTentativas() {
+        return this.maxTentativas;
+    }
+
+    public void setMaxTentativas(Integer maxTentativas) {
+        this.maxTentativas = maxTentativas;
+    }
+
 }

@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.avaliacao;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para criar uma avaliação de mercado")
 public class CreateAvaliacaoRequest {
 
@@ -29,4 +21,37 @@ public class CreateAvaliacaoRequest {
     @Size(min = 10, max = 1000, message = "Comentário deve ter entre 10 e 1000 caracteres")
     @Schema(description = "Comentário sobre o mercado (opcional)", example = "Ótimo atendimento e produtos frescos!")
     private String comentario;
+    public CreateAvaliacaoRequest() {
+    }
+
+    public CreateAvaliacaoRequest(Long mercadoId, Integer estrelas, String comentario) {
+        this.mercadoId = mercadoId;
+        this.estrelas = estrelas;
+        this.comentario = comentario;
+    }
+
+    public Long getMercadoId() {
+        return this.mercadoId;
+    }
+
+    public void setMercadoId(Long mercadoId) {
+        this.mercadoId = mercadoId;
+    }
+
+    public Integer getEstrelas() {
+        return this.estrelas;
+    }
+
+    public void setEstrelas(Integer estrelas) {
+        this.estrelas = estrelas;
+    }
+
+    public String getComentario() {
+        return this.comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
 }

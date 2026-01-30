@@ -9,17 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.Instant;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "refresh_tokens", indexes = {
         @Index(name = "idx_refresh_token_usuario", columnList = "usuario_id"),
@@ -55,4 +47,64 @@ public class RefreshToken extends BaseEntity {
     public void revogar() {
         this.revogado = true;
     }
+    public RefreshToken() {
+    }
+
+    public RefreshToken(String token, User user, Instant dataExpiracao, Boolean revogado, String ipOrigem, String userAgent) {
+        this.token = token;
+        this.user = user;
+        this.dataExpiracao = dataExpiracao;
+        this.revogado = revogado;
+        this.ipOrigem = ipOrigem;
+        this.userAgent = userAgent;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Instant getDataExpiracao() {
+        return this.dataExpiracao;
+    }
+
+    public void setDataExpiracao(Instant dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Boolean getRevogado() {
+        return this.revogado;
+    }
+
+    public void setRevogado(Boolean revogado) {
+        this.revogado = revogado;
+    }
+
+    public String getIpOrigem() {
+        return this.ipOrigem;
+    }
+
+    public void setIpOrigem(String ipOrigem) {
+        this.ipOrigem = ipOrigem;
+    }
+
+    public String getUserAgent() {
+        return this.userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
 }

@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta genérica da API")
 public class ApiResponse<T> {
 
@@ -60,4 +52,46 @@ public class ApiResponse<T> {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    public ApiResponse() {
+    }
+
+    public ApiResponse(Boolean sucesso, String mensagem, T dados, LocalDateTime timestamp) {
+        this.sucesso = sucesso;
+        this.mensagem = mensagem;
+        this.dados = dados;
+        this.timestamp = timestamp;
+    }
+
+    public Boolean getSucesso() {
+        return this.sucesso;
+    }
+
+    public void setSucesso(Boolean sucesso) {
+        this.sucesso = sucesso;
+    }
+
+    public String getMensagem() {
+        return this.mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public T getDados() {
+        return this.dados;
+    }
+
+    public void setDados(T dados) {
+        this.dados = dados;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }

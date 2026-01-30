@@ -2,17 +2,9 @@ package com.netflix.mercado.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para alterar senha do usuário")
 public class ChangePasswordRequest {
 
@@ -31,4 +23,37 @@ public class ChangePasswordRequest {
     @Schema(description = "Confirmação da nova senha", example = "NovaSenh@456")
     @JsonProperty("confirmPassword")
     private String confirmPassword;
+    public ChangePasswordRequest() {
+    }
+
+    public ChangePasswordRequest(String oldPassword, String newPassword, String confirmPassword) {
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
+        this.confirmPassword = confirmPassword;
+    }
+
+    public String getOldPassword() {
+        return this.oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return this.confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
 }

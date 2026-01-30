@@ -1,12 +1,12 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.horario.request.CreateHorarioRequest;
-import com.netflix.mercados.dto.horario.request.UpdateHorarioRequest;
-import com.netflix.mercados.dto.horario.response.HorarioFuncionamentoResponse;
-import com.netflix.mercados.dto.horario.response.StatusLojaResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.HorarioService;
+import com.netflix.mercado.dto.horario.CreateHorarioRequest;
+import com.netflix.mercado.dto.horario.UpdateHorarioRequest;
+import com.netflix.mercado.dto.horario.HorarioResponse;
+import com.netflix.mercado.dto.horario.MercadoStatusResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.HorarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Horários", description = "Gerenciamento de horários de funcionamento")

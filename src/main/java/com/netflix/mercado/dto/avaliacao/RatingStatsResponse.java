@@ -1,18 +1,10 @@
 package com.netflix.mercado.dto.avaliacao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.Map;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com estatísticas de avaliações")
 public class RatingStatsResponse {
 
@@ -47,4 +39,82 @@ public class RatingStatsResponse {
     @Schema(description = "Percentual de avaliações com 1 estrela", example = "4.76")
     @JsonProperty("percentualUmaEstrela")
     private BigDecimal percentualUmaEstrela;
+    public RatingStatsResponse() {
+    }
+
+    public RatingStatsResponse(BigDecimal mediaEstrelas, Integer totalAvaliacoes, Map<Integer, Integer> distribuicaoPorEstrela, BigDecimal percentualCincoEstrelas, BigDecimal percentualQuatroEstrelas, BigDecimal percentualTresEstrelas, BigDecimal percentualDoisEstrelas, BigDecimal percentualUmaEstrela) {
+        this.mediaEstrelas = mediaEstrelas;
+        this.totalAvaliacoes = totalAvaliacoes;
+        this.distribuicaoPorEstrela = distribuicaoPorEstrela;
+        this.percentualCincoEstrelas = percentualCincoEstrelas;
+        this.percentualQuatroEstrelas = percentualQuatroEstrelas;
+        this.percentualTresEstrelas = percentualTresEstrelas;
+        this.percentualDoisEstrelas = percentualDoisEstrelas;
+        this.percentualUmaEstrela = percentualUmaEstrela;
+    }
+
+    public BigDecimal getMediaEstrelas() {
+        return this.mediaEstrelas;
+    }
+
+    public void setMediaEstrelas(BigDecimal mediaEstrelas) {
+        this.mediaEstrelas = mediaEstrelas;
+    }
+
+    public Integer getTotalAvaliacoes() {
+        return this.totalAvaliacoes;
+    }
+
+    public void setTotalAvaliacoes(Integer totalAvaliacoes) {
+        this.totalAvaliacoes = totalAvaliacoes;
+    }
+
+    public Map<Integer, Integer> getDistribuicaoPorEstrela() {
+        return this.distribuicaoPorEstrela;
+    }
+
+    public void setDistribuicaoPorEstrela(Map<Integer, Integer> distribuicaoPorEstrela) {
+        this.distribuicaoPorEstrela = distribuicaoPorEstrela;
+    }
+
+    public BigDecimal getPercentualCincoEstrelas() {
+        return this.percentualCincoEstrelas;
+    }
+
+    public void setPercentualCincoEstrelas(BigDecimal percentualCincoEstrelas) {
+        this.percentualCincoEstrelas = percentualCincoEstrelas;
+    }
+
+    public BigDecimal getPercentualQuatroEstrelas() {
+        return this.percentualQuatroEstrelas;
+    }
+
+    public void setPercentualQuatroEstrelas(BigDecimal percentualQuatroEstrelas) {
+        this.percentualQuatroEstrelas = percentualQuatroEstrelas;
+    }
+
+    public BigDecimal getPercentualTresEstrelas() {
+        return this.percentualTresEstrelas;
+    }
+
+    public void setPercentualTresEstrelas(BigDecimal percentualTresEstrelas) {
+        this.percentualTresEstrelas = percentualTresEstrelas;
+    }
+
+    public BigDecimal getPercentualDoisEstrelas() {
+        return this.percentualDoisEstrelas;
+    }
+
+    public void setPercentualDoisEstrelas(BigDecimal percentualDoisEstrelas) {
+        this.percentualDoisEstrelas = percentualDoisEstrelas;
+    }
+
+    public BigDecimal getPercentualUmaEstrela() {
+        return this.percentualUmaEstrela;
+    }
+
+    public void setPercentualUmaEstrela(BigDecimal percentualUmaEstrela) {
+        this.percentualUmaEstrela = percentualUmaEstrela;
+    }
+
 }

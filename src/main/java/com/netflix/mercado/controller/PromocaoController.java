@@ -1,12 +1,12 @@
-package com.netflix.mercados.controller;
+package com.netflix.mercado.controller;
 
-import com.netflix.mercados.dto.promocao.request.CreatePromocaoRequest;
-import com.netflix.mercados.dto.promocao.request.UpdatePromocaoRequest;
-import com.netflix.mercados.dto.promocao.response.PromocaoResponse;
-import com.netflix.mercados.dto.promocao.response.ValidatePromoCodeResponse;
-import com.netflix.mercados.entity.User;
-import com.netflix.mercados.security.UserPrincipal;
-import com.netflix.mercados.service.PromocaoService;
+import com.netflix.mercado.dto.promocao.CreatePromocaoRequest;
+import com.netflix.mercado.dto.promocao.UpdatePromocaoRequest;
+import com.netflix.mercado.dto.promocao.PromocaoResponse;
+import com.netflix.mercado.dto.promocao.ValidatePromocaoResponse;
+import com.netflix.mercado.entity.User;
+import com.netflix.mercado.security.UserPrincipal;
+import com.netflix.mercado.service.PromocaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Promoções", description = "Gerenciamento de promoções")

@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.avaliacao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com informações de avaliação")
 public class AvaliacaoResponse {
 
@@ -48,4 +40,100 @@ public class AvaliacaoResponse {
     @Schema(description = "Data de atualização")
     @JsonProperty("updatedAt")
     private LocalDateTime updatedAt;
+    public AvaliacaoResponse() {
+    }
+
+    public AvaliacaoResponse(Long id, Long usuarioId, String usuarioUsername, Long mercadoId, String mercadoNome, Integer estrelas, String comentario, Integer curtidas, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.usuarioId = usuarioId;
+        this.usuarioUsername = usuarioUsername;
+        this.mercadoId = mercadoId;
+        this.mercadoNome = mercadoNome;
+        this.estrelas = estrelas;
+        this.comentario = comentario;
+        this.curtidas = curtidas;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUsuarioId() {
+        return this.usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public String getUsuarioUsername() {
+        return this.usuarioUsername;
+    }
+
+    public void setUsuarioUsername(String usuarioUsername) {
+        this.usuarioUsername = usuarioUsername;
+    }
+
+    public Long getMercadoId() {
+        return this.mercadoId;
+    }
+
+    public void setMercadoId(Long mercadoId) {
+        this.mercadoId = mercadoId;
+    }
+
+    public String getMercadoNome() {
+        return this.mercadoNome;
+    }
+
+    public void setMercadoNome(String mercadoNome) {
+        this.mercadoNome = mercadoNome;
+    }
+
+    public Integer getEstrelas() {
+        return this.estrelas;
+    }
+
+    public void setEstrelas(Integer estrelas) {
+        this.estrelas = estrelas;
+    }
+
+    public String getComentario() {
+        return this.comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    public Integer getCurtidas() {
+        return this.curtidas;
+    }
+
+    public void setCurtidas(Integer curtidas) {
+        this.curtidas = curtidas;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }

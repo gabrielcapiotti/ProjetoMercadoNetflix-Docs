@@ -11,15 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "audit_logs", indexes = {
         @Index(name = "idx_audit_usuario", columnList = "usuario_id"),
@@ -66,4 +58,100 @@ public class AuditLog extends BaseEntity {
 
     @Column(name = "status_http")
     private Integer statusHttp;
+    public AuditLog() {
+    }
+
+    public AuditLog(User user, TipoAcao acao, String tipoEntidade, Long idEntidade, String descricao, String valoresAnteriores, String valoresNovos, String ipOrigem, String userAgent, Integer statusHttp) {
+        this.user = user;
+        this.acao = acao;
+        this.tipoEntidade = tipoEntidade;
+        this.idEntidade = idEntidade;
+        this.descricao = descricao;
+        this.valoresAnteriores = valoresAnteriores;
+        this.valoresNovos = valoresNovos;
+        this.ipOrigem = ipOrigem;
+        this.userAgent = userAgent;
+        this.statusHttp = statusHttp;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public TipoAcao getAcao() {
+        return this.acao;
+    }
+
+    public void setAcao(TipoAcao acao) {
+        this.acao = acao;
+    }
+
+    public String getTipoEntidade() {
+        return this.tipoEntidade;
+    }
+
+    public void setTipoEntidade(String tipoEntidade) {
+        this.tipoEntidade = tipoEntidade;
+    }
+
+    public Long getIdEntidade() {
+        return this.idEntidade;
+    }
+
+    public void setIdEntidade(Long idEntidade) {
+        this.idEntidade = idEntidade;
+    }
+
+    public String getDescricao() {
+        return this.descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getValoresAnteriores() {
+        return this.valoresAnteriores;
+    }
+
+    public void setValoresAnteriores(String valoresAnteriores) {
+        this.valoresAnteriores = valoresAnteriores;
+    }
+
+    public String getValoresNovos() {
+        return this.valoresNovos;
+    }
+
+    public void setValoresNovos(String valoresNovos) {
+        this.valoresNovos = valoresNovos;
+    }
+
+    public String getIpOrigem() {
+        return this.ipOrigem;
+    }
+
+    public void setIpOrigem(String ipOrigem) {
+        this.ipOrigem = ipOrigem;
+    }
+
+    public String getUserAgent() {
+        return this.userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public Integer getStatusHttp() {
+        return this.statusHttp;
+    }
+
+    public void setStatusHttp(Integer statusHttp) {
+        this.statusHttp = statusHttp;
+    }
+
 }

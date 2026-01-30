@@ -9,15 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "favoritos", indexes = {
         @Index(name = "idx_favorito_usuario", columnList = "usuario_id"),
@@ -40,4 +32,46 @@ public class Favorito extends BaseEntity {
 
     @Column(name = "prioridade", nullable = false)
     private Integer prioridade = 0;
+    public Favorito() {
+    }
+
+    public Favorito(User user, Mercado mercado, String observacoes, Integer prioridade) {
+        this.user = user;
+        this.mercado = mercado;
+        this.observacoes = observacoes;
+        this.prioridade = prioridade;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Mercado getMercado() {
+        return this.mercado;
+    }
+
+    public void setMercado(Mercado mercado) {
+        this.mercado = mercado;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public Integer getPrioridade() {
+        return this.prioridade;
+    }
+
+    public void setPrioridade(Integer prioridade) {
+        this.prioridade = prioridade;
+    }
+
 }

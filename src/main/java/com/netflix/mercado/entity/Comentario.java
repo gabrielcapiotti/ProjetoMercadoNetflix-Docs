@@ -12,18 +12,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "comentarios", indexes = {
         @Index(name = "idx_comentario_avaliacao", columnList = "avaliacao_id"),
@@ -72,4 +64,73 @@ public class Comentario extends BaseEntity {
     public boolean ehResposta() {
         return comentarioPai != null;
     }
+    public Comentario() {
+    }
+
+    public Comentario(String conteudo, Avaliacao avaliacao, User user, Comentario comentarioPai, Set<Comentario> respostas, Long curtidas, Boolean moderado) {
+        this.conteudo = conteudo;
+        this.avaliacao = avaliacao;
+        this.user = user;
+        this.comentarioPai = comentarioPai;
+        this.respostas = respostas;
+        this.curtidas = curtidas;
+        this.moderado = moderado;
+    }
+
+    public String getConteudo() {
+        return this.conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public Avaliacao getAvaliacao() {
+        return this.avaliacao;
+    }
+
+    public void setAvaliacao(Avaliacao avaliacao) {
+        this.avaliacao = avaliacao;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Comentario getComentarioPai() {
+        return this.comentarioPai;
+    }
+
+    public void setComentarioPai(Comentario comentarioPai) {
+        this.comentarioPai = comentarioPai;
+    }
+
+    public Set<Comentario> getRespostas() {
+        return this.respostas;
+    }
+
+    public void setRespostas(Set<Comentario> respostas) {
+        this.respostas = respostas;
+    }
+
+    public Long getCurtidas() {
+        return this.curtidas;
+    }
+
+    public void setCurtidas(Long curtidas) {
+        this.curtidas = curtidas;
+    }
+
+    public Boolean getModerado() {
+        return this.moderado;
+    }
+
+    public void setModerado(Boolean moderado) {
+        this.moderado = moderado;
+    }
+
 }

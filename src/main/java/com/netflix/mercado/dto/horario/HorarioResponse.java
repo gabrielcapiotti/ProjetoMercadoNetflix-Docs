@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.horario;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com informações de horário de funcionamento")
 public class HorarioResponse {
 
@@ -43,4 +35,82 @@ public class HorarioResponse {
     @Schema(description = "Data de atualização")
     @JsonProperty("updatedAt")
     private LocalDateTime updatedAt;
+    public HorarioResponse() {
+    }
+
+    public HorarioResponse(Long id, String diaSemana, String horaAbertura, String horaFechamento, Boolean aberto, String observacoes, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.diaSemana = diaSemana;
+        this.horaAbertura = horaAbertura;
+        this.horaFechamento = horaFechamento;
+        this.aberto = aberto;
+        this.observacoes = observacoes;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDiaSemana() {
+        return this.diaSemana;
+    }
+
+    public void setDiaSemana(String diaSemana) {
+        this.diaSemana = diaSemana;
+    }
+
+    public String getHoraAbertura() {
+        return this.horaAbertura;
+    }
+
+    public void setHoraAbertura(String horaAbertura) {
+        this.horaAbertura = horaAbertura;
+    }
+
+    public String getHoraFechamento() {
+        return this.horaFechamento;
+    }
+
+    public void setHoraFechamento(String horaFechamento) {
+        this.horaFechamento = horaFechamento;
+    }
+
+    public Boolean getAberto() {
+        return this.aberto;
+    }
+
+    public void setAberto(Boolean aberto) {
+        this.aberto = aberto;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }

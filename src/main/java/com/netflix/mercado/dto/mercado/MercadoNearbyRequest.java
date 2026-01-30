@@ -4,17 +4,9 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para buscar mercados próximos por localização")
 public class MercadoNearbyRequest {
 
@@ -42,4 +34,55 @@ public class MercadoNearbyRequest {
     @Min(value = 1, message = "Tamanho deve ser no mínimo 1")
     @Schema(description = "Quantidade de resultados por página", example = "20")
     private Integer size;
+    public MercadoNearbyRequest() {
+    }
+
+    public MercadoNearbyRequest(BigDecimal latitude, BigDecimal longitude, BigDecimal raio, Integer page, Integer size) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.raio = raio;
+        this.page = page;
+        this.size = size;
+    }
+
+    public BigDecimal getLatitude() {
+        return this.latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return this.longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public BigDecimal getRaio() {
+        return this.raio;
+    }
+
+    public void setRaio(BigDecimal raio) {
+        this.raio = raio;
+    }
+
+    public Integer getPage() {
+        return this.page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getSize() {
+        return this.size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
 }

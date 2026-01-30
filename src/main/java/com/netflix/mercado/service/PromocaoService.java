@@ -9,8 +9,10 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
 import com.netflix.mercado.repository.PromocaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
-import lombok.extern.slf4j.Slf4j;
+import com.netflix.mercado.dto.promocao.CreatePromocaoRequest;
+import com.netflix.mercado.dto.promocao.UpdatePromocaoRequest;
+import com.netflix.mercado.dto.promocao.PromocaoResponse;
+import com.netflix.mercado.dto.promocao.ValidatePromocaoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +28,6 @@ import java.time.temporal.ChronoUnit;
  * Service responsável por gerenciar promoções de mercados.
  * Implementa lógica de criação, validação, aplicação e expiração de promoções.
  */
-@Slf4j
 @Service
 @Transactional
 public class PromocaoService {
@@ -373,4 +374,37 @@ public class PromocaoService {
         return usuario.getId().equals(mercado.getOwner().getId()) ||
                 usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+    public PromocaoService() {
+    }
+
+    public PromocaoService(PromocaoRepository promocaoRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService) {
+        this.promocaoRepository = promocaoRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.mercadoService = mercadoService;
+    }
+
+    public PromocaoRepository getPromocaoRepository() {
+        return this.promocaoRepository;
+    }
+
+    public void setPromocaoRepository(PromocaoRepository promocaoRepository) {
+        this.promocaoRepository = promocaoRepository;
+    }
+
+    public AuditLogRepository getAuditLogRepository() {
+        return this.auditLogRepository;
+    }
+
+    public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
+    }
+
+    public MercadoService getMercadoService() {
+        return this.mercadoService;
+    }
+
+    public void setMercadoService(MercadoService mercadoService) {
+        this.mercadoService = mercadoService;
+    }
+
 }

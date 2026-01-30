@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.notificacao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com informações de notificação")
 public class NotificacaoResponse {
 
@@ -37,4 +29,73 @@ public class NotificacaoResponse {
     @Schema(description = "Data de leitura")
     @JsonProperty("readAt")
     private LocalDateTime readAt;
+    public NotificacaoResponse() {
+    }
+
+    public NotificacaoResponse(Long id, String titulo, String conteudo, String tipo, Boolean lida, LocalDateTime createdAt, LocalDateTime readAt) {
+        this.id = id;
+        this.titulo = titulo;
+        this.conteudo = conteudo;
+        this.tipo = tipo;
+        this.lida = lida;
+        this.createdAt = createdAt;
+        this.readAt = readAt;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return this.titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getConteudo() {
+        return this.conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public String getTipo() {
+        return this.tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Boolean getLida() {
+        return this.lida;
+    }
+
+    public void setLida(Boolean lida) {
+        this.lida = lida;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getReadAt() {
+        return this.readAt;
+    }
+
+    public void setReadAt(LocalDateTime readAt) {
+        this.readAt = readAt;
+    }
+
 }

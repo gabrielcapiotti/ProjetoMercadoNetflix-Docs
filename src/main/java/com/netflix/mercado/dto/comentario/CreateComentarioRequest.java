@@ -3,17 +3,9 @@ package com.netflix.mercado.dto.comentario;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para criar comentário em avaliação")
 public class CreateComentarioRequest {
 
@@ -30,4 +22,37 @@ public class CreateComentarioRequest {
     @Schema(description = "ID do comentário pai para respostas aninhadas", example = "1")
     @JsonProperty("comentarioPaiId")
     private Long comentarioPaiId;
+    public CreateComentarioRequest() {
+    }
+
+    public CreateComentarioRequest(Long avaliacaoId, String conteudo, Long comentarioPaiId) {
+        this.avaliacaoId = avaliacaoId;
+        this.conteudo = conteudo;
+        this.comentarioPaiId = comentarioPaiId;
+    }
+
+    public Long getAvaliacaoId() {
+        return this.avaliacaoId;
+    }
+
+    public void setAvaliacaoId(Long avaliacaoId) {
+        this.avaliacaoId = avaliacaoId;
+    }
+
+    public String getConteudo() {
+        return this.conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public Long getComentarioPaiId() {
+        return this.comentarioPaiId;
+    }
+
+    public void setComentarioPaiId(Long comentarioPaiId) {
+        this.comentarioPaiId = comentarioPaiId;
+    }
+
 }

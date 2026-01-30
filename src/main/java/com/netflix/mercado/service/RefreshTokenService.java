@@ -6,7 +6,6 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.RefreshTokenRepository;
 import com.netflix.mercado.security.JwtTokenProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,7 +20,6 @@ import java.util.UUID;
  * Service responsável por gerenciar refresh tokens.
  * Implementa lógica de geração, validação, renovação e revogação de refresh tokens.
  */
-@Slf4j
 @Service
 @Transactional
 public class RefreshTokenService {
@@ -213,4 +211,37 @@ public class RefreshTokenService {
 
         return ChronoUnit.MINUTES.between(agora, expiracao);
     }
+    public RefreshTokenService() {
+    }
+
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, JwtTokenProvider jwtTokenProvider, Long refreshTokenExpiration) {
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenExpiration = refreshTokenExpiration;
+    }
+
+    public RefreshTokenRepository getRefreshTokenRepository() {
+        return this.refreshTokenRepository;
+    }
+
+    public void setRefreshTokenRepository(RefreshTokenRepository refreshTokenRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
+
+    public JwtTokenProvider getJwtTokenProvider() {
+        return this.jwtTokenProvider;
+    }
+
+    public void setJwtTokenProvider(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public Long getRefreshTokenExpiration() {
+        return this.refreshTokenExpiration;
+    }
+
+    public void setRefreshTokenExpiration(Long refreshTokenExpiration) {
+        this.refreshTokenExpiration = refreshTokenExpiration;
+    }
+
 }

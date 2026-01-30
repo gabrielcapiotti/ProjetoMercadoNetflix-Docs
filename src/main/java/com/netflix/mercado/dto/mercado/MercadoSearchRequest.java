@@ -4,17 +4,9 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Requisição para buscar mercados com filtros")
 public class MercadoSearchRequest {
 
@@ -43,4 +35,64 @@ public class MercadoSearchRequest {
     @Min(value = 1, message = "Tamanho deve ser no mínimo 1")
     @Schema(description = "Quantidade de resultados por página", example = "20")
     private Integer size;
+    public MercadoSearchRequest() {
+    }
+
+    public MercadoSearchRequest(String nome, String cidade, String estado, BigDecimal minAvaliacao, Integer page, Integer size) {
+        this.nome = nome;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.minAvaliacao = minAvaliacao;
+        this.page = page;
+        this.size = size;
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCidade() {
+        return this.cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return this.estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public BigDecimal getMinAvaliacao() {
+        return this.minAvaliacao;
+    }
+
+    public void setMinAvaliacao(BigDecimal minAvaliacao) {
+        this.minAvaliacao = minAvaliacao;
+    }
+
+    public Integer getPage() {
+        return this.page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
+
+    public Integer getSize() {
+        return this.size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
 }

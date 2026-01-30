@@ -1,17 +1,9 @@
 package com.netflix.mercado.dto.comentario;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Schema(description = "Resposta com informações de comentário")
 public class ComentarioResponse {
 
@@ -42,4 +34,82 @@ public class ComentarioResponse {
     @Schema(description = "Data de atualização")
     @JsonProperty("updatedAt")
     private LocalDateTime updatedAt;
+    public ComentarioResponse() {
+    }
+
+    public ComentarioResponse(Long id, String conteudo, Long usuarioId, String usuarioUsername, Integer curtidas, Long comentarioPaiId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.conteudo = conteudo;
+        this.usuarioId = usuarioId;
+        this.usuarioUsername = usuarioUsername;
+        this.curtidas = curtidas;
+        this.comentarioPaiId = comentarioPaiId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getConteudo() {
+        return this.conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public Long getUsuarioId() {
+        return this.usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public String getUsuarioUsername() {
+        return this.usuarioUsername;
+    }
+
+    public void setUsuarioUsername(String usuarioUsername) {
+        this.usuarioUsername = usuarioUsername;
+    }
+
+    public Integer getCurtidas() {
+        return this.curtidas;
+    }
+
+    public void setCurtidas(Integer curtidas) {
+        this.curtidas = curtidas;
+    }
+
+    public Long getComentarioPaiId() {
+        return this.comentarioPaiId;
+    }
+
+    public void setComentarioPaiId(Long comentarioPaiId) {
+        this.comentarioPaiId = comentarioPaiId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }
