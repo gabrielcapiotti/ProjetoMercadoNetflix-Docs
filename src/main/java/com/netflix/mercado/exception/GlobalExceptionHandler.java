@@ -7,8 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import com.netflix.mercado.dto.ErrorResponse;
-import com.netflix.mercado.dto.ValidationErrorResponse;
+import com.netflix.mercado.dto.common.ErrorResponse;
+import com.netflix.mercado.dto.common.ValidationErrorResponse;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

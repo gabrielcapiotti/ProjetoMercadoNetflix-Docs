@@ -13,6 +13,9 @@ import com.netflix.mercado.dto.promocao.CreatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.UpdatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.PromocaoResponse;
 import com.netflix.mercado.dto.promocao.ValidatePromocaoResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +34,8 @@ import java.time.temporal.ChronoUnit;
 @Service
 @Transactional
 public class PromocaoService {
+
+    private static final Logger log = LoggerFactory.getLogger(PromocaoService.class);
 
     @Autowired
     private PromocaoRepository promocaoRepository;
@@ -55,14 +60,14 @@ public class PromocaoService {
         log.info("Criando promoção para mercado ID: {}", mercadoId);
 
         // Validar dados obrigatórios
-        if (request.getTitulo() == null || request.getTitulo().isBlank()) {
-            throw new ValidationException("Título da promoção é obrigatório");
+        if (request.getCodigo() == null || request.getCodigo().isBlank()) {
+            throw new ValidationException("Código da promoção é obrigatório");
         }
-        if (request.getDesconto() == null || request.getDesconto().compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getPercentualDesconto() == null || request.getPercentualDesconto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValidationException("Desconto deve ser maior que zero");
         }
-        if (request.getDataExpiracao() == null) {
-            throw new ValidationException("Data de expiração é obrigatória");
+        if (request.getDataValidade() == null) {
+            throw new ValidationException("Data de validade é obrigatória");
         }
 
         Mercado mercado = mercadoService.getMercadoById(mercadoId);
@@ -73,22 +78,20 @@ public class PromocaoService {
             throw new UnauthorizedException("Você não tem permissão para criar promoções neste mercado");
         }
 
-        // Validar data de expiração
-        if (request.getDataExpiracao().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Data de expiração não pode ser no passado");
+        // Validar data de validade
+        if (request.getDataValidade().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Data de validade não pode ser no passado");
         }
 
         Promocao promocao = new Promocao();
         promocao.setMercado(mercado);
-        promocao.setTitulo(request.getTitulo());
+        promocao.setCodigo(request.getCodigo());
         promocao.setDescricao(request.getDescricao());
-        promocao.setDesconto(request.getDesconto());
-        promocao.setTipoDesconto(request.getTipoDesconto()); // PERCENTUAL ou FIXO
-        promocao.setCodigoPromocional(request.getCodigoPromocional());
-        promocao.setDataInicio(LocalDateTime.now());
-        promocao.setDataExpiracao(request.getDataExpiracao());
-        promocao.setUsosDisponiveis(request.getUsosDisponiveis());
-        promocao.setUsosRealizados(0L);
+        promocao.setPercentualDesconto(request.getPercentualDesconto());
+        promocao.setValorDescontoMaximo(request.getValorDescontoMaximo());
+        promocao.setValorMinimoCompra(request.getValorMinimoCompra());
+        promocao.setDataInicio(request.getDataInicio());
+        promocao.setDataValidade(request.getDataValidade());
         promocao.setAtiva(true);
 
         promocao = promocaoRepository.save(promocao);
@@ -129,28 +132,31 @@ public class PromocaoService {
             throw new UnauthorizedException("Você não tem permissão para atualizar esta promoção");
         }
 
-        String valoresAnteriores = String.format("titulo=%s, desconto=%s", promocao.getTitulo(), promocao.getDesconto());
+        String valoresAnteriores = String.format("codigo=%s, desconto=%s", promocao.getCodigo(), promocao.getPercentualDesconto());
 
         // Atualizar campos
-        if (request.getTitulo() != null && !request.getTitulo().isBlank()) {
-            promocao.setTitulo(request.getTitulo());
+        if (request.getCodigo() != null && !request.getCodigo().isBlank()) {
+            promocao.setCodigo(request.getCodigo());
         }
         if (request.getDescricao() != null) {
             promocao.setDescricao(request.getDescricao());
         }
-        if (request.getDesconto() != null && request.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-            promocao.setDesconto(request.getDesconto());
+        if (request.getPercentualDesconto() != null && request.getPercentualDesconto().compareTo(BigDecimal.ZERO) > 0) {
+            promocao.setPercentualDesconto(request.getPercentualDesconto());
         }
-        if (request.getDataExpiracao() != null && request.getDataExpiracao().isAfter(LocalDateTime.now())) {
-            promocao.setDataExpiracao(request.getDataExpiracao());
+        if (request.getDataValidade() != null && request.getDataValidade().isAfter(LocalDateTime.now())) {
+            promocao.setDataValidade(request.getDataValidade());
         }
-        if (request.getAtiva() != null) {
-            promocao.setAtiva(request.getAtiva());
+        if (request.getValorDescontoMaximo() != null) {
+            promocao.setValorDescontoMaximo(request.getValorDescontoMaximo());
+        }
+        if (request.getValorMinimoCompra() != null) {
+            promocao.setValorMinimoCompra(request.getValorMinimoCompra());
         }
 
         promocao = promocaoRepository.save(promocao);
 
-        String valoresNovos = String.format("titulo=%s, desconto=%s", promocao.getTitulo(), promocao.getDesconto());
+        String valoresNovos = String.format("codigo=%s, desconto=%s", promocao.getCodigo(), promocao.getPercentualDesconto());
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(

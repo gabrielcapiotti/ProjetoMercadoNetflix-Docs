@@ -12,6 +12,7 @@ import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
  * Service responsável por gerenciar avaliações de mercados.
  * Implementa lógica de criação, atualização, exclusão e cálculo de estatísticas de avaliações.
  */
+@Slf4j
 @Service
 @Transactional
 public class AvaliacaoService {
@@ -64,7 +66,7 @@ public class AvaliacaoService {
 
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setMercado(mercado);
-        avaliacao.setUsuario(usuario);
+        avaliacao.setUser(usuario);
         avaliacao.setRating(request.getRating());
         avaliacao.getTitulo(request.getTitulo());
         avaliacao.setComentarioTitulo(request.getTitulo());

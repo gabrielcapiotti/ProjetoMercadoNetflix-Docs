@@ -11,9 +11,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "notificacoes", indexes = {
         @Index(name = "idx_notificacao_usuario", columnList = "usuario_id"),
@@ -24,12 +28,11 @@ import java.time.LocalDateTime;
 public class Notificacao extends BaseEntity {
 
     public enum TipoNotificacao {
+        SISTEMA("Sistema"),
         PROMOCAO("Promoção"),
         AVALIACAO("Avaliação"),
         COMENTARIO("Comentário"),
-        FAVORITO("Favorito"),
-        SEGURANCA("Segurança"),
-        SISTEMA("Sistema");
+        MERCADO("Mercado");
 
         private final String descricao;
 
@@ -79,8 +82,7 @@ public class Notificacao extends BaseEntity {
     public Notificacao() {
     }
 
-    public Notificacao(final String descricao, User user, String titulo, String conteudo, TipoNotificacao tipo, Boolean lida, String urlAcao, LocalDateTime dataLeitura) {
-        this.descricao = descricao;
+    public Notificacao(User user, String titulo, String conteudo, TipoNotificacao tipo, Boolean lida, String urlAcao, LocalDateTime dataLeitura) {
         this.user = user;
         this.titulo = titulo;
         this.conteudo = conteudo;
@@ -88,14 +90,6 @@ public class Notificacao extends BaseEntity {
         this.lida = lida;
         this.urlAcao = urlAcao;
         this.dataLeitura = dataLeitura;
-    }
-
-    public final String getDescricao() {
-        return this.descricao;
-    }
-
-    public void setDescricao(final String descricao) {
-        this.descricao = descricao;
     }
 
     public User getUser() {

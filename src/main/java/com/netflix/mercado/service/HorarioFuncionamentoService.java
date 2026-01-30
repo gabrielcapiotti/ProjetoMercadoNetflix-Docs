@@ -7,7 +7,11 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.HorarioFuncionamentoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.*;
+import com.netflix.mercado.dto.horario.CreateHorarioRequest;
+import com.netflix.mercado.dto.horario.UpdateHorarioRequest;
+import com.netflix.mercado.dto.horario.HorarioResponse;
+import com.netflix.mercado.dto.horario.MercadoStatusResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import java.util.List;
  * Service responsável por gerenciar horários de funcionamento de mercados.
  * Implementa lógica de criação, atualização e consulta de horários.
  */
+@Slf4j
 @Service
 @Transactional
 public class HorarioFuncionamentoService {

@@ -12,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -96,31 +98,13 @@ public class HorarioFuncionamento extends BaseEntity {
     public HorarioFuncionamento() {
     }
 
-    public HorarioFuncionamento(final int numero, final String descricao, Mercado mercado, DiaSemana diaSemana, LocalTime horaAbertura, LocalTime horaFechamento, Boolean aberto, String observacoes) {
-        this.numero = numero;
-        this.descricao = descricao;
+    public HorarioFuncionamento(Mercado mercado, DiaSemana diaSemana, LocalTime horaAbertura, LocalTime horaFechamento, Boolean aberto, String observacoes) {
         this.mercado = mercado;
         this.diaSemana = diaSemana;
         this.horaAbertura = horaAbertura;
         this.horaFechamento = horaFechamento;
         this.aberto = aberto;
         this.observacoes = observacoes;
-    }
-
-    public final int getNumero() {
-        return this.numero;
-    }
-
-    public void setNumero(final int numero) {
-        this.numero = numero;
-    }
-
-    public final String getDescricao() {
-        return this.descricao;
-    }
-
-    public void setDescricao(final String descricao) {
-        this.descricao = descricao;
     }
 
     public Mercado getMercado() {

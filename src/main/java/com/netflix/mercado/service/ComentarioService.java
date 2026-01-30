@@ -11,6 +11,7 @@ import com.netflix.mercado.repository.ComentarioRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.comentario.CreateComentarioRequest;
 import com.netflix.mercado.dto.comentario.UpdateComentarioRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.HashSet;
  * Service responsável por gerenciar comentários em avaliações.
  * Implementa lógica de criação, resposta, moderação e gerenciamento de curtidas.
  */
+@Slf4j
 @Service
 @Transactional
 public class ComentarioService {
@@ -62,7 +64,7 @@ public class ComentarioService {
 
         Comentario comentario = new Comentario();
         comentario.setAvaliacao(avaliacao);
-        comentario.setUsuario(usuario);
+        comentario.setUser(usuario);
         comentario.setConteudo(request.getConteudo());
         comentario.setPaiComentario(null); // Comentário raiz
         comentario.setAprovado(true); // Considerar aprovado por padrão
@@ -238,7 +240,7 @@ public class ComentarioService {
 
         Comentario respostaComentario = new Comentario();
         respostaComentario.setAvaliacao(comentarioPai.getAvaliacao());
-        respostaComentario.setUsuario(usuario);
+        respostaComentario.setUser(usuario);
         respostaComentario.setConteudo(request.getConteudo());
         respostaComentario.setPaiComentario(comentarioPai);
         respostaComentario.setAprovado(true);

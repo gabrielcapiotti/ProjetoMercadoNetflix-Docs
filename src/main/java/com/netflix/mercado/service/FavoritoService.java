@@ -8,10 +8,16 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.FavoritoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.FavoritoResponse;
+import com.netflix.mercado.dto.favorito.FavoritoResponse;
+import com.netflix.mercado.dto.favorito.CreateFavoritoRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +32,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class FavoritoService {
+
+    private static final Logger log = LoggerFactory.getLogger(FavoritoService.class);
 
     @Autowired
     private FavoritoRepository favoritoRepository;
@@ -51,15 +59,14 @@ public class FavoritoService {
         Mercado mercado = mercadoService.getMercadoById(mercadoId);
 
         // Verificar se já está nos favoritos
-        if (favoritoRepository.existsByMercadoIdAndUsuarioId(mercadoId, usuario.getId())) {
+        if (favoritoRepository.existsByUserAndMercado(usuario, mercado)) {
             log.warn("Mercado ID: {} já está nos favoritos do usuário: {}", mercadoId, usuario.getEmail());
             throw new ValidationException("Este mercado já está nos seus favoritos");
         }
 
         Favorito favorito = new Favorito();
         favorito.setMercado(mercado);
-        favorito.setUsuario(usuario);
-        favorito.setDataAdicao(LocalDateTime.now());
+        favorito.setUser(usuario);
         favorito.setPrioridade(0);
 
         favorito = favoritoRepository.save(favorito);
@@ -89,7 +96,9 @@ public class FavoritoService {
     public void removerFavorito(Long mercadoId, User usuario) {
         log.info("Removendo mercado ID: {} dos favoritos do usuário: {}", mercadoId, usuario.getEmail());
 
-        Favorito favorito = favoritoRepository.findByMercadoIdAndUsuarioId(mercadoId, usuario.getId())
+        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        
+        Favorito favorito = favoritoRepository.findByUserAndMercado(usuario, mercado)
                 .orElseThrow(() -> {
                     log.warn("Favorito não encontrado para mercado ID: {} e usuário: {}", mercadoId, usuario.getEmail());
                     return new ResourceNotFoundException("Favorito não encontrado");
@@ -119,9 +128,9 @@ public class FavoritoService {
      * @return página de favoritos
      */
     @Transactional(readOnly = true)
-    public Page<Favorito> obterFavoritosDUsuario(Long usuarioId, Pageable pageable) {
-        log.debug("Buscando favoritos do usuário ID: {}", usuarioId);
-        return favoritoRepository.findByUsuarioId(usuarioId, pageable);
+    public Page<Favorito> obterFavoritosDUsuario(User usuario, Pageable pageable) {
+        log.debug("Buscando favoritos do usuário: {}", usuario.getEmail());
+        return favoritoRepository.findByUser(usuario, pageable);
     }
 
     /**
@@ -134,7 +143,8 @@ public class FavoritoService {
     @Transactional(readOnly = true)
     public Boolean verificarFavorito(Long mercadoId, User usuario) {
         log.debug("Verificando se mercado ID: {} está nos favoritos do usuário: {}", mercadoId, usuario.getEmail());
-        return favoritoRepository.existsByMercadoIdAndUsuarioId(mercadoId, usuario.getId());
+        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        return favoritoRepository.existsByUserAndMercado(usuario, mercado);
     }
 
     /**
@@ -144,9 +154,9 @@ public class FavoritoService {
      * @return quantidade de favoritos
      */
     @Transactional(readOnly = true)
-    public Long contarFavoritosDoUsuario(Long usuarioId) {
-        log.debug("Contando favoritos do usuário ID: {}", usuarioId);
-        return favoritoRepository.countByUsuarioId(usuarioId);
+    public Long contarFavoritosDoUsuario(User usuario) {
+        log.debug("Contando favoritos do usuário: {}", usuario.getEmail());
+        return favoritoRepository.countByUser(usuario);
     }
 
     /**
@@ -189,9 +199,14 @@ public class FavoritoService {
      * @return lista de favoritos ordenados por prioridade
      */
     @Transactional(readOnly = true)
-    public List<Favorito> obterFavoritosComPrioridade(Long usuarioId) {
-        log.debug("Buscando favoritos do usuário ID: {} ordenados por prioridade", usuarioId);
-        return favoritoRepository.findByUsuarioIdOrderByPrioridadeDescDataAdicaoDesc(usuarioId);
+    public List<Favorito> obterFavoritosComPrioridade(User usuario) {
+        log.debug("Buscando favoritos do usuário: {} ordenados por prioridade", usuario.getEmail());
+        return favoritoRepository.findByUser(
+            usuario, 
+            PageRequest.of(0, Integer.MAX_VALUE, 
+                Sort.by("prioridade").descending()
+                    .and(Sort.by("createdAt").descending()))
+        ).getContent();
     }
 
     /**
@@ -215,6 +230,7 @@ public class FavoritoService {
 
         log.debug("Prioridade do favorito ID: {} definida para: {}", favoritoId, prioridade);
     }
+
     public FavoritoService() {
     }
 
@@ -246,6 +262,42 @@ public class FavoritoService {
 
     public void setMercadoService(MercadoService mercadoService) {
         this.mercadoService = mercadoService;
+    }
+
+    // Métodos wrapper com nomes em inglês para controllers
+    public FavoritoResponse createFavorito(CreateFavoritoRequest request, User usuario) {
+        Favorito favorito = adicionarFavorito(request.getMercadoId(), usuario);
+        return convertToResponse(favorito);
+    }
+
+    public List<FavoritoResponse> listFavoritos(User usuario) {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        return obterFavoritosDUsuario(usuario, pageable).getContent().stream()
+            .map(this::convertToResponse)
+            .toList();
+    }
+
+    public void deleteFavorito(Long mercadoId, User usuario) {
+        removerFavorito(mercadoId, usuario);
+    }
+
+    public Long countFavoritos(User usuario) {
+        return contarFavoritosDoUsuario(usuario);
+    }
+
+    public Boolean isFavorite(Long mercadoId, User usuario) {
+        return verificarFavorito(mercadoId, usuario);
+    }
+
+    private FavoritoResponse convertToResponse(Favorito favorito) {
+        FavoritoResponse response = new FavoritoResponse();
+        response.setId(favorito.getId());
+        response.setMercadoId(favorito.getMercado().getId());
+        response.setMercadoNome(favorito.getMercado().getNome());
+        response.setUsuarioId(favorito.getUser().getId());
+        response.setPrioridade(favorito.getPrioridade());
+        response.setDataAdicao(favorito.getCreatedAt());
+        return response;
     }
 
 }

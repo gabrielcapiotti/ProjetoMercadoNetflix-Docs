@@ -1,8 +1,8 @@
 package com.netflix.mercado.controller;
 
-import com.netflix.mercado.dto.comentario.request.CreateComentarioRequest;
-import com.netflix.mercado.dto.comentario.request.UpdateComentarioRequest;
-import com.netflix.mercado.dto.comentario.response.ComentarioResponse;
+import com.netflix.mercado.dto.comentario.CreateComentarioRequest;
+import com.netflix.mercado.dto.comentario.UpdateComentarioRequest;
+import com.netflix.mercado.dto.comentario.ComentarioResponse;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
 import com.netflix.mercado.service.ComentarioService;
@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor

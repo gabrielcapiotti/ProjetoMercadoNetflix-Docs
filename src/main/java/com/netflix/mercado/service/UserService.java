@@ -11,6 +11,8 @@ import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.auth.RegisterRequest;
 import com.netflix.mercado.dto.auth.UserResponse;
 import com.netflix.mercado.dto.auth.ChangePasswordRequest;
+import com.netflix.mercado.dto.auth.UserUpdateRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
  * Service responsável por gerenciar operações relacionadas a usuários.
  * Implementa lógica de negócio para criar, atualizar, buscar e gerenciar usuários.
  */
+@Slf4j
 @Service
 @Transactional
 public class UserService {

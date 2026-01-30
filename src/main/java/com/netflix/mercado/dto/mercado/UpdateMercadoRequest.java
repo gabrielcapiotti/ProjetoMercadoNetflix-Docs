@@ -62,7 +62,6 @@ public class UpdateMercadoRequest {
     @Schema(description = "Longitude do mercado", example = "-46.6333")
     private BigDecimal longitude;
 
-    @URL(message = "URL da foto deve ser válida")
     @Schema(description = "URL da foto principal do mercado", example = "https://example.com/mercado.jpg")
     @JsonProperty("fotoPrincipalUrl")
     private String fotoPrincipalUrl;

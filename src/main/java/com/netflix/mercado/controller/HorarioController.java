@@ -6,7 +6,7 @@ import com.netflix.mercado.dto.horario.HorarioResponse;
 import com.netflix.mercado.dto.horario.MercadoStatusResponse;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
-import com.netflix.mercado.service.HorarioService;
+import com.netflix.mercado.service.HorarioFuncionamentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ import java.util.Map;
 @Tag(name = "Horários", description = "Gerenciamento de horários de funcionamento")
 public class HorarioController {
 
-    private final HorarioService horarioService;
+    private final HorarioFuncionamentoService horarioService;
 
     /**
      * Cria novo horário de funcionamento
@@ -50,19 +52,19 @@ public class HorarioController {
         @ApiResponse(
             responseCode = "201",
             description = "Horário criado com sucesso",
-            content = @Content(schema = @Schema(implementation = HorarioFuncionamentoResponse.class))
+            content = @Content(schema = @Schema(implementation = HorarioResponse.class))
         ),
         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado")
     })
-    public ResponseEntity<HorarioFuncionamentoResponse> createHorario(
+    public ResponseEntity<HorarioResponse> createHorario(
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId,
             @Valid @RequestBody CreateHorarioRequest request) {
         try {
             User user = getCurrentUser();
             log.info("Criando horário para mercado: {} por usuário: {}", mercadoId, user.getId());
-            HorarioFuncionamentoResponse response = horarioService.createHorario(
+            HorarioResponse response = horarioService.createHorario(
                     mercadoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -87,12 +89,12 @@ public class HorarioController {
         ),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado")
     })
-    public ResponseEntity<List<HorarioFuncionamentoResponse>> listHorarios(
+    public ResponseEntity<List<HorarioResponse>> listHorarios(
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
             log.debug("Listando horários do mercado: {}", mercadoId);
-            List<HorarioFuncionamentoResponse> response = horarioService.listHorarios(mercadoId);
+            List<HorarioResponse> response = horarioService.listHorarios(mercadoId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao listar horários", e);
@@ -114,19 +116,19 @@ public class HorarioController {
         @ApiResponse(
             responseCode = "200",
             description = "Horário atualizado com sucesso",
-            content = @Content(schema = @Schema(implementation = HorarioFuncionamentoResponse.class))
+            content = @Content(schema = @Schema(implementation = HorarioResponse.class))
         ),
         @ApiResponse(responseCode = "404", description = "Horário não encontrado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    public ResponseEntity<HorarioFuncionamentoResponse> updateHorario(
+    public ResponseEntity<HorarioResponse> updateHorario(
             @Parameter(description = "ID do horário")
             @PathVariable Long id,
             @Valid @RequestBody UpdateHorarioRequest request) {
         try {
             User user = getCurrentUser();
             log.info("Atualizando horário: {} por usuário: {}", id, user.getId());
-            HorarioFuncionamentoResponse response = horarioService.updateHorario(id, request, user);
+            HorarioResponse response = horarioService.updateHorario(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao atualizar horário", e);
@@ -175,16 +177,16 @@ public class HorarioController {
         @ApiResponse(
             responseCode = "200",
             description = "Status retornado com sucesso",
-            content = @Content(schema = @Schema(implementation = StatusLojaResponse.class))
+            content = @Content(schema = @Schema(implementation = MercadoStatusResponse.class))
         ),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado")
     })
-    public ResponseEntity<StatusLojaResponse> getLojaStatus(
+    public ResponseEntity<MercadoStatusResponse> getLojaStatus(
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
             log.debug("Obtendo status da loja: {}", mercadoId);
-            StatusLojaResponse response = horarioService.getLojaStatus(mercadoId);
+            MercadoStatusResponse response = horarioService.getLojaStatus(mercadoId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao obter status da loja", e);

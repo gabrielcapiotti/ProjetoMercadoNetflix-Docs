@@ -1,14 +1,19 @@
 package com.netflix.mercado.service;
 
 import com.netflix.mercado.entity.AuditLog;
+import com.netflix.mercado.entity.AuditLog.TipoAcao;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.AuditLogRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +25,8 @@ import java.util.List;
 @Service
 @Transactional
 public class AuditLogService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuditLogService.class);
 
     @Autowired
     private AuditLogRepository auditLogRepository;
@@ -51,12 +58,11 @@ public class AuditLogService {
         }
 
         AuditLog auditLog = new AuditLog();
-        auditLog.setUsuario(usuario);
-        auditLog.setTipoAcao(tipoAcao);
+        auditLog.setUser(usuario);
+        auditLog.setAcao(tipoAcao == null ? null : TipoAcao.valueOf(tipoAcao));
         auditLog.setTipoEntidade(tipoEntidade);
         auditLog.setIdEntidade(idEntidade);
         auditLog.setDescricao(descricao);
-        auditLog.setDataHora(LocalDateTime.now());
 
         auditLog = auditLogRepository.save(auditLog);
 
@@ -93,14 +99,14 @@ public class AuditLogService {
      * @return página de logs de auditoria
      */
     @Transactional(readOnly = true)
-    public Page<AuditLog> obterAuditoriaDoUsuario(Long usuarioId, Pageable pageable) {
-        log.debug("Buscando auditoria do usuário ID: {}", usuarioId);
+    public Page<AuditLog> obterAuditoriaDoUsuario(User usuario, Pageable pageable) {
+        log.debug("Buscando auditoria do usuário: {}", usuario.getEmail());
 
-        if (usuarioId == null) {
-            throw new ValidationException("ID do usuário é obrigatório");
+        if (usuario == null) {
+            throw new ValidationException("Usuário é obrigatório");
         }
 
-        return auditLogRepository.findByUsuarioIdOrderByDataHoraDesc(usuarioId, pageable);
+        return auditLogRepository.findByUser(usuario, pageable);
     }
 
     /**
@@ -121,7 +127,7 @@ public class AuditLogService {
             throw new ValidationException("ID da entidade é obrigatório");
         }
 
-        return auditLogRepository.findByTipoEntidadeAndIdEntidadeOrderByDataHoraDesc(tipoEntidade, idEntidade);
+        return auditLogRepository.findHistoricoEntidade(tipoEntidade, idEntidade);
     }
 
     /**
@@ -147,7 +153,11 @@ public class AuditLogService {
             throw new ValidationException("Data inicial não pode ser após a data final");
         }
 
-        return auditLogRepository.findByDataHoraBetweenOrderByDataHoraDesc(dataInicio, dataFim, pageable);
+        List<AuditLog> logs = auditLogRepository.findByDataRange(dataInicio, dataFim);
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), logs.size());
+        List<AuditLog> pageContent = logs.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, logs.size());
     }
 
     /**
@@ -165,7 +175,8 @@ public class AuditLogService {
             throw new ValidationException("Tipo de ação é obrigatório");
         }
 
-        return auditLogRepository.findByTipoAcaoOrderByDataHoraDesc(tipoAcao, pageable);
+        TipoAcao acao = TipoAcao.valueOf(tipoAcao);
+        return auditLogRepository.findByAcao(acao, pageable);
     }
 
     /**
@@ -183,7 +194,7 @@ public class AuditLogService {
             throw new ValidationException("Tipo de entidade é obrigatório");
         }
 
-        return auditLogRepository.findByTipoEntidadeOrderByDataHoraDesc(tipoEntidade, pageable);
+        return auditLogRepository.findByTipoEntidade(tipoEntidade, pageable);
     }
 
     /**
@@ -193,14 +204,14 @@ public class AuditLogService {
      * @return quantidade de ações
      */
     @Transactional(readOnly = true)
-    public Long contarAcoesDoUsuario(Long usuarioId) {
-        log.debug("Contando ações do usuário ID: {}", usuarioId);
+    public Long contarAcoesDoUsuario(User usuario) {
+        log.debug("Contando ações do usuário: {}", usuario.getEmail());
 
-        if (usuarioId == null) {
-            throw new ValidationException("ID do usuário é obrigatório");
+        if (usuario == null) {
+            throw new ValidationException("Usuário é obrigatório");
         }
 
-        return auditLogRepository.countByUsuarioId(usuarioId);
+        return auditLogRepository.countByUser(usuario);
     }
 
     /**
@@ -217,7 +228,8 @@ public class AuditLogService {
             throw new ValidationException("Tipo de ação é obrigatório");
         }
 
-        return auditLogRepository.countByTipoAcao(tipoAcao);
+        TipoAcao acao = TipoAcao.valueOf(tipoAcao);
+        return auditLogRepository.findByAcao(acao, Pageable.unpaged()).getTotalElements();
     }
 
     /**
@@ -229,16 +241,19 @@ public class AuditLogService {
      * @return lista de logs suspeitos
      */
     @Transactional(readOnly = true)
-    public List<AuditLog> obterAtividadeSuspeita(Long usuarioId, Integer minutosAtrás, Integer minimumActions) {
-        log.debug("Analisando atividade suspeita do usuário ID: {} nos últimos {} minutos", usuarioId, minutosAtrás);
+    public List<AuditLog> obterAtividadeSuspeita(User usuario, Integer minutosAtrás, Integer minimumActions) {
+        log.debug("Analisando atividade suspeita do usuário: {} nos últimos {} minutos", usuario.getEmail(), minutosAtrás);
 
-        if (usuarioId == null) {
-            throw new ValidationException("ID do usuário é obrigatório");
+        if (usuario == null) {
+            throw new ValidationException("Usuário é obrigatório");
         }
 
         LocalDateTime dataLimite = LocalDateTime.now().minusMinutes(minutosAtrás);
+        LocalDateTime agora = LocalDateTime.now();
 
-        return auditLogRepository.findByUsuarioIdAndDataHoraAfterOrderByDataHoraDesc(usuarioId, dataLimite);
+        return auditLogRepository.findByDataRange(dataLimite, agora).stream()
+            .filter(log -> log.getUser().getId().equals(usuario.getId()))
+            .toList();
     }
 
     /**

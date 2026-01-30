@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -210,16 +212,16 @@ public class PromocaoController {
         @ApiResponse(
             responseCode = "200",
             description = "Validação retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = ValidatePromoCodeResponse.class))
+            content = @Content(schema = @Schema(implementation = ValidatePromocaoResponse.class))
         ),
         @ApiResponse(responseCode = "404", description = "Código de promoção não encontrado")
     })
-    public ResponseEntity<ValidatePromoCodeResponse> validatePromoCode(
+    public ResponseEntity<ValidatePromocaoResponse> validatePromoCode(
             @Parameter(description = "Código de promoção")
             @PathVariable String code) {
         try {
             log.debug("Validando código de promoção: {}", code);
-            ValidatePromoCodeResponse response = promocaoService.validatePromoCode(code);
+            ValidatePromocaoResponse response = promocaoService.validatePromoCode(code);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao validar código de promoção", e);

@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/mercados")
 @RequiredArgsConstructor
@@ -380,12 +382,12 @@ public class MercadoController {
         ),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado")
     })
-    public ResponseEntity<List<HorarioFuncionamentoResponse>> getHorarios(
+    public ResponseEntity<List<HorarioResponse>> getHorarios(
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
             log.debug("Obtendo horários do mercado: {}", id);
-            List<HorarioFuncionamentoResponse> response = mercadoService.getHorarios(id);
+            List<HorarioResponse> response = mercadoService.getHorarios(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao obter horários", e);
@@ -407,19 +409,19 @@ public class MercadoController {
         @ApiResponse(
             responseCode = "201",
             description = "Horário criado com sucesso",
-            content = @Content(schema = @Schema(implementation = HorarioFuncionamentoResponse.class))
+            content = @Content(schema = @Schema(implementation = HorarioResponse.class))
         ),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado"),
         @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    public ResponseEntity<HorarioFuncionamentoResponse> createHorario(
+    public ResponseEntity<HorarioResponse> createHorario(
             @Parameter(description = "ID do mercado")
             @PathVariable Long id,
             @Valid @RequestBody CreateHorarioRequest request) {
         try {
             User user = getCurrentUser();
             log.info("Criando horário para mercado: {} por usuário: {}", id, user.getId());
-            HorarioFuncionamentoResponse response = mercadoService.createHorario(id, request, user);
+            HorarioResponse response = mercadoService.createHorario(id, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             log.error("Erro ao criar horário", e);

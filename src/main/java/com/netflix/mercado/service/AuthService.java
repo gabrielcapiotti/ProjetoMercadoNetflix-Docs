@@ -12,6 +12,7 @@ import com.netflix.mercado.dto.auth.RegisterRequest;
 import com.netflix.mercado.dto.auth.LoginRequest;
 import com.netflix.mercado.dto.auth.JwtAuthenticationResponse;
 import com.netflix.mercado.security.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
  * Service responsável por autenticação, autorização e gerenciamento de tokens JWT.
  * Implementa lógica de login, registro, refresh token e logout.
  */
+@Slf4j
 @Service
 @Transactional
 public class AuthService {

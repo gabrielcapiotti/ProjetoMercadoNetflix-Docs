@@ -28,6 +28,7 @@ public class UserPrincipal implements UserDetails {
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
     private boolean enabled;
+    private User user;
 
     /**
      * Cria um UserPrincipal a partir de uma entidade User
@@ -49,6 +50,7 @@ public class UserPrincipal implements UserDetails {
             .accountNonExpired(true)
             .accountNonLocked(!user.isLocked())
             .credentialsNonExpired(true)
+            .user(user)
             .build();
     }
 

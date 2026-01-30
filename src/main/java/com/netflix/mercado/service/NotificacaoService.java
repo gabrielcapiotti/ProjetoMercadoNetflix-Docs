@@ -7,7 +7,11 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.NotificacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
-import com.netflix.mercado.dto.CreateNotificacaoRequest;
+import com.netflix.mercado.dto.notificacao.CreateNotificacaoRequest;
+import com.netflix.mercado.dto.notificacao.NotificacaoResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +29,8 @@ import java.time.temporal.ChronoUnit;
 @Service
 @Transactional
 public class NotificacaoService {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificacaoService.class);
 
     @Autowired
     private NotificacaoRepository notificacaoRepository;
@@ -53,9 +59,8 @@ public class NotificacaoService {
         Notificacao notificacao = new Notificacao();
         notificacao.setTitulo(request.getTitulo());
         notificacao.setConteudo(request.getConteudo());
-        notificacao.setTipoNotificacao(request.getTipo());
+        notificacao.setUser(usuario);
         notificacao.setLida(false);
-        notificacao.setDataEnvio(LocalDateTime.now());
 
         notificacao = notificacaoRepository.save(notificacao);
 
@@ -106,9 +111,9 @@ public class NotificacaoService {
      * @return página de notificações
      */
     @Transactional(readOnly = true)
-    public Page<Notificacao> obterNotificacionesDoUsuario(Long usuarioId, Pageable pageable) {
-        log.debug("Buscando notificações do usuário ID: {}", usuarioId);
-        return notificacaoRepository.findByUsuarioIdOrderByDataEnvioDesc(usuarioId, pageable);
+    public Page<Notificacao> obterNotificacionesDoUsuario(User usuario, Pageable pageable) {
+        log.debug("Buscando notificações do usuário: {}", usuario.getEmail());
+        return notificacaoRepository.findByUser(usuario, pageable);
     }
 
     /**
@@ -194,9 +199,9 @@ public class NotificacaoService {
      * @return quantidade de notificações não lidas
      */
     @Transactional(readOnly = true)
-    public Long contarNaoLidas(Long usuarioId) {
-        log.debug("Contando notificações não lidas do usuário ID: {}", usuarioId);
-        return notificacaoRepository.countByUsuarioIdAndLidaFalse(usuarioId);
+    public Long contarNaoLidas(User usuario) {
+        log.debug("Contando notificações não lidas do usuário: {}", usuario.getEmail());
+        return notificacaoRepository.countUnreadByUser(usuario);
     }
 
     /**
@@ -232,6 +237,7 @@ public class NotificacaoService {
 
         log.info("Limpeza automática concluída. {} notificações deletadas", deletadas);
     }
+
     public NotificacaoService() {
     }
 
@@ -254,6 +260,58 @@ public class NotificacaoService {
 
     public void setAuditLogRepository(AuditLogRepository auditLogRepository) {
         this.auditLogRepository = auditLogRepository;
+    }
+
+    // Métodos wrapper com nomes em inglês para controllers
+    public Page<NotificacaoResponse> listNotificacoes(User usuario, Pageable pageable, Boolean lidas) {
+        Page<Notificacao> notificacoes = obterNotificacionesDoUsuario(usuario, pageable);
+        return notificacoes.map(NotificacaoResponse::fromEntity);
+    }
+
+    public Long countUnreadNotificacoes(User usuario) {
+        return contarNaoLidas(usuario);
+    }
+
+    public NotificacaoResponse markAsRead(Long notificacaoId, User usuario) {
+        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Notificação não encontrada"));
+        
+        if (!notificacao.getUser().getId().equals(usuario.getId())) {
+            throw new ValidationException("Você não tem permissão para acessar esta notificação");
+        }
+        
+        notificacao.setLida(true);
+        notificacao = notificacaoRepository.save(notificacao);
+        return NotificacaoResponse.fromEntity(notificacao);
+    }
+
+    public void deleteNotificacao(Long notificacaoId, User usuario) {
+        Notificacao notificacao = notificacaoRepository.findById(notificacaoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Notificação não encontrada"));
+        
+        if (!notificacao.getUser().getId().equals(usuario.getId())) {
+            throw new ValidationException("Você não tem permissão para deletar esta notificação");
+        }
+        
+        notificacaoRepository.delete(notificacao);
+    }
+
+    public void markAllAsRead(User usuario) {
+        Page<Notificacao> notificacoes = obterNotificacionesDoUsuario(usuario, Pageable.unpaged());
+        notificacoes.forEach(n -> {
+            n.setLida(true);
+            notificacaoRepository.save(n);
+        });
+    }
+
+    public void deleteAllNotificacoes(User usuario) {
+        Page<Notificacao> notificacoes = obterNotificacionesDoUsuario(usuario, Pageable.unpaged());
+        notificacoes.forEach(notificacaoRepository::delete);
+    }
+
+    public void deleteAllNotificacoes(User usuario) {
+        // Implementar se necessário
+        throw new UnsupportedOperationException("Método não implementado");
     }
 
 }

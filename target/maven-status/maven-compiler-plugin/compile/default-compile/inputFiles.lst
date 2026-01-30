@@ -95,6 +95,7 @@
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/entity/Favorito.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/auth/RegisterRequest.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/repository/UserRepository.java
+/workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/auth/UserUpdateRequest.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/avaliacao/CreateAvaliacaoRequest.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/favorito/FavoritoResponse.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/validation/ValidPhone.java

@@ -1,9 +1,9 @@
 package com.netflix.mercado.controller;
 
-import com.netflix.mercado.dto.avaliacao.request.CreateAvaliacaoRequest;
-import com.netflix.mercado.dto.avaliacao.request.UpdateAvaliacaoRequest;
-import com.netflix.mercado.dto.avaliacao.response.AvaliacaoResponse;
-import com.netflix.mercado.dto.avaliacao.response.RatingStatsResponse;
+import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.AvaliacaoResponse;
+import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
 import com.netflix.mercado.service.AvaliacaoService;
@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/avaliacoes")
 @RequiredArgsConstructor

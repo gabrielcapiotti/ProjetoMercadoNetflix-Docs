@@ -6,6 +6,7 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.RefreshTokenRepository;
 import com.netflix.mercado.security.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * Service responsável por gerenciar refresh tokens.
  * Implementa lógica de geração, validação, renovação e revogação de refresh tokens.
  */
+@Slf4j
 @Service
 @Transactional
 public class RefreshTokenService {
