@@ -2,8 +2,12 @@ package com.netflix.mercado.dto.promocao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Data;
 import java.math.BigDecimal;
 
+@Data
+@Builder
 @Schema(description = "Resposta da validação de promoção")
 public class ValidatePromocaoResponse {
 

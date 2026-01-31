@@ -37,4 +37,7 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> 
 
     @Query("SELECT COUNT(n) FROM Notificacao n WHERE n.user = :user AND n.active = true")
     long countByUser(@Param("user") User user);
+
+    // Método auxiliar para buscar não lidas
+    Page<Notificacao> findByUserAndLidaFalseOrderByCreatedAtDesc(User user, Pageable pageable);
 }

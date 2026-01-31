@@ -1,6 +1,7 @@
 package com.netflix.mercado.dto.comentario;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.netflix.mercado.entity.Comentario;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
@@ -110,6 +111,24 @@ public class ComentarioResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    // Método estático para converter Entity em DTO
+    public static ComentarioResponse from(Comentario comentario) {
+        if (comentario == null) {
+            return null;
+        }
+        
+        ComentarioResponse response = new ComentarioResponse();
+        response.setId(comentario.getId());
+        response.setConteudo(comentario.getConteudo());
+        response.setUsuarioId(comentario.getUser() != null ? comentario.getUser().getId() : null);
+        response.setUsuarioUsername(comentario.getUser() != null ? comentario.getUser().getEmail() : null);
+        response.setCurtidas(comentario.getCurtidas() != null ? comentario.getCurtidas().intValue() : 0);
+        response.setComentarioPaiId(comentario.getComentarioPai() != null ? comentario.getComentarioPai().getId() : null);
+        response.setCreatedAt(comentario.getCreatedAt());
+        response.setUpdatedAt(comentario.getUpdatedAt());
+        return response;
     }
 
 }

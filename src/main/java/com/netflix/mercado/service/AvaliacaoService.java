@@ -264,7 +264,7 @@ public class AvaliacaoService {
         Double media = avaliacaoRepository.findAverageEstrelasByMercadoId(mercadoId);
 
         return RatingStatsResponse.builder()
-                .totalAvaliacoes(total)
+                .totalAvaliacoes((int) total)
                 .mediaAvaliacoes(media != null ? media : 0.0)
                 .cincoEstrelas(cinco)
                 .quatroEstrelas(quatro)
@@ -329,6 +329,36 @@ public class AvaliacaoService {
     private boolean isAdmin(User usuario) {
         return usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+
+    // Aliases em inglês para compatibilidade com Controllers
+    public Avaliacao createAvaliacao(CreateAvaliacaoRequest request, User usuario) {
+        return criarAvaliacao(request, usuario);
+    }
+
+    public Avaliacao updateAvaliacao(Long id, UpdateAvaliacaoRequest request, User usuario) {
+        return atualizarAvaliacao(id, request, usuario);
+    }
+
+    public void deleteAvaliacao(Long id, User usuario) {
+        deletarAvaliacao(id, usuario);
+    }
+
+    public Avaliacao getAvaliacaoById(Long id) {
+        return obterAvaliacaoPorId(id);
+    }
+
+    public Page<Avaliacao> listAvaliacoes(Pageable pageable) {
+        return avaliacaoRepository.findAll(pageable);
+    }
+
+    public Page<Avaliacao> listAvaliacoesByMercado(Long mercadoId, Pageable pageable) {
+        return obterAvaliacoesPorMercado(mercadoId, pageable);
+    }
+
+    public RatingStatsResponse getRatingStats(Long mercadoId) {
+        return calcularEstatisticas(mercadoId);
+    }
+
     public AvaliacaoService() {
     }
 

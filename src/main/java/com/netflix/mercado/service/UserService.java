@@ -80,7 +80,7 @@ public class UserService {
         user.setTwoFactorEnabled(false);
 
         // Adicionar role padrão (USER)
-        Role userRole = roleRepository.findByName("ROLE_USER")
+        Role userRole = roleRepository.findByName(Role.RoleName.ROLE_USER)
                 .orElseThrow(() -> new ResourceNotFoundException("Role USER não encontrada"));
         user.setRoles(Set.of(userRole));
 

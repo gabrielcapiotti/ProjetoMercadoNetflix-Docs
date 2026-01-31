@@ -144,4 +144,21 @@ public class Avaliacao extends BaseEntity {
         this.comentarios = comentarios;
     }
 
+    // Métodos auxiliares para compatibilidade
+    public Long getUtil() {
+        return this.uteis;
+    }
+
+    public void setUtil(Long util) {
+        this.uteis = util;
+    }
+
+    public Long getInutil() {
+        return this.inutils;
+    }
+
+    public void setInutil(Long inutil) {
+        this.inutils = inutil;
+    }
+
 }

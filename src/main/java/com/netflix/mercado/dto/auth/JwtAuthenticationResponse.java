@@ -2,8 +2,12 @@ package com.netflix.mercado.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Data;
 import java.time.LocalDateTime;
 
+@Data
+@Builder
 @Schema(description = "Resposta com tokens JWT de autenticação")
 public class JwtAuthenticationResponse {
 

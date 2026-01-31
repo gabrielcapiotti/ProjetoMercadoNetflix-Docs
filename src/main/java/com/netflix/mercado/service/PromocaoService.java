@@ -288,10 +288,10 @@ public class PromocaoService {
         }
 
         return ValidatePromocaoResponse.builder()
-                .valido(true)
-                .promocaoId(promocao.getId())
+                .valida(true)
                 .desconto(promocao.getPercentualDesconto())
-                .tipoDesconto("PERCENTUAL")
+                .mensagem("Promoção válida")
+                .utilizacoesRestantes(promocao.getMaxUtilizacoes() - promocao.getUtilizacoesAtuais())
                 .build();
     }
 
@@ -377,6 +377,41 @@ public class PromocaoService {
         // TODO: Mercado não tem owner - implementar validação correta
         return usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+
+    // Aliases em inglês para compatibilidade com Controllers
+    public Promocao createPromocao(Long mercadoId, CreatePromocaoRequest request, User usuario) {
+        return criarPromocao(request, mercadoId, usuario);
+    }
+
+    public Promocao updatePromocao(Long id, UpdatePromocaoRequest request, User usuario) {
+        return atualizarPromocao(id, request, usuario);
+    }
+
+    public void deletePromocao(Long id, User usuario) {
+        deletarPromocao(id, usuario);
+    }
+
+    public Promocao getPromocaoById(Long id) {
+        return obterPromocaoPorId(id);
+    }
+
+    public Page<Promocao> listPromocoesByMercado(Long mercadoId, Boolean ativa, Pageable pageable) {
+        if (ativa != null && ativa) {
+            return obterPromocoesAtivas(pageable);
+        }
+        return obterPromocoesDoMercado(mercadoId, pageable);
+    }
+
+    public ValidatePromocaoResponse validatePromoCode(String codigo) {
+        return validarCodigo(codigo);
+    }
+
+    public void applyPromocao(Long promocaoId, User usuario) {
+        Promocao promocao = obterPromocaoPorId(promocaoId);
+        promocao.setUtilizacoesAtuais(promocao.getUtilizacoesAtuais() + 1);
+        promocaoRepository.save(promocao);
+    }
+
     public PromocaoService() {
     }
 

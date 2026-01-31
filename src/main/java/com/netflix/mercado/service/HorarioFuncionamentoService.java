@@ -3,6 +3,7 @@ package com.netflix.mercado.service;
 import com.netflix.mercado.entity.HorarioFuncionamento;
 import com.netflix.mercado.entity.HorarioFuncionamento.DiaSemana;
 import com.netflix.mercado.entity.Mercado;
+import com.netflix.mercado.entity.User;
 import com.netflix.mercado.entity.AuditLog;
 import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
@@ -285,6 +286,23 @@ public class HorarioFuncionamentoService {
         );
     }
     public HorarioFuncionamentoService() {
+    }
+
+    // Aliases em inglês para compatibilidade com Controllers
+    public HorarioFuncionamento createHorario(Long mercadoId, CreateHorarioRequest request, User usuario) {
+        return criarHorario(mercadoId, request);
+    }
+
+    public HorarioFuncionamento updateHorario(Long id, UpdateHorarioRequest request, User usuario) {
+        return atualizarHorario(id, request);
+    }
+
+    public void deleteHorario(Long id, User usuario) {
+        deletarHorario(id);
+    }
+
+    public List<HorarioResponse> listHorarios(Long mercadoId) {
+        return obterHorariosPorMercado(mercadoId);
     }
 
     public HorarioFuncionamentoService(HorarioFuncionamentoRepository horarioRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService) {

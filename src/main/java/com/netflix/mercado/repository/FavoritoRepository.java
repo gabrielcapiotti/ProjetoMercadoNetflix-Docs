@@ -33,4 +33,7 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
 
     @Query("SELECT f FROM Favorito f WHERE f.mercado = :mercado AND f.active = true")
     Page<Favorito> findByMercado(@Param("mercado") Mercado mercado, Pageable pageable);
+
+    // Método por ID para facilitar uso
+    long countByMercadoId(Long mercadoId);
 }

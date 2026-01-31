@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -51,8 +51,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setDataCriacao(LocalDateTime.now());
-        refreshToken.setDataExpiracao(LocalDateTime.now().plus(7, ChronoUnit.DAYS));
+        refreshToken.setDataExpiracao(Instant.now().plus(7, ChronoUnit.DAYS));
         refreshToken.setRevogado(false);
 
         refreshToken = refreshTokenRepository.save(refreshToken);
@@ -104,7 +103,7 @@ public class RefreshTokenService {
         }
 
         // Verificar se expirou
-        if (refreshToken.getDataExpiracao().isBefore(LocalDateTime.now())) {
+        if (refreshToken.getDataExpiracao().isBefore(Instant.now())) {
             log.warning("Refresh token expirou");
             return false;
         }
@@ -177,7 +176,7 @@ public class RefreshTokenService {
     public void limparTokensExpirados() {
         log.info("Iniciando limpeza de refresh tokens expirados");
 
-        long deletados = refreshTokenRepository.deleteByDataExpiracaoBefore(LocalDateTime.now());
+        long deletados = refreshTokenRepository.deleteByDataExpiracaoBefore(Instant.now());
 
         log.info("Limpeza de refresh tokens concluída. " + deletados + " tokens deletados");
     }
@@ -191,7 +190,7 @@ public class RefreshTokenService {
     public void limparTokensExpiradosDoUsuario(Long userId) {
         log.fine("Limpando tokens expirados do usuário ID: " + userId);
 
-        refreshTokenRepository.deleteByUserIdAndDataExpiracaoBefore(userId, LocalDateTime.now());
+        refreshTokenRepository.deleteByUserIdAndDataExpiracaoBefore(userId, Instant.now());
 
         log.fine("Tokens expirados deletados para usuário ID: " + userId);
     }
@@ -209,8 +208,8 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = obterRefreshToken(token);
 
-        LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime expiracao = refreshToken.getDataExpiracao();
+        Instant agora = Instant.now();
+        Instant expiracao = refreshToken.getDataExpiracao();
 
         return ChronoUnit.MINUTES.between(agora, expiracao);
     }

@@ -248,4 +248,29 @@ public class User extends BaseEntity {
         this.refreshTokens = refreshTokens;
     }
 
+    // Métodos auxiliares para compatibilidade com Spring Security
+    public String getPassword() {
+        return this.passwordHash;
+    }
+
+    public boolean isActive() {
+        return this.getActive();
+    }
+
+    public boolean isEmailVerified() {
+        return this.emailVerified != null && this.emailVerified;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return this.twoFactorEnabled != null && this.twoFactorEnabled;
+    }
+
+    public String getPhoneNumber() {
+        return this.phone;
+    }
+
+    public boolean isLocked() {
+        return false; // Por padrão não está bloqueado
+    }
+
 }

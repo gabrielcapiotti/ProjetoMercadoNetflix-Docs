@@ -37,4 +37,16 @@ public interface PromocaoRepository extends JpaRepository<Promocao, Long> {
     List<Promocao> findExhaustedPromocoes();
 
     boolean existsByCodigo(String codigo);
+
+    // Métodos por ID para facilitar uso
+    Page<Promocao> findByMercadoId(Long mercadoId, Pageable pageable);
+    
+    @Query("SELECT p FROM Promocao p WHERE p.ativa = true AND p.active = true")
+    Page<Promocao> findByAtivaTrue(Pageable pageable);
+    
+    @Query("SELECT p FROM Promocao p WHERE p.codigo = :codigo AND p.active = true")
+    Optional<Promocao> findByCodigoPromocional(@Param("codigo") String codigo);
+    
+    @Query("UPDATE Promocao p SET p.ativa = false WHERE p.dataValidade < :agora AND p.active = true")
+    long desativarPromocoesExpiradas(@Param("agora") LocalDateTime agora);
 }

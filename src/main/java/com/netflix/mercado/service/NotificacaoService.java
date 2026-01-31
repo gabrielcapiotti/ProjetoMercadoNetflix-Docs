@@ -7,6 +7,7 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.NotificacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
+import com.netflix.mercado.repository.UserRepository;
 import com.netflix.mercado.dto.notificacao.CreateNotificacaoRequest;
 import com.netflix.mercado.dto.notificacao.NotificacaoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class NotificacaoService {
     @Autowired
     private AuditLogRepository auditLogRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * Cria uma nova notificação.
      *
@@ -54,6 +58,9 @@ public class NotificacaoService {
             throw new ValidationException("Conteúdo da notificação é obrigatório");
         }
 
+        User usuario = userRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + request.getUsuarioId()));
+
         Notificacao notificacao = new Notificacao();
         notificacao.setTitulo(request.getTitulo());
         notificacao.setConteudo(request.getConteudo());
@@ -64,18 +71,6 @@ public class NotificacaoService {
 
         log.info("Notificação criada com sucesso. ID: " + notificacao.getId() + "");
         return notificacao;
-    }
-
-    /**
-     * Cria uma nova notificação a partir de um request.
-     *
-     * @param request dados da notificação
-     * @return a notificação criada
-     */
-    private Notificacao criarNotificacao(CreateNotificacaoRequest request) {
-        // Buscar usuário por ID
-        // TODO: implementar UserService.findById ou usar repository
-        throw new UnsupportedOperationException("Método não implementado - precisa buscar usuário por ID");
     }
 
     /**
@@ -168,7 +163,7 @@ public class NotificacaoService {
     public void marcarTodosComoLido(User usuario) {
         log.info("Marcando todas as notificações do usuário ID: " + usuario.getId() + " como lidas");
 
-        Page<Notificacao> naoLidas = obterNaoLidas(usuario.getId(), Pageable.unpaged());
+        Page<Notificacao> naoLidas = obterNaoLidas(usuario, Pageable.unpaged());
         LocalDateTime agora = LocalDateTime.now();
 
         naoLidas.forEach(notificacao -> {

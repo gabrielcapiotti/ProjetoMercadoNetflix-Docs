@@ -41,4 +41,16 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 
     @Query("SELECT COUNT(a) FROM Avaliacao a WHERE a.user = :user AND a.mercado = :mercado AND a.active = true")
     long countByUserAndMercado(@Param("user") User user, @Param("mercado") Mercado mercado);
+
+    // Métodos por ID para facilitar uso
+    Page<Avaliacao> findByMercadoId(Long mercadoId, Pageable pageable);
+    
+    Page<Avaliacao> findByUserId(Long userId, Pageable pageable);
+    
+    long countByMercadoIdAndEstrelas(Long mercadoId, int estrelas);
+    
+    @Query("SELECT AVG(a.estrelas) FROM Avaliacao a WHERE a.mercado.id = :mercadoId AND a.active = true")
+    Double findAverageEstrelasByMercadoId(@Param("mercadoId") Long mercadoId);
+    
+    boolean existsByMercadoIdAndUserId(Long mercadoId, Long userId);
 }

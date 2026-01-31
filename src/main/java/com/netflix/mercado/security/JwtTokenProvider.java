@@ -42,6 +42,20 @@ public class JwtTokenProvider {
     }
 
     /**
+     * Gera um token a partir de um objeto User (sobrecarga para compatibilidade)
+     *
+     * @param user Objeto User da entidade
+     * @return JWT token assinado
+     */
+    public String generateToken(com.netflix.mercado.entity.User user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+            .map(role -> (GrantedAuthority) () -> role.getName().name())
+            .collect(Collectors.toList());
+        
+        return generateTokenFromUsername(user.getEmail(), authorities, user.getId());
+    }
+
+    /**
      * Gera um refresh token para o usuário (7 dias de expiração)
      *
      * @param username Nome do usuário
@@ -226,5 +240,14 @@ public class JwtTokenProvider {
      */
     public long getRefreshTokenExpirationMs() {
         return refreshTokenExpirationMs;
+    }
+
+    /**
+     * Obtém o tempo de expiração do token em segundos (para compatibilidade com AuthService)
+     *
+     * @return Tempo de expiração em segundos
+     */
+    public long getJwtExpirationTime() {
+        return jwtExpirationMs / 1000;
     }
 }

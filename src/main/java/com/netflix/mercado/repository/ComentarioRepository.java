@@ -35,4 +35,10 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
 
     @Query("SELECT c FROM Comentario c WHERE c.curtidas >= :minCurtidas AND c.active = true ORDER BY c.curtidas DESC")
     Page<Comentario> findMostLikedComentarios(@Param("minCurtidas") Long minCurtidas, Pageable pageable);
+
+    // Métodos por ID para facilitar uso
+    @Query("SELECT c FROM Comentario c WHERE c.avaliacao.id = :avaliacaoId AND c.comentarioPai IS NULL AND c.active = true")
+    Page<Comentario> findByAvaliacaoIdAndComentarioPaiIsNull(@Param("avaliacaoId") Long avaliacaoId, Pageable pageable);
+    
+    Page<Comentario> findByUserId(Long userId, Pageable pageable);
 }

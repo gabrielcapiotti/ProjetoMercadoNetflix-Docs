@@ -11,6 +11,7 @@ import com.netflix.mercado.repository.ComentarioRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.comentario.CreateComentarioRequest;
 import com.netflix.mercado.dto.comentario.UpdateComentarioRequest;
+import com.netflix.mercado.dto.comentario.ComentarioResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -336,6 +337,32 @@ public class ComentarioService {
     private boolean isAdmin(User usuario) {
         return usuario.getRoles().stream().anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
     }
+
+    // Aliases em inglês para compatibilidade com Controllers
+    public ComentarioResponse createComentario(Long avaliacaoId, CreateComentarioRequest request, User usuario) {
+        return ComentarioResponse.from(criarComentario(request, usuario));
+    }
+
+    public ComentarioResponse updateComentario(Long id, UpdateComentarioRequest request, User usuario) {
+        return ComentarioResponse.from(atualizarComentario(id, request, usuario));
+    }
+
+    public void deleteComentario(Long id, User usuario) {
+        deletarComentario(id, usuario);
+    }
+
+    public ComentarioResponse getComentarioById(Long id) {
+        return ComentarioResponse.from(obterComentarioPorId(id));
+    }
+
+    public Page<ComentarioResponse> listComentarios(Long avaliacaoId, Pageable pageable) {
+        return obterComentariosPorAvaliacao(avaliacaoId, pageable).map(ComentarioResponse::from);
+    }
+
+    public ComentarioResponse replyComentario(Long comentarioPaiId, CreateComentarioRequest request, User usuario) {
+        return ComentarioResponse.from(responderComentario(comentarioPaiId, request, usuario));
+    }
+
     public ComentarioService() {
     }
 

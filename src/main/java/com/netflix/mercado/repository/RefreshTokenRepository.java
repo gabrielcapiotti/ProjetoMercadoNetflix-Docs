@@ -30,4 +30,13 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     @Query("SELECT r FROM RefreshToken r WHERE r.dataExpiracao < :agora AND r.active = true")
     List<RefreshToken> findExpiredTokens(@Param("agora") Instant agora);
+
+    // Métodos adicionais para manipulação por ID
+    void deleteByUserId(Long userId);
+    
+    List<RefreshToken> findByUserId(Long userId);
+    
+    long deleteByDataExpiracaoBefore(Instant data);
+    
+    void deleteByUserIdAndDataExpiracaoBefore(Long userId, Instant data);
 }
