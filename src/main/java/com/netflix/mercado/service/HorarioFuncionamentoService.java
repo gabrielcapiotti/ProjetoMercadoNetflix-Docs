@@ -1,6 +1,7 @@
 package com.netflix.mercado.service;
 
 import com.netflix.mercado.entity.HorarioFuncionamento;
+import com.netflix.mercado.entity.HorarioFuncionamento.DiaSemana;
 import com.netflix.mercado.entity.Mercado;
 import com.netflix.mercado.entity.AuditLog;
 import com.netflix.mercado.exception.ResourceNotFoundException;
@@ -52,16 +53,16 @@ public class HorarioFuncionamentoService {
         log.info("Criando horário de funcionamento para mercado ID: " + mercadoId + "");
 
         // Buscar mercado
-        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
 
         // Validar dados
         validarHorarios(request);
 
         HorarioFuncionamento horario = new HorarioFuncionamento();
         horario.setMercado(mercado);
-        horario.setDiaSemana(request.getDiaSemana());
-        horario.setHoraAbertura(request.getHoraAbertura());
-        horario.setHoraFechamento(request.getHoraFechamento());
+        horario.setDiaSemana(DiaSemana.valueOf(request.getDiaSemana()));
+        horario.setHoraAbertura(LocalTime.parse(request.getHoraAbertura()));
+        horario.setHoraFechamento(LocalTime.parse(request.getHoraFechamento()));
         horario.setAberto(true);
 
         horario = horarioRepository.save(horario);
@@ -91,21 +92,18 @@ public class HorarioFuncionamentoService {
         // Validar dados se fornecidos
         if (request.getHoraAbertura() != null || request.getHoraFechamento() != null) {
             CreateHorarioRequest validationRequest = new CreateHorarioRequest();
-            validationRequest.setDiaSemana(request.getDiaSemana() != null ? request.getDiaSemana() : horario.getDiaSemana());
-            validationRequest.setHoraAbertura(request.getHoraAbertura() != null ? request.getHoraAbertura() : horario.getHoraAbertura());
-            validationRequest.setHoraFechamento(request.getHoraFechamento() != null ? request.getHoraFechamento() : horario.getHoraFechamento());
+            validationRequest.setDiaSemana(horario.getDiaSemana().name());
+            validationRequest.setHoraAbertura(request.getHoraAbertura() != null ? request.getHoraAbertura() : horario.getHoraAbertura().toString());
+            validationRequest.setHoraFechamento(request.getHoraFechamento() != null ? request.getHoraFechamento() : horario.getHoraFechamento().toString());
             validarHorarios(validationRequest);
         }
 
-        // Atualizar campos
-        if (request.getDiaSemana() != null) {
-            horario.setDiaSemana(request.getDiaSemana());
-        }
+        // Atualizar campos (diaSemana não é alterável no update)
         if (request.getHoraAbertura() != null) {
-            horario.setHoraAbertura(request.getHoraAbertura());
+            horario.setHoraAbertura(LocalTime.parse(request.getHoraAbertura()));
         }
         if (request.getHoraFechamento() != null) {
-            horario.setHoraFechamento(request.getHoraFechamento());
+            horario.setHoraFechamento(LocalTime.parse(request.getHoraFechamento()));
         }
         if (request.getAberto() != null) {
             horario.setAberto(request.getAberto());
@@ -226,7 +224,7 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public List<HorarioFuncionamento> obterHorariosDia(Long mercadoId, String diaSemana) {
-        log.fine("Buscando horários do mercado ID: {} para o dia: " + mercadoId, diaSemana + "");
+        log.fine("Buscando horários do mercado ID: " + diaSemana + " para o dia: ");
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);

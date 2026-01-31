@@ -65,8 +65,7 @@ public class ComentarioController {
             @Valid @RequestBody CreateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando comentário na avaliação: {} por usuário: " + 
-                    avaliacaoId, user.getId());
+            log.info("Criando comentário na avaliação: " + avaliacaoId + " por usuário: " + user.getId());
             ComentarioResponse response = comentarioService.createComentario(
                     avaliacaoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -163,7 +162,7 @@ public class ComentarioController {
             @Valid @RequestBody UpdateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando comentário: {} por usuário: " + id, user.getId());
+            log.info("Atualizando comentário: " + user.getId() + " por usuário: ");
             ComentarioResponse response = comentarioService.updateComentario(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -192,7 +191,7 @@ public class ComentarioController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando comentário: {} por usuário: " + id, user.getId());
+            log.info("Deletando comentário: " + user.getId() + " por usuário: ");
             comentarioService.deleteComentario(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
@@ -226,7 +225,7 @@ public class ComentarioController {
             @Valid @RequestBody CreateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Respondendo comentário: {} por usuário: " + id, user.getId());
+            log.info("Respondendo comentário: " + user.getId() + " por usuário: ");
             ComentarioResponse response = comentarioService.replyComentario(id, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {

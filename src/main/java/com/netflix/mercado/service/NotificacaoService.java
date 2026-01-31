@@ -9,9 +9,6 @@ import com.netflix.mercado.repository.NotificacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.notificacao.CreateNotificacaoRequest;
 import com.netflix.mercado.dto.notificacao.NotificacaoResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar notificações de usuários.
@@ -30,7 +28,7 @@ import java.time.temporal.ChronoUnit;
 @Transactional
 public class NotificacaoService {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificacaoService.class);
+    private static final Logger log = Logger.getLogger(NotificacaoService.class.getName());
 
     @Autowired
     private NotificacaoRepository notificacaoRepository;
@@ -46,7 +44,7 @@ public class NotificacaoService {
      * @throws ValidationException se dados inválidos
      */
     public Notificacao criarNotificacao(CreateNotificacaoRequest request) {
-        log.info("Criando notificação para usuário ID: {}", request.getUsuarioId());
+        log.info("Criando notificação para usuário ID: " + request.getUsuarioId() + "");
 
         if (request.getTitulo() == null || request.getTitulo().isBlank()) {
             throw new ValidationException("Título da notificação é obrigatório");
@@ -64,7 +62,7 @@ public class NotificacaoService {
 
         notificacao = notificacaoRepository.save(notificacao);
 
-        log.info("Notificação criada com sucesso. ID: {}", notificacao.getId());
+        log.info("Notificação criada com sucesso. ID: " + notificacao.getId() + "");
         return notificacao;
     }
 
@@ -90,7 +88,7 @@ public class NotificacaoService {
      * @return a notificação criada
      */
     public Notificacao enviarNotificacao(User usuario, String titulo, String conteudo, String tipo) {
-        log.info("Enviando notificação para usuário ID: {} - Tipo: {}", usuario.getId(), tipo);
+        log.info("Enviando notificação para usuário ID: " + usuario.getId() + " - Tipo: " + tipo + "");
 
         CreateNotificacaoRequest request = new CreateNotificacaoRequest();
         request.setUsuarioId(usuario.getId());
@@ -110,7 +108,7 @@ public class NotificacaoService {
                 null, null, null, null, null
         ));
 
-        log.info("Notificação enviada com sucesso para usuário ID: {}", usuario.getId());
+        log.info("Notificação enviada com sucesso para usuário ID: " + usuario.getId() + "");
         return notificacao;
     }
 
@@ -123,7 +121,7 @@ public class NotificacaoService {
      */
     @Transactional(readOnly = true)
     public Page<Notificacao> obterNotificacionesDoUsuario(User usuario, Pageable pageable) {
-        log.debug("Buscando notificações do usuário: {}", usuario.getEmail());
+        log.fine("Buscando notificações do usuário: " + usuario.getEmail() + "");
         return notificacaoRepository.findByUser(usuario, pageable);
     }
 
@@ -136,7 +134,7 @@ public class NotificacaoService {
      */
     @Transactional(readOnly = true)
     public Page<Notificacao> obterNaoLidas(User usuario, Pageable pageable) {
-        log.debug("Buscando notificações não lidas do usuário: {}", usuario.getEmail());
+        log.fine("Buscando notificações não lidas do usuário: " + usuario.getEmail() + "");
         return notificacaoRepository.findByUserAndLidaFalseOrderByCreatedAtDesc(usuario, pageable);
     }
 
@@ -147,11 +145,11 @@ public class NotificacaoService {
      * @throws ResourceNotFoundException se notificação não existe
      */
     public void marcarComoLida(Long id) {
-        log.debug("Marcando notificação como lida. ID: {}", id);
+        log.fine("Marcando notificação como lida. ID: " + id + "");
 
         Notificacao notificacao = notificacaoRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Notificação não encontrada com ID: {}", id);
+                    log.warning("Notificação não encontrada com ID: " + id + "");
                     return new ResourceNotFoundException("Notificação não encontrada com ID: " + id);
                 });
 
@@ -159,7 +157,7 @@ public class NotificacaoService {
         notificacao.setDataLeitura(LocalDateTime.now());
         notificacaoRepository.save(notificacao);
 
-        log.debug("Notificação marcada como lida. ID: {}", id);
+        log.fine("Notificação marcada como lida. ID: " + id + "");
     }
 
     /**
@@ -168,7 +166,7 @@ public class NotificacaoService {
      * @param usuario usuário proprietário das notificações
      */
     public void marcarTodosComoLido(User usuario) {
-        log.info("Marcando todas as notificações do usuário ID: {} como lidas", usuario.getId());
+        log.info("Marcando todas as notificações do usuário ID: " + usuario.getId() + " como lidas");
 
         Page<Notificacao> naoLidas = obterNaoLidas(usuario.getId(), Pageable.unpaged());
         LocalDateTime agora = LocalDateTime.now();
@@ -180,7 +178,7 @@ public class NotificacaoService {
 
         notificacaoRepository.saveAll(naoLidas.getContent());
 
-        log.info("Todas as notificações do usuário ID: {} marcadas como lidas", usuario.getId());
+        log.info("Todas as notificações do usuário ID: " + usuario.getId() + " marcadas como lidas");
     }
 
     /**
@@ -190,17 +188,17 @@ public class NotificacaoService {
      * @throws ResourceNotFoundException se notificação não existe
      */
     public void deletarNotificacao(Long id) {
-        log.info("Deletando notificação com ID: {}", id);
+        log.info("Deletando notificação com ID: " + id + "");
 
         Notificacao notificacao = notificacaoRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Notificação não encontrada com ID: {}", id);
+                    log.warning("Notificação não encontrada com ID: " + id + "");
                     return new ResourceNotFoundException("Notificação não encontrada com ID: " + id);
                 });
 
         notificacaoRepository.delete(notificacao);
 
-        log.info("Notificação deletada com sucesso. ID: {}", id);
+        log.info("Notificação deletada com sucesso. ID: " + id + "");
     }
 
     /**
@@ -211,7 +209,7 @@ public class NotificacaoService {
      */
     @Transactional(readOnly = true)
     public Long contarNaoLidas(User usuario) {
-        log.debug("Contando notificações não lidas do usuário: {}", usuario.getEmail());
+        log.fine("Contando notificações não lidas do usuário: " + usuario.getEmail() + "");
         return notificacaoRepository.countUnreadByUser(usuario);
     }
 
@@ -224,7 +222,7 @@ public class NotificacaoService {
     @Scheduled(cron = "0 0 2 * * *") // Executar diariamente às 2 da manhã
     @Transactional
     public void limparNotificacoesAntigas(Long diasRetencao) {
-        log.info("Iniciando limpeza de notificações com mais de {} dias", diasRetencao);
+        log.info("Iniciando limpeza de notificações com mais de " + diasRetencao + " dias");
 
         LocalDateTime dataLimite = LocalDateTime.now().minus(diasRetencao, ChronoUnit.DAYS);
 
@@ -232,7 +230,7 @@ public class NotificacaoService {
         // long deletadas = notificacaoRepository.deleteByCreatedAtBefore(dataLimite);
         long deletadas = 0;
 
-        log.info("Limpeza de notificações concluída. {} notificações deletadas", deletadas);
+        log.info("Limpeza de notificações concluída. " + deletadas + " notificações deletadas");
     }
 
     /**
@@ -250,7 +248,7 @@ public class NotificacaoService {
         // long deletadas = notificacaoRepository.deleteByCreatedAtBefore(dataLimite);
         long deletadas = 0;
 
-        log.info("Limpeza automática concluída. {} notificações deletadas", deletadas);
+        log.info("Limpeza automática concluída. " + deletadas + " notificações deletadas");
     }
 
     public NotificacaoService() {

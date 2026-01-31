@@ -63,8 +63,7 @@ public class AvaliacaoController {
             @Valid @RequestBody CreateAvaliacaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando avaliação para mercado: {} por usuário: " + 
-                    request.getMercadoId(), user.getId());
+            log.info("Criando avaliação para mercado: " + request.getMercadoId() + " por usuário: " + user.getId());
             AvaliacaoResponse response = avaliacaoService.createAvaliacao(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -97,7 +96,7 @@ public class AvaliacaoController {
             @Parameter(description = "Ordenação")
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         try {
-            log.fine("Listando avaliações - page: {}, size: " + page, size + "");
+            log.fine("Listando avaliações - page: " + size + ", size: ");
             Pageable pageable = PageRequest.of(page, size);
             Page<AvaliacaoResponse> response = avaliacaoService.listAvaliacoes(pageable);
             return ResponseEntity.ok(response);
@@ -161,7 +160,7 @@ public class AvaliacaoController {
             @Valid @RequestBody UpdateAvaliacaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando avaliação: {} por usuário: " + id, user.getId());
+            log.info("Atualizando avaliação: " + user.getId() + " por usuário: ");
             AvaliacaoResponse response = avaliacaoService.updateAvaliacao(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -190,7 +189,7 @@ public class AvaliacaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando avaliação: {} por usuário: " + id, user.getId());
+            log.info("Deletando avaliação: " + user.getId() + " por usuário: ");
             avaliacaoService.deleteAvaliacao(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            log.severe("Erro ao processar autenticação JWT: " + e.getMessage(), e);
+            log.severe("Erro ao processar autenticação JWT: " + e.getMessage());
             // Continuar a cadeia de filtros mesmo com erro para que o controlador
             // de exceção global possa tratar a requisição não autenticada
         }
@@ -125,7 +125,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.severe("Usuário não encontrado: " + e.getMessage());
             SecurityContextHolder.clearContext();
         } catch (Exception e) {
-            log.severe("Erro ao processar autenticação do usuário: " + e.getMessage(), e);
+            log.severe("Erro ao processar autenticação do usuário: " + e.getMessage());
             SecurityContextHolder.clearContext();
         }
     }

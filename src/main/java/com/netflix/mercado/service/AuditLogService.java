@@ -5,9 +5,6 @@ import com.netflix.mercado.entity.AuditLog.TipoAcao;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.AuditLogRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar logs de auditoria.
@@ -26,7 +24,7 @@ import java.util.List;
 @Transactional
 public class AuditLogService {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditLogService.class);
+    private static final Logger log = Logger.getLogger(AuditLogService.class.getName());
 
     @Autowired
     private AuditLogRepository auditLogRepository;
@@ -43,8 +41,7 @@ public class AuditLogService {
      */
     public AuditLog registrarAcao(User usuario, String tipoAcao, String tipoEntidade, 
                                   Long idEntidade, String descricao) {
-        log.debug("Registrando ação no audit log - Tipo: {}, Entidade: {}, ID: {}", 
-                  tipoAcao, tipoEntidade, idEntidade);
+        log.fine("Registrando ação no audit log - Tipo: " + tipoAcao + ", Entidade: " + tipoEntidade + ", ID: " + idEntidade);
 
         // Validar dados obrigatórios
         if (tipoAcao == null || tipoAcao.isBlank()) {
@@ -66,7 +63,7 @@ public class AuditLogService {
 
         auditLog = auditLogRepository.save(auditLog);
 
-        log.debug("Ação registrada no audit log. ID: {}", auditLog.getId());
+        log.fine("Ação registrada no audit log. ID: " + auditLog.getId() + "");
         return auditLog;
     }
 
@@ -83,7 +80,7 @@ public class AuditLogService {
      */
     public AuditLog registrarAcaoComValores(User usuario, String tipoAcao, String tipoEntidade,
                                             Long idEntidade, String valoresAnteriores, String valoresNovos) {
-        log.debug("Registrando ação com valores no audit log - Tipo: {}, Entidade: {}", tipoAcao, tipoEntidade);
+        log.fine("Registrando ação com valores no audit log - Tipo: " + tipoAcao + ", Entidade: " + tipoEntidade + "");
 
         String descricao = String.format("Valores anteriores: %s | Valores novos: %s", 
                                          valoresAnteriores, valoresNovos);
@@ -100,7 +97,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public Page<AuditLog> obterAuditoriaDoUsuario(User usuario, Pageable pageable) {
-        log.debug("Buscando auditoria do usuário: {}", usuario.getEmail());
+        log.fine("Buscando auditoria do usuário: " + usuario.getEmail() + "");
 
         if (usuario == null) {
             throw new ValidationException("Usuário é obrigatório");
@@ -118,7 +115,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public List<AuditLog> obterAuditoriaEntidade(String tipoEntidade, Long idEntidade) {
-        log.debug("Buscando auditoria da entidade - Tipo: {}, ID: {}", tipoEntidade, idEntidade);
+        log.fine("Buscando auditoria da entidade - Tipo: " + tipoEntidade + ", ID: " + idEntidade + "");
 
         if (tipoEntidade == null || tipoEntidade.isBlank()) {
             throw new ValidationException("Tipo de entidade é obrigatório");
@@ -141,7 +138,7 @@ public class AuditLogService {
     @Transactional(readOnly = true)
     public Page<AuditLog> obterAuditoriaEntreData(LocalDateTime dataInicio, LocalDateTime dataFim, 
                                                    Pageable pageable) {
-        log.debug("Buscando auditoria entre {} e {}", dataInicio, dataFim);
+        log.fine("Buscando auditoria entre " + dataInicio + " e " + dataFim + "");
 
         if (dataInicio == null) {
             throw new ValidationException("Data inicial é obrigatória");
@@ -169,7 +166,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public Page<AuditLog> obterPorTipoAcao(String tipoAcao, Pageable pageable) {
-        log.debug("Buscando auditoria por tipo de ação: {}", tipoAcao);
+        log.fine("Buscando auditoria por tipo de ação: " + tipoAcao + "");
 
         if (tipoAcao == null || tipoAcao.isBlank()) {
             throw new ValidationException("Tipo de ação é obrigatório");
@@ -188,7 +185,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public Page<AuditLog> obterPorTipoEntidade(String tipoEntidade, Pageable pageable) {
-        log.debug("Buscando auditoria por tipo de entidade: {}", tipoEntidade);
+        log.fine("Buscando auditoria por tipo de entidade: " + tipoEntidade + "");
 
         if (tipoEntidade == null || tipoEntidade.isBlank()) {
             throw new ValidationException("Tipo de entidade é obrigatório");
@@ -205,7 +202,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public Long contarAcoesDoUsuario(User usuario) {
-        log.debug("Contando ações do usuário: {}", usuario.getEmail());
+        log.fine("Contando ações do usuário: " + usuario.getEmail() + "");
 
         if (usuario == null) {
             throw new ValidationException("Usuário é obrigatório");
@@ -222,7 +219,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public Long contarAcoes(String tipoAcao) {
-        log.debug("Contando ações do tipo: {}", tipoAcao);
+        log.fine("Contando ações do tipo: " + tipoAcao + "");
 
         if (tipoAcao == null || tipoAcao.isBlank()) {
             throw new ValidationException("Tipo de ação é obrigatório");
@@ -242,7 +239,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public List<AuditLog> obterAtividadeSuspeita(User usuario, Integer minutosAtrás, Integer minimumActions) {
-        log.debug("Analisando atividade suspeita do usuário: {} nos últimos {} minutos", usuario.getEmail(), minutosAtrás);
+        log.fine("Analisando atividade suspeita do usuário: " + usuario.getEmail() + " nos últimos " + minutosAtrás + " minutos");
 
         if (usuario == null) {
             throw new ValidationException("Usuário é obrigatório");

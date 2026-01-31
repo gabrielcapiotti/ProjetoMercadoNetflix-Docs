@@ -13,6 +13,7 @@ import com.netflix.mercado.dto.common.ValidationErrorResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Tratador global de exceções para a aplicação.
@@ -20,6 +21,8 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = Logger.getLogger(GlobalExceptionHandler.class.getName());
 
     /**
      * Trata exceções de recurso não encontrado.
@@ -32,7 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
             ResourceNotFoundException ex, WebRequest request) {
 
-        log.warn("Recurso não encontrado: {}", ex.getMessage());
+        log.warning("Recurso não encontrado: " + ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
@@ -55,7 +58,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ValidationErrorResponse> handleValidationException(
             ValidationException ex, WebRequest request) {
 
-        log.warn("Erro de validação: {}", ex.getMessage());
+        log.warning("Erro de validação: " + ex.getMessage());
 
         ValidationErrorResponse errorResponse = ValidationErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -79,7 +82,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(
             UnauthorizedException ex, WebRequest request) {
 
-        log.warn("Acesso não autorizado: {}", ex.getMessage());
+        log.warning("Acesso não autorizado: " + ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.UNAUTHORIZED.value())
@@ -102,7 +105,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, WebRequest request) {
 
-        log.warn("Erro na validação dos argumentos da requisição");
+        log.warning("Erro na validação dos argumentos da requisição");
 
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -133,7 +136,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, WebRequest request) {
 
-        log.error("Erro interno do servidor", ex);
+        log.severe("Erro interno do servidor: " + ex.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

@@ -64,7 +64,7 @@ public class HorarioController {
             @Valid @RequestBody CreateHorarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando horário para mercado: {} por usuário: " + mercadoId, user.getId());
+            log.info("Criando horário para mercado: " + user.getId() + " por usuário: ");
             HorarioResponse response = horarioService.createHorario(
                     mercadoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -128,7 +128,7 @@ public class HorarioController {
             @Valid @RequestBody UpdateHorarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando horário: {} por usuário: " + id, user.getId());
+            log.info("Atualizando horário: " + user.getId() + " por usuário: ");
             HorarioResponse response = horarioService.updateHorario(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -157,7 +157,7 @@ public class HorarioController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando horário: {} por usuário: " + id, user.getId());
+            log.info("Deletando horário: " + user.getId() + " por usuário: ");
             horarioService.deleteHorario(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

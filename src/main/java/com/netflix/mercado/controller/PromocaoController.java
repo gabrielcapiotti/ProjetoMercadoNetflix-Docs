@@ -98,13 +98,13 @@ public class PromocaoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         try {
-            log.debug("Listando promoções do mercado: {}", mercadoId);
+            log.fine("Listando promoções do mercado: " + mercadoId + "");
             Pageable pageable = PageRequest.of(page, size);
             Page<PromocaoResponse> response = promocaoService
                     .listPromocoesByMercado(mercadoId, onlyActive, pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar promoções", e);
+            log.severe("Erro ao listar promoções: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
