@@ -11,7 +11,6 @@ import com.netflix.mercado.dto.horario.CreateHorarioRequest;
 import com.netflix.mercado.dto.horario.UpdateHorarioRequest;
 import com.netflix.mercado.dto.horario.HorarioResponse;
 import com.netflix.mercado.dto.horario.MercadoStatusResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +19,17 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar horários de funcionamento de mercados.
  * Implementa lógica de criação, atualização e consulta de horários.
  */
-@Slf4j
 @Service
 @Transactional
 public class HorarioFuncionamentoService {
+
+    private static final Logger log = Logger.getLogger(HorarioFuncionamentoService.class.getName());
 
     @Autowired
     private HorarioFuncionamentoRepository horarioRepository;
@@ -48,7 +49,7 @@ public class HorarioFuncionamentoService {
      * @throws ValidationException se dados inválidos
      */
     public HorarioFuncionamento criarHorario(Long mercadoId, CreateHorarioRequest request) {
-        log.info("Criando horário de funcionamento para mercado ID: {}", mercadoId);
+        log.info("Criando horário de funcionamento para mercado ID: " + mercadoId + "");
 
         // Buscar mercado
         Mercado mercado = mercadoService.getMercadoById(mercadoId);
@@ -65,7 +66,7 @@ public class HorarioFuncionamentoService {
 
         horario = horarioRepository.save(horario);
 
-        log.info("Horário de funcionamento criado com sucesso. ID: {}", horario.getId());
+        log.info("Horário de funcionamento criado com sucesso. ID: " + horario.getId());
         return horario;
     }
 
@@ -79,11 +80,11 @@ public class HorarioFuncionamentoService {
      * @throws ValidationException se dados inválidos
      */
     public HorarioFuncionamento atualizarHorario(Long id, UpdateHorarioRequest request) {
-        log.info("Atualizando horário com ID: {}", id);
+        log.info("Atualizando horário com ID: " + id + "");
 
         HorarioFuncionamento horario = horarioRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Horário não encontrado com ID: {}", id);
+                    log.warning("Horário não encontrado com ID: " + id + "");
                     return new ResourceNotFoundException("Horário não encontrado com ID: " + id);
                 });
 
@@ -112,7 +113,7 @@ public class HorarioFuncionamentoService {
 
         horario = horarioRepository.save(horario);
 
-        log.info("Horário atualizado com sucesso. ID: {}", id);
+        log.info("Horário atualizado com sucesso. ID: " + id + "");
         return horario;
     }
 
@@ -123,17 +124,17 @@ public class HorarioFuncionamentoService {
      * @throws ResourceNotFoundException se horário não existe
      */
     public void deletarHorario(Long id) {
-        log.info("Deletando horário com ID: {}", id);
+        log.info("Deletando horário com ID: " + id + "");
 
         HorarioFuncionamento horario = horarioRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Horário não encontrado com ID: {}", id);
+                    log.warning("Horário não encontrado com ID: " + id + "");
                     return new ResourceNotFoundException("Horário não encontrado com ID: " + id);
                 });
 
         horarioRepository.delete(horario);
 
-        log.info("Horário deletado com sucesso. ID: {}", id);
+        log.info("Horário deletado com sucesso. ID: " + id + "");
     }
 
     /**
@@ -144,7 +145,7 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public List<HorarioResponse> obterHorariosPorMercado(Long mercadoId) {
-        log.debug("Buscando horários do mercado ID: {}", mercadoId);
+        log.fine("Buscando horários do mercado ID: " + mercadoId + "");
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);
@@ -164,7 +165,7 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public Boolean verificarSeEstaAberto(Long mercadoId) {
-        log.debug("Verificando se mercado ID: {} está aberto", mercadoId);
+        log.fine("Verificando se mercado ID: " + mercadoId + " está aberto");
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);
@@ -192,7 +193,7 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public LocalDateTime obterProximaAbertura(Long mercadoId) {
-        log.debug("Buscando próxima abertura do mercado ID: {}", mercadoId);
+        log.fine("Buscando próxima abertura do mercado ID: " + mercadoId + "");
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);
@@ -225,7 +226,7 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public List<HorarioFuncionamento> obterHorariosDia(Long mercadoId, String diaSemana) {
-        log.debug("Buscando horários do mercado ID: {} para o dia: {}", mercadoId, diaSemana);
+        log.fine("Buscando horários do mercado ID: {} para o dia: " + mercadoId, diaSemana + "");
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);
@@ -242,7 +243,7 @@ public class HorarioFuncionamentoService {
      * @throws ValidationException se dados inválidos
      */
     public void validarHorarios(CreateHorarioRequest request) {
-        log.debug("Validando dados de horário");
+        log.fine("Validando dados de horário");
 
         // Validar dia da semana
         if (request.getDiaSemana() == null || request.getDiaSemana().isBlank()) {

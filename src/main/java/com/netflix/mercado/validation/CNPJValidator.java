@@ -1,6 +1,5 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidCNPJ;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para CNPJ (Cadastro Nacional da Pessoa Jurídica).
@@ -20,9 +20,10 @@ import java.util.Set;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class CNPJValidator implements ConstraintValidator<ValidCNPJ, String> {
+
+    private static final Logger log = Logger.getLogger(CNPJValidator.class.getName());
 
     // CNPJs conhecidos como inválidos
     private static final Set<String> INVALID_CNPJ_PATTERNS = new HashSet<>();
@@ -55,7 +56,7 @@ public class CNPJValidator implements ConstraintValidator<ValidCNPJ, String> {
         try {
             return isValidCNPJ(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar CNPJ: {}", e.getMessage());
+            log.severe("Erro ao validar CNPJ: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar CNPJ");
             return false;
         }
@@ -104,7 +105,7 @@ public class CNPJValidator implements ConstraintValidator<ValidCNPJ, String> {
             return false;
         }
 
-        log.debug("CNPJ validado com sucesso: {}", cnpj);
+        log.fine("CNPJ validado com sucesso: " + cnpj + "");
         return true;
     }
 

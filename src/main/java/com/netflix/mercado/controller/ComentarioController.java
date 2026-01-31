@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,14 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Comentários", description = "Gerenciamento de comentários em avaliações")
 public class ComentarioController {
+
+    private static final Logger log = Logger.getLogger(ComentarioController.class.getName());
 
     private final ComentarioService comentarioService;
 
@@ -64,13 +65,13 @@ public class ComentarioController {
             @Valid @RequestBody CreateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando comentário na avaliação: {} por usuário: {}", 
+            log.info("Criando comentário na avaliação: {} por usuário: " + 
                     avaliacaoId, user.getId());
             ComentarioResponse response = comentarioService.createComentario(
                     avaliacaoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar comentário", e);
+            log.severe("Erro ao criar comentário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -97,13 +98,13 @@ public class ComentarioController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         try {
-            log.debug("Listando comentários da avaliação: {}", avaliacaoId);
+            log.fine("Listando comentários da avaliação: " + avaliacaoId + "");
             Pageable pageable = PageRequest.of(page, size);
             Page<ComentarioResponse> response = comentarioService
                     .listComentarios(avaliacaoId, pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar comentários", e);
+            log.severe("Erro ao listar comentários: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -128,11 +129,11 @@ public class ComentarioController {
             @Parameter(description = "ID do comentário")
             @PathVariable Long id) {
         try {
-            log.debug("Obtendo comentário: {}", id);
+            log.fine("Obtendo comentário: " + id + "");
             ComentarioResponse response = comentarioService.getComentarioById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter comentário", e);
+            log.severe("Erro ao obter comentário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -162,11 +163,11 @@ public class ComentarioController {
             @Valid @RequestBody UpdateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando comentário: {} por usuário: {}", id, user.getId());
+            log.info("Atualizando comentário: {} por usuário: " + id, user.getId());
             ComentarioResponse response = comentarioService.updateComentario(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao atualizar comentário", e);
+            log.severe("Erro ao atualizar comentário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -191,11 +192,11 @@ public class ComentarioController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando comentário: {} por usuário: {}", id, user.getId());
+            log.info("Deletando comentário: {} por usuário: " + id, user.getId());
             comentarioService.deleteComentario(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar comentário", e);
+            log.severe("Erro ao deletar comentário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -225,11 +226,11 @@ public class ComentarioController {
             @Valid @RequestBody CreateComentarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Respondendo comentário: {} por usuário: {}", id, user.getId());
+            log.info("Respondendo comentário: {} por usuário: " + id, user.getId());
             ComentarioResponse response = comentarioService.replyComentario(id, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao responder comentário", e);
+            log.severe("Erro ao responder comentário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

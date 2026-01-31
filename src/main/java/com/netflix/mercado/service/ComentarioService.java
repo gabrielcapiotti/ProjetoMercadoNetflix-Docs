@@ -256,7 +256,7 @@ public class ComentarioService {
                 "COMENTARIO",
                 respostaComentario.getId(),
                 "Resposta criada para comentário " + comentarioPaiId,
-                null, null, null, null, null
+                null, null, null, null, 200
         ));
 
         log.info("Resposta criada com sucesso. ID: " + respostaComentario.getId());
@@ -270,7 +270,7 @@ public class ComentarioService {
      * @param usuario usuário curtindo
      */
     public void adicionarCurtida(Long id, User usuario) {
-        log.fine("Adicionando curtida ao comentário ID: {} do usuário: " + id, usuario.getEmail());
+        log.fine("Adicionando curtida ao comentário ID: " + id + " do usuário: " + usuario.getEmail());
 
         Comentario comentario = obterComentarioPorId(id);
 
@@ -289,7 +289,7 @@ public class ComentarioService {
      * @param usuario usuário removendo a curtida
      */
     public void removerCurtida(Long id, User usuario) {
-        log.fine("Removendo curtida do comentário ID: {} do usuário: " + id, usuario.getEmail());
+        log.fine("Removendo curtida do comentário ID: " + id + " do usuário: " + usuario.getEmail());
 
         Comentario comentario = obterComentarioPorId(id);
 
@@ -309,7 +309,7 @@ public class ComentarioService {
      * @param aprovado true para aprovar, false para desaprovar
      */
     public void moderarComentario(Long id, Boolean aprovado) {
-        log.info("Moderando comentário ID: {}, aprovado: " + id, aprovado);
+        log.info("Moderando comentário ID: " + id + ", aprovado: " + aprovado);
 
         Comentario comentario = obterComentarioPorId(id);
         comentario.setModerado(aprovado);
@@ -321,7 +321,7 @@ public class ComentarioService {
                 "COMENTARIO",
                 id,
                 "Comentário " + (aprovado ? "aprovado" : "desaprovado"),
-                null, null, null, null, null
+                null, null, null, null, 200
         ));
 
         log.info("Comentário moderado com sucesso. ID: " + id);

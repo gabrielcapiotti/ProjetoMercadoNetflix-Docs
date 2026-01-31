@@ -1,12 +1,12 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidPhone;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para números telefônicos brasileiros.
@@ -18,9 +18,10 @@ import java.util.regex.Pattern;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
+
+    private static final Logger log = Logger.getLogger(PhoneValidator.class.getName());
 
     // Regex para validação de número telefônico brasileiro
     // Aceita formatos: +55 (11) 99999-9999, (11) 99999-9999, 11 99999-9999, 11999999999, etc
@@ -51,7 +52,7 @@ public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
         try {
             return isValidPhone(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar telefone: {}", e.getMessage());
+            log.severe("Erro ao validar telefone: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar telefone");
             return false;
         }
@@ -110,7 +111,7 @@ public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
             return false;
         }
 
-        log.debug("Telefone validado com sucesso: {}", phone);
+        log.fine("Telefone validado com sucesso: " + phone + "");
         return true;
     }
 

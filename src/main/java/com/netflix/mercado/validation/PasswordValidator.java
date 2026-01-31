@@ -1,6 +1,5 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidPassword;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para senha.
@@ -23,9 +23,10 @@ import java.util.regex.Pattern;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
+
+    private static final Logger log = Logger.getLogger(PasswordValidator.class.getName());
 
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 100;
@@ -82,7 +83,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
         try {
             return isValidPassword(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar senha: {}", e.getMessage());
+            log.severe("Erro ao validar senha: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar senha");
             return false;
         }
@@ -144,7 +145,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
             return false;
         }
 
-        log.debug("Senha validada com sucesso (comprimento: {})", password.length());
+        log.fine("Senha validada com sucesso (comprimento: " + password.length( + ")"));
         return true;
     }
 

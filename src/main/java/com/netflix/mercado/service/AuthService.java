@@ -12,7 +12,6 @@ import com.netflix.mercado.dto.auth.RegisterRequest;
 import com.netflix.mercado.dto.auth.LoginRequest;
 import com.netflix.mercado.dto.auth.JwtAuthenticationResponse;
 import com.netflix.mercado.security.JwtTokenProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,15 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por autenticação, autorização e gerenciamento de tokens JWT.
  * Implementa lógica de login, registro, refresh token e logout.
  */
-@Slf4j
 @Service
 @Transactional
 public class AuthService {
+
+    private static final Logger log = Logger.getLogger(AuthService.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -60,7 +61,7 @@ public class AuthService {
      * @return resposta com tokens JWT
      */
     public JwtAuthenticationResponse register(RegisterRequest request) {
-        log.info("Registrando novo usuário: {}", request.getEmail());
+        log.info("Registrando novo usuário: " + request.getEmail());
 
         User user = userService.createUser(request);
 
@@ -69,16 +70,15 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenService.criarRefreshToken(user);
 
         auditLogRepository.save(new AuditLog(
-                null,
                 user,
-                "LOGIN",
+                AuditLog.TipoAcao.CRIACAO,
                 "USER",
                 user.getId(),
                 "Usuário registrado e autenticado",
-                LocalDateTime.now()
+                null, null, null, null, 201
         ));
 
-        log.info("Usuário registrado com sucesso: {}", user.getEmail());
+        log.info("Usuário registrado com sucesso: " + user.getEmail());
 
         return JwtAuthenticationResponse.builder()
                 .accessToken(accessToken)
@@ -96,7 +96,7 @@ public class AuthService {
      * @throws ValidationException se credenciais são inválidas
      */
     public JwtAuthenticationResponse login(LoginRequest request) {
-        log.info("Tentativa de login para email: {}", request.getEmail());
+        log.info("Tentativa de login para email: " + request.getEmail());
 
         try {
             // Autenticar
@@ -112,7 +112,7 @@ public class AuthService {
 
             // Verificar se usuário está ativo
             if (!user.isActive()) {
-                log.warn("Tentativa de login com usuário inativo: {}", request.getEmail());
+                log.warning("Tentativa de login com usuário inativo: " + request.getEmail());
                 throw new ValidationException("Usuário está inativo");
             }
 
@@ -122,16 +122,15 @@ public class AuthService {
 
             // Registrar login no audit log
             auditLogRepository.save(new AuditLog(
-                    null,
                     user,
-                    "LOGIN",
+                    AuditLog.TipoAcao.CRIACAO,
                     "USER",
                     user.getId(),
                     "Login realizado com sucesso",
-                    LocalDateTime.now()
+                    null, null, null, null, 200
             ));
 
-            log.info("Login bem-sucedido para: {}", request.getEmail());
+            log.info("Login bem-sucedido para: " + request.getEmail());
 
             return JwtAuthenticationResponse.builder()
                     .accessToken(accessToken)
@@ -141,7 +140,7 @@ public class AuthService {
                     .build();
 
         } catch (AuthenticationException e) {
-            log.warn("Falha na autenticação para email: {}", request.getEmail());
+            log.warning("Falha na autenticação para email: " + request.getEmail());
             throw new ValidationException("Email ou senha inválidos");
         }
     }
@@ -154,19 +153,19 @@ public class AuthService {
      * @throws ValidationException se refresh token é inválido
      */
     public JwtAuthenticationResponse refreshToken(String refreshTokenString) {
-        log.debug("Renovando access token");
+        log.fine("Renovando access token");
 
         RefreshToken refreshToken = refreshTokenService.obterRefreshToken(refreshTokenString);
 
         if (!refreshTokenService.validarRefreshToken(refreshTokenString)) {
-            log.warn("Tentativa de refresh com token inválido ou expirado");
+            log.warning("Tentativa de refresh com token inválido ou expirado");
             throw new ValidationException("Refresh token inválido ou expirado");
         }
 
         User user = refreshToken.getUser();
         String newAccessToken = jwtTokenProvider.generateToken(user);
 
-        log.debug("Access token renovado com sucesso");
+        log.fine("Access token renovado com sucesso");
 
         return JwtAuthenticationResponse.builder()
                 .accessToken(newAccessToken)
@@ -182,22 +181,21 @@ public class AuthService {
      * @param userId ID do usuário
      */
     public void logout(Long userId) {
-        log.info("Logout do usuário ID: {}", userId);
+        log.info("Logout do usuário ID: " + userId);
 
         User user = userService.findUserById(userId);
         refreshTokenService.revogarTodosOsTokensDoUsuario(user);
 
         auditLogRepository.save(new AuditLog(
-                null,
                 user,
-                "LOGOUT",
+                AuditLog.TipoAcao.DELECAO,
                 "USER",
                 user.getId(),
                 "Logout realizado",
-                LocalDateTime.now()
+                null, null, null, null, 200
         ));
 
-        log.info("Logout realizado para usuário ID: {}", userId);
+        log.info("Logout realizado para usuário ID: " + userId);
     }
 
     /**
@@ -208,11 +206,11 @@ public class AuthService {
      */
     @Transactional(readOnly = true)
     public boolean validateToken(String token) {
-        log.debug("Validando token JWT");
+        log.fine("Validando token JWT");
         try {
             return jwtTokenProvider.validateToken(token);
         } catch (Exception e) {
-            log.debug("Token inválido: {}", e.getMessage());
+            log.fine("Token inválido: " + e.getMessage());
             return false;
         }
     }
@@ -226,10 +224,10 @@ public class AuthService {
      */
     @Transactional(readOnly = true)
     public User getUserFromToken(String token) {
-        log.debug("Extraindo usuário do token");
+        log.fine("Extraindo usuário do token");
 
         if (!validateToken(token)) {
-            log.warn("Tentativa de extrair usuário de token inválido");
+            log.warning("Tentativa de extrair usuário de token inválido");
             throw new ValidationException("Token inválido ou expirado");
         }
 

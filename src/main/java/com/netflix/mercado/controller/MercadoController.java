@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/mercados")
 @RequiredArgsConstructor
@@ -40,6 +39,7 @@ import java.util.List;
 @Tag(name = "Mercados", description = "Gerenciamento de mercados/lojas")
 public class MercadoController {
 
+    private static final Logger log = Logger.getLogger(MercadoController.class.getName());
     private final MercadoService mercadoService;
 
     /**
@@ -66,11 +66,11 @@ public class MercadoController {
             @Valid @RequestBody CreateMercadoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando novo mercado para usuário: {}", user.getId());
+            log.info("Criando novo mercado para usuário: " + user.getId());
             MercadoResponse response = mercadoService.createMercado(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar mercado", e);
+            log.severe("Erro ao criar mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -103,13 +103,13 @@ public class MercadoController {
             @Parameter(description = "Filtro por cidade")
             @RequestParam(required = false) String cidade) {
         try {
-            log.debug("Listando mercados - page: {}, size: {}", page, size);
+            log.fine("Listando mercados - page: " + page + ", size: " + size);
             Pageable pageable = PageRequest.of(page, size);
             // TODO: implementar filtros (nome, tipo, cidade) no service
             Page<MercadoResponse> response = mercadoService.getAllMercados(pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar mercados", e);
+            log.severe("Erro ao listar mercados: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -134,12 +134,12 @@ public class MercadoController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
-            log.debug("Obtendo mercado: {}", id);
+            log.fine("Obtendo mercado: " + id);
             // TODO: converter para MercadoDetailResponse quando implementado
             MercadoResponse response = mercadoService.getMercadoById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter mercado", e);
+            log.severe("Erro ao obter mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -169,11 +169,11 @@ public class MercadoController {
             @Valid @RequestBody UpdateMercadoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando mercado: {} por usuário: {}", id, user.getId());
+            log.info("Atualizando mercado: " + id + " por usuário: " + user.getId());
             MercadoResponse response = mercadoService.updateMercado(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao atualizar mercado", e);
+            log.severe("Erro ao atualizar mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -198,11 +198,11 @@ public class MercadoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando mercado: {} por usuário: {}", id, user.getId());
+            log.info("Deletando mercado: " + id + " por usuário: " + user.getId());
             mercadoService.deleteMercado(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar mercado", e);
+            log.severe("Erro ao deletar mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -230,11 +230,11 @@ public class MercadoController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
-            log.info("Aprovando mercado: {}", id);
+            log.info("Aprovando mercado: " + id);
             mercadoService.aprovarMercado(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error("Erro ao aprovar mercado", e);
+            log.severe("Erro ao aprovar mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -263,11 +263,11 @@ public class MercadoController {
             @PathVariable Long id,
             @RequestParam(required = false) String reason) {
         try {
-            log.info("Rejeitando mercado: {}", id);
+            log.info("Rejeitando mercado: " + id);
             mercadoService.rejeitarMercado(id, reason);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error("Erro ao rejeitar mercado", e);
+            log.severe("Erro ao rejeitar mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -298,8 +298,7 @@ public class MercadoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         try {
-            log.debug("Buscando mercados próximos: lat={}, lon={}, raio={}", 
-                    latitude, longitude, raioKm);
+            log.fine("Buscando mercados próximos: lat=" + latitude + ", lon=" + longitude + ", raio=" + raioKm);
             // TODO: buscarPorProximidade retorna List<Mercado>, não Page<MercadoResponse>
             // Implementar conversão para paginado
             throw new UnsupportedOperationException("Método ainda não implementado");
@@ -308,7 +307,7 @@ public class MercadoController {
             //         latitude, longitude, raioKm, pageable);
             // return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao buscar mercados próximos", e);
+            log.severe("Erro ao buscar mercados próximos: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -333,13 +332,13 @@ public class MercadoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Adicionando mercado {} aos favoritos do usuário: {}", id, user.getId());
+            log.info("Adicionando mercado " + id + " aos favoritos do usuário: " + user.getId());
             // TODO: mover para FavoritoController/Service
             throw new UnsupportedOperationException("Método deve ser movido para FavoritoService");
             // mercadoService.addToFavorites(id, user);
             // return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error("Erro ao adicionar aos favoritos", e);
+            log.severe("Erro ao adicionar aos favoritos: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -363,13 +362,13 @@ public class MercadoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Removendo mercado {} dos favoritos do usuário: {}", id, user.getId());
+            log.info("Removendo mercado " + id + " dos favoritos do usuário: " + user.getId());
             // TODO: mover para FavoritoController/Service
             throw new UnsupportedOperationException("Método deve ser movido para FavoritoService");
             // mercadoService.removeFromFavorites(id, user);
             // return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao remover dos favoritos", e);
+            log.severe("Erro ao remover dos favoritos: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -394,13 +393,13 @@ public class MercadoController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
-            log.debug("Obtendo horários do mercado: {}", id);
+            log.fine("Obtendo horários do mercado: " + id);
             // TODO: implementar em HorarioFuncionamentoService
             throw new UnsupportedOperationException("Método ainda não implementado");
             // List<HorarioResponse> response = mercadoService.getHorarios(id);
             // return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter horários", e);
+            log.severe("Erro ao obter horários: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -430,13 +429,13 @@ public class MercadoController {
             @Valid @RequestBody CreateHorarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando horário para mercado: {} por usuário: {}", id, user.getId());
+            log.info("Criando horário para mercado: " + id + " por usuário: " + user.getId());
             // TODO: implementar em HorarioFuncionamentoService
             throw new UnsupportedOperationException("Método ainda não implementado");
             // HorarioResponse response = mercadoService.createHorario(id, request, user);
             // return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar horário", e);
+            log.severe("Erro ao criar horário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

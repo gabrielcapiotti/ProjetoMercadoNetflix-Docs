@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Promoções", description = "Gerenciamento de promoções")
 public class PromocaoController {
 
+    private static final Logger log = Logger.getLogger(PromocaoController.class.getName());
     private final PromocaoService promocaoService;
 
     /**
@@ -64,11 +65,11 @@ public class PromocaoController {
             @Valid @RequestBody CreatePromocaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando promoção para mercado: {} por usuário: {}", mercadoId, user.getId());
+            log.info("Criando promoção para mercado: " + mercadoId + " por usuário: " + user.getId());
             PromocaoResponse response = promocaoService.createPromocao(mercadoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar promoção", e);
+            log.severe("Erro ao criar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -128,11 +129,11 @@ public class PromocaoController {
             @Parameter(description = "ID da promoção")
             @PathVariable Long id) {
         try {
-            log.debug("Obtendo promoção: {}", id);
+            log.fine("Obtendo promoção: " + id);
             PromocaoResponse response = promocaoService.getPromocaoById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter promoção", e);
+            log.severe("Erro ao obter promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -162,11 +163,11 @@ public class PromocaoController {
             @Valid @RequestBody UpdatePromocaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando promoção: {} por usuário: {}", id, user.getId());
+            log.info("Atualizando promoção: " + id + " por usuário: " + user.getId());
             PromocaoResponse response = promocaoService.updatePromocao(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao atualizar promoção", e);
+            log.severe("Erro ao atualizar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -191,11 +192,11 @@ public class PromocaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando promoção: {} por usuário: {}", id, user.getId());
+            log.info("Deletando promoção: " + id + " por usuário: " + user.getId());
             promocaoService.deletePromocao(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar promoção", e);
+            log.severe("Erro ao deletar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -220,11 +221,11 @@ public class PromocaoController {
             @Parameter(description = "Código de promoção")
             @PathVariable String code) {
         try {
-            log.debug("Validando código de promoção: {}", code);
+            log.fine("Validando código de promoção: " + code);
             ValidatePromocaoResponse response = promocaoService.validatePromoCode(code);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao validar código de promoção", e);
+            log.severe("Erro ao validar código de promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -254,11 +255,11 @@ public class PromocaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Aplicando promoção {} para usuário: {}", id, user.getId());
+            log.info("Aplicando promoção " + id + " para usuário: " + user.getId());
             PromocaoResponse response = promocaoService.applyPromocao(id, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao aplicar promoção", e);
+            log.severe("Erro ao aplicar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

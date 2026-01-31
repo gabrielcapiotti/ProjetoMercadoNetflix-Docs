@@ -12,7 +12,7 @@ import com.netflix.mercado.dto.auth.RegisterRequest;
 import com.netflix.mercado.dto.auth.UserResponse;
 import com.netflix.mercado.dto.auth.ChangePasswordRequest;
 import com.netflix.mercado.dto.auth.UserUpdateRequest;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar operações relacionadas a usuários.
  * Implementa lógica de negócio para criar, atualizar, buscar e gerenciar usuários.
  */
-@Slf4j
 @Service
 @Transactional
 public class UserService {
+
+    private static final Logger log = Logger.getLogger(UserService.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -53,17 +55,17 @@ public class UserService {
      * @throws ValidationException se email já existe
      */
     public User createUser(RegisterRequest request) {
-        log.info("Criando novo usuário com email: {}", request.getEmail());
+        log.info("Criando novo usuário com email: " + request.getEmail());
 
         // Validar se email já existe
         if (userRepository.existsByEmail(request.getEmail())) {
-            log.warn("Tentativa de criar usuário com email existente: {}", request.getEmail());
+            log.warning("Tentativa de criar usuário com email existente: " + request.getEmail());
             throw new ValidationException("Email já cadastrado no sistema");
         }
 
         // Validar CPF único
         if (userRepository.existsByCpf(request.getCpf())) {
-            log.warn("Tentativa de criar usuário com CPF existente: {}", request.getCpf());
+            log.warning("Tentativa de criar usuário com CPF existente: " + request.getCpf());
             throw new ValidationException("CPF já cadastrado no sistema");
         }
 
@@ -86,16 +88,15 @@ public class UserService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 user,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "USER",
                 user.getId(),
                 "Novo usuário criado: " + user.getEmail(),
-                LocalDateTime.now()
+                null, null, null, null, 201
         ));
 
-        log.info("Usuário criado com sucesso. ID: {}", user.getId());
+        log.info("Usuário criado com sucesso. ID: " + user.getId());
         return user;
     }
 
@@ -108,10 +109,10 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findUserById(Long id) {
-        log.debug("Buscando usuário com ID: {}", id);
+        log.fine("Buscando usuário com ID: " + id );
         return userRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Usuário não encontrado com ID: {}", id);
+                    log.warning("Usuário não encontrado com ID: " + id );
                     return new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
                 });
     }
@@ -125,10 +126,10 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findUserByEmail(String email) {
-        log.debug("Buscando usuário com email: {}", email);
+        log.fine("Buscando usuário com email: " + email );
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    log.warn("Usuário não encontrado com email: {}", email);
+                    log.warning("Usuário não encontrado com email: " + email );
                     return new ResourceNotFoundException("Usuário não encontrado com email: " + email);
                 });
     }
@@ -142,7 +143,7 @@ public class UserService {
      * @throws ResourceNotFoundException se usuário não existe
      */
     public User updateUser(Long id, UserUpdateRequest request) {
-        log.info("Atualizando usuário com ID: {}", id);
+        log.info("Atualizando usuário com ID: " + id );
 
         User user = findUserById(id);
 
@@ -162,16 +163,19 @@ public class UserService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 user,
-                "UPDATE",
+                AuditLog.TipoAcao.ATUALIZACAO,
                 "USER",
                 user.getId(),
                 "Alterações: " + valoresAnteriores + " -> " + valoresNovos,
-                LocalDateTime.now()
+                null,
+                null,
+                null,
+                null,
+                200
         ));
 
-        log.info("Usuário atualizado com sucesso. ID: {}", id);
+        log.info("Usuário atualizado com sucesso. ID: " + id );
         return user;
     }
 
@@ -183,13 +187,13 @@ public class UserService {
      * @throws ValidationException se senha atual está incorreta
      */
     public void changePassword(Long id, ChangePasswordRequest request) {
-        log.info("Alterando senha do usuário com ID: {}", id);
+        log.info("Alterando senha do usuário com ID: " + id );
 
         User user = findUserById(id);
 
         // Validar senha atual
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
-            log.warn("Tentativa de alteração de senha com senha atual incorreta para ID: {}", id);
+            log.warning("Tentativa de alteração de senha com senha atual incorreta para ID: " + id );
             throw new ValidationException("Senha atual está incorreta");
         }
 
@@ -202,17 +206,9 @@ public class UserService {
         userRepository.save(user);
 
         // Registrar no audit log
-        auditLogRepository.save(new AuditLog(
-                null,
-                user,
-                "UPDATE",
-                "USER",
-                user.getId(),
-                "Senha alterada",
-                LocalDateTime.now()
-        ));
+        auditLogRepository.save(new AuditLog(user, AuditLog.TipoAcao.ATUALIZACAO, "USER", user.getId(), "Senha alterada", null, null, null, null, 200));
 
-        log.info("Senha alterada com sucesso para usuário ID: {}", id);
+        log.info("Senha alterada com sucesso para usuário ID: " + id );
     }
 
     /**
@@ -221,23 +217,15 @@ public class UserService {
      * @param id ID do usuário
      */
     public void enableTwoFactor(Long id) {
-        log.info("Habilitando 2FA para usuário ID: {}", id);
+        log.info("Habilitando 2FA para usuário ID: " + id );
 
         User user = findUserById(id);
         user.setTwoFactorEnabled(true);
         userRepository.save(user);
 
-        auditLogRepository.save(new AuditLog(
-                null,
-                user,
-                "UPDATE",
-                "USER",
-                user.getId(),
-                "Autenticação de dois fatores habilitada",
-                LocalDateTime.now()
-        ));
+        auditLogRepository.save(new AuditLog(user, AuditLog.TipoAcao.ATUALIZACAO, "USER", user.getId(), "Autenticação de dois fatores habilitada", null, null, null, null, 200));
 
-        log.info("2FA habilitado para usuário ID: {}", id);
+        log.info("2FA habilitado para usuário ID: " + id );
     }
 
     /**
@@ -246,23 +234,15 @@ public class UserService {
      * @param id ID do usuário
      */
     public void disableTwoFactor(Long id) {
-        log.info("Desabilitando 2FA para usuário ID: {}", id);
+        log.info("Desabilitando 2FA para usuário ID: " + id );
 
         User user = findUserById(id);
         user.setTwoFactorEnabled(false);
         userRepository.save(user);
 
-        auditLogRepository.save(new AuditLog(
-                null,
-                user,
-                "UPDATE",
-                "USER",
-                user.getId(),
-                "Autenticação de dois fatores desabilitada",
-                LocalDateTime.now()
-        ));
+        auditLogRepository.save(new AuditLog(user, AuditLog.TipoAcao.ATUALIZACAO, "USER", user.getId(), "Autenticação de dois fatores desabilitada", null, null, null, null, 200));
 
-        log.info("2FA desabilitado para usuário ID: {}", id);
+        log.info("2FA desabilitado para usuário ID: " + id );
     }
 
     /**
@@ -271,23 +251,15 @@ public class UserService {
      * @param id ID do usuário
      */
     public void verifyEmail(Long id) {
-        log.info("Verificando email do usuário ID: {}", id);
+        log.info("Verificando email do usuário ID: " + id );
 
         User user = findUserById(id);
         user.setEmailVerified(true);
         userRepository.save(user);
 
-        auditLogRepository.save(new AuditLog(
-                null,
-                user,
-                "UPDATE",
-                "USER",
-                user.getId(),
-                "Email verificado",
-                LocalDateTime.now()
-        ));
+        auditLogRepository.save(new AuditLog(user, AuditLog.TipoAcao.ATUALIZACAO, "USER", user.getId(), "Email verificado", null, null, null, null, 200));
 
-        log.info("Email verificado para usuário ID: {}", id);
+        log.info("Email verificado para usuário ID: " + id );
     }
 
     /**
@@ -298,7 +270,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public Page<UserResponse> getAllUsers(Pageable pageable) {
-        log.debug("Buscando todos os usuários com paginação: {}", pageable);
+        log.fine("Buscando todos os usuários com paginação: " + pageable );
         return userRepository.findAll(pageable)
                 .map(this::convertToResponse);
     }

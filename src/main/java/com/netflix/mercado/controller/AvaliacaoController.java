@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,14 +26,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/avaliacoes")
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Avaliações", description = "Gerenciamento de avaliações de mercados")
 public class AvaliacaoController {
+
+    private static final Logger log = Logger.getLogger(AvaliacaoController.class.getName());
 
     private final AvaliacaoService avaliacaoService;
 
@@ -62,12 +63,12 @@ public class AvaliacaoController {
             @Valid @RequestBody CreateAvaliacaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando avaliação para mercado: {} por usuário: {}", 
+            log.info("Criando avaliação para mercado: {} por usuário: " + 
                     request.getMercadoId(), user.getId());
             AvaliacaoResponse response = avaliacaoService.createAvaliacao(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar avaliação", e);
+            log.severe("Erro ao criar avaliação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -96,12 +97,12 @@ public class AvaliacaoController {
             @Parameter(description = "Ordenação")
             @RequestParam(defaultValue = "createdAt") String sortBy) {
         try {
-            log.debug("Listando avaliações - page: {}, size: {}", page, size);
+            log.fine("Listando avaliações - page: {}, size: " + page, size + "");
             Pageable pageable = PageRequest.of(page, size);
             Page<AvaliacaoResponse> response = avaliacaoService.listAvaliacoes(pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar avaliações", e);
+            log.severe("Erro ao listar avaliações: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -126,11 +127,11 @@ public class AvaliacaoController {
             @Parameter(description = "ID da avaliação")
             @PathVariable Long id) {
         try {
-            log.debug("Obtendo avaliação: {}", id);
+            log.fine("Obtendo avaliação: " + id + "");
             AvaliacaoResponse response = avaliacaoService.getAvaliacaoById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter avaliação", e);
+            log.severe("Erro ao obter avaliação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -160,11 +161,11 @@ public class AvaliacaoController {
             @Valid @RequestBody UpdateAvaliacaoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando avaliação: {} por usuário: {}", id, user.getId());
+            log.info("Atualizando avaliação: {} por usuário: " + id, user.getId());
             AvaliacaoResponse response = avaliacaoService.updateAvaliacao(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao atualizar avaliação", e);
+            log.severe("Erro ao atualizar avaliação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -189,11 +190,11 @@ public class AvaliacaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando avaliação: {} por usuário: {}", id, user.getId());
+            log.info("Deletando avaliação: {} por usuário: " + id, user.getId());
             avaliacaoService.deleteAvaliacao(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar avaliação", e);
+            log.severe("Erro ao deletar avaliação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -220,13 +221,13 @@ public class AvaliacaoController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         try {
-            log.debug("Listando avaliações do mercado: {}", mercadoId);
+            log.fine("Listando avaliações do mercado: " + mercadoId + "");
             Pageable pageable = PageRequest.of(page, size);
             Page<AvaliacaoResponse> response = avaliacaoService
                     .listAvaliacoesByMercado(mercadoId, pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar avaliações do mercado", e);
+            log.severe("Erro ao listar avaliações do mercado: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -251,11 +252,11 @@ public class AvaliacaoController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
-            log.debug("Obtendo estatísticas de rating do mercado: {}", mercadoId);
+            log.fine("Obtendo estatísticas de rating do mercado: " + mercadoId + "");
             RatingStatsResponse response = avaliacaoService.getRatingStats(mercadoId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter estatísticas de rating", e);
+            log.severe("Erro ao obter estatísticas de rating: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

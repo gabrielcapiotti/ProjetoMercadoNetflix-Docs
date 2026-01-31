@@ -1,6 +1,5 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para email.
@@ -22,9 +22,10 @@ import java.util.regex.Pattern;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
+
+    private static final Logger log = Logger.getLogger(EmailValidator.class.getName());
 
     // Regex RFC 5322 completo (simplificado mas robusto)
     // Aceita: user+tag@domain.co.uk, user.name@sub.domain.com, etc
@@ -65,7 +66,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
         try {
             return isValidEmail(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar email: {}", e.getMessage());
+            log.severe("Erro ao validar email: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar email");
             return false;
         }
@@ -128,7 +129,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
             return false;
         }
 
-        log.debug("Email validado com sucesso: {}", trimmedEmail);
+        log.fine("Email validado com sucesso: " + trimmedEmail + "");
         return true;
     }
 

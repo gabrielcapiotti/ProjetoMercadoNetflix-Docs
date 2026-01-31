@@ -1,6 +1,5 @@
 package com.netflix.mercado.security;
 
-import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +15,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
-@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = Logger.getLogger(JwtAuthenticationFilter.class.getName());
     public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, CustomUserDetailsService userDetailsService) {
         this.tokenProvider = tokenProvider;
         this.userDetailsService = userDetailsService;
@@ -50,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            log.error("Erro ao processar autenticação JWT: {}", e.getMessage(), e);
+            log.severe("Erro ao processar autenticação JWT: " + e.getMessage(), e);
             // Continuar a cadeia de filtros mesmo com erro para que o controlador
             // de exceção global possa tratar a requisição não autenticada
         }
@@ -73,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(BEARER_PREFIX_LENGTH);
         }
 
-        log.debug("Token JWT não encontrado no header Authorization");
+        log.fine("Token JWT não encontrado no header Authorization");
         return null;
     }
 
@@ -89,7 +90,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = tokenProvider.extractUsername(token);
 
             if (!StringUtils.hasText(username)) {
-                log.warn("Username não encontrado no token");
+                log.warning("Username não encontrado no token");
                 return;
             }
 
@@ -118,13 +119,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 6. Setar no SecurityContext
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            log.debug("Autenticação JWT bem-sucedida para usuário: {}", username);
+            log.fine("Autenticação JWT bem-sucedida para usuário: " + username + "");
 
         } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
-            log.error("Usuário não encontrado: {}", e.getMessage());
+            log.severe("Usuário não encontrado: " + e.getMessage());
             SecurityContextHolder.clearContext();
         } catch (Exception e) {
-            log.error("Erro ao processar autenticação do usuário: {}", e.getMessage(), e);
+            log.severe("Erro ao processar autenticação do usuário: " + e.getMessage(), e);
             SecurityContextHolder.clearContext();
         }
     }

@@ -1,6 +1,5 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidCPF;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para CPF (Cadastro de Pessoas Físicas).
@@ -20,9 +20,10 @@ import java.util.Set;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class CPFValidator implements ConstraintValidator<ValidCPF, String> {
+
+    private static final Logger log = Logger.getLogger(CPFValidator.class.getName());
 
     // CPFs conhecidos como inválidos
     private static final Set<String> INVALID_CPF_PATTERNS = new HashSet<>();
@@ -55,7 +56,7 @@ public class CPFValidator implements ConstraintValidator<ValidCPF, String> {
         try {
             return isValidCPF(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar CPF: {}", e.getMessage());
+            log.severe("Erro ao validar CPF: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar CPF");
             return false;
         }
@@ -104,7 +105,7 @@ public class CPFValidator implements ConstraintValidator<ValidCPF, String> {
             return false;
         }
 
-        log.debug("CPF validado com sucesso: {}", cpf);
+        log.fine("CPF validado com sucesso: " + cpf + "");
         return true;
     }
 

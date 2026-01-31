@@ -6,7 +6,6 @@ import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.RefreshTokenRepository;
 import com.netflix.mercado.security.JwtTokenProvider;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,15 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar refresh tokens.
  * Implementa lógica de geração, validação, renovação e revogação de refresh tokens.
  */
-@Slf4j
 @Service
 @Transactional
 public class RefreshTokenService {
+
+    private static final Logger log = Logger.getLogger(RefreshTokenService.class.getName());
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
@@ -42,7 +43,7 @@ public class RefreshTokenService {
      * @return o refresh token criado
      */
     public RefreshToken criarRefreshToken(User user) {
-        log.info("Criando refresh token para usuário: {}", user.getEmail());
+        log.info("Criando refresh token para usuário: " + user.getEmail());
 
         // Revogar tokens anteriores se existirem
         refreshTokenRepository.deleteByUserId(user.getId());
@@ -56,7 +57,7 @@ public class RefreshTokenService {
 
         refreshToken = refreshTokenRepository.save(refreshToken);
 
-        log.info("Refresh token criado com sucesso para usuário: {}", user.getEmail());
+        log.info("Refresh token criado com sucesso para usuário: " + user.getEmail());
         return refreshToken;
     }
 
@@ -69,11 +70,11 @@ public class RefreshTokenService {
      */
     @Transactional(readOnly = true)
     public RefreshToken obterRefreshToken(String token) {
-        log.debug("Buscando refresh token");
+        log.fine("Buscando refresh token");
 
         return refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> {
-                    log.warn("Refresh token não encontrado");
+                    log.warning("Refresh token não encontrado");
                     return new ResourceNotFoundException("Refresh token não encontrado");
                 });
     }
@@ -86,25 +87,25 @@ public class RefreshTokenService {
      */
     @Transactional(readOnly = true)
     public boolean validarRefreshToken(String token) {
-        log.debug("Validando refresh token");
+        log.fine("Validando refresh token");
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElse(null);
 
         if (refreshToken == null) {
-            log.warn("Refresh token não encontrado");
+            log.warning("Refresh token não encontrado");
             return false;
         }
 
         // Verificar se foi revogado
         if (refreshToken.isRevogado()) {
-            log.warn("Refresh token foi revogado");
+            log.warning("Refresh token foi revogado");
             return false;
         }
 
         // Verificar se expirou
         if (refreshToken.getDataExpiracao().isBefore(LocalDateTime.now())) {
-            log.warn("Refresh token expirou");
+            log.warning("Refresh token expirou");
             return false;
         }
 
@@ -122,7 +123,7 @@ public class RefreshTokenService {
         log.info("Renovando access token");
 
         if (!validarRefreshToken(refreshTokenString)) {
-            log.warn("Tentativa de renovação com refresh token inválido");
+            log.warning("Tentativa de renovação com refresh token inválido");
             throw new ValidationException("Refresh token inválido ou expirado");
         }
 
@@ -131,7 +132,7 @@ public class RefreshTokenService {
 
         String novoAccessToken = jwtTokenProvider.generateToken(user);
 
-        log.info("Access token renovado com sucesso para usuário: {}", user.getEmail());
+        log.info("Access token renovado com sucesso para usuário: " + user.getEmail());
         return novoAccessToken;
     }
 
@@ -157,7 +158,7 @@ public class RefreshTokenService {
      * @param user usuário cujos tokens devem ser revogados
      */
     public void revogarTodosOsTokensDoUsuario(User user) {
-        log.info("Revogando todos os refresh tokens do usuário: {}", user.getEmail());
+        log.info("Revogando todos os refresh tokens do usuário: " + user.getEmail());
 
         refreshTokenRepository.findByUserId(user.getId())
                 .forEach(token -> {
@@ -165,7 +166,7 @@ public class RefreshTokenService {
                     refreshTokenRepository.save(token);
                 });
 
-        log.info("Todos os refresh tokens revogados para usuário: {}", user.getEmail());
+        log.info("Todos os refresh tokens revogados para usuário: " + user.getEmail());
     }
 
     /**
@@ -178,7 +179,7 @@ public class RefreshTokenService {
 
         long deletados = refreshTokenRepository.deleteByDataExpiracaoBefore(LocalDateTime.now());
 
-        log.info("Limpeza de refresh tokens concluída. {} tokens deletados", deletados);
+        log.info("Limpeza de refresh tokens concluída. " + deletados + " tokens deletados");
     }
 
     /**
@@ -188,11 +189,11 @@ public class RefreshTokenService {
      */
     @Transactional
     public void limparTokensExpiradosDoUsuario(Long userId) {
-        log.debug("Limpando tokens expirados do usuário ID: {}", userId);
+        log.fine("Limpando tokens expirados do usuário ID: " + userId);
 
         refreshTokenRepository.deleteByUserIdAndDataExpiracaoBefore(userId, LocalDateTime.now());
 
-        log.debug("Tokens expirados deletados para usuário ID: {}", userId);
+        log.fine("Tokens expirados deletados para usuário ID: " + userId);
     }
 
     /**
@@ -204,7 +205,7 @@ public class RefreshTokenService {
      */
     @Transactional(readOnly = true)
     public Long obterTempoExpiracaoRestante(String token) {
-        log.debug("Calculando tempo de expiração restante do token");
+        log.fine("Calculando tempo de expiração restante do token");
 
         RefreshToken refreshToken = obterRefreshToken(token);
 

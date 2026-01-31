@@ -265,7 +265,7 @@ public class AuditLogService {
      */
     @Transactional(readOnly = true)
     public List<Object> obterRelatorioAtividadesPorTipo(LocalDateTime dataInicio, LocalDateTime dataFim) {
-        log.debug("Gerando relatório de atividades por tipo entre {} e {}", dataInicio, dataFim);
+        log.fine("Gerando relatório de atividades por tipo entre " + dataInicio + " e " + dataFim);
 
         if (dataInicio == null || dataFim == null) {
             throw new ValidationException("Datas inicial e final são obrigatórias");

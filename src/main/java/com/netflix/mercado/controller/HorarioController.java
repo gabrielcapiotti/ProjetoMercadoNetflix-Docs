@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,14 +26,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Horários", description = "Gerenciamento de horários de funcionamento")
 public class HorarioController {
+
+    private static final Logger log = Logger.getLogger(HorarioController.class.getName());
 
     private final HorarioFuncionamentoService horarioService;
 
@@ -63,12 +64,12 @@ public class HorarioController {
             @Valid @RequestBody CreateHorarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Criando horário para mercado: {} por usuário: {}", mercadoId, user.getId());
+            log.info("Criando horário para mercado: {} por usuário: " + mercadoId, user.getId());
             HorarioResponse response = horarioService.createHorario(
                     mercadoId, request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar horário", e);
+            log.severe("Erro ao criar horário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -93,11 +94,11 @@ public class HorarioController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
-            log.debug("Listando horários do mercado: {}", mercadoId);
+            log.fine("Listando horários do mercado: " + mercadoId + "");
             List<HorarioResponse> response = horarioService.listHorarios(mercadoId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar horários", e);
+            log.severe("Erro ao listar horários: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -127,11 +128,11 @@ public class HorarioController {
             @Valid @RequestBody UpdateHorarioRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Atualizando horário: {} por usuário: {}", id, user.getId());
+            log.info("Atualizando horário: {} por usuário: " + id, user.getId());
             HorarioResponse response = horarioService.updateHorario(id, request, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao atualizar horário", e);
+            log.severe("Erro ao atualizar horário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -156,11 +157,11 @@ public class HorarioController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando horário: {} por usuário: {}", id, user.getId());
+            log.info("Deletando horário: {} por usuário: " + id, user.getId());
             horarioService.deleteHorario(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar horário", e);
+            log.severe("Erro ao deletar horário: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -185,11 +186,11 @@ public class HorarioController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
-            log.debug("Obtendo status da loja: {}", mercadoId);
+            log.fine("Obtendo status da loja: " + mercadoId + "");
             MercadoStatusResponse response = horarioService.getLojaStatus(mercadoId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao obter status da loja", e);
+            log.severe("Erro ao obter status da loja: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -214,11 +215,11 @@ public class HorarioController {
             @Parameter(description = "ID do mercado")
             @PathVariable Long mercadoId) {
         try {
-            log.debug("Verificando se mercado está aberto: {}", mercadoId);
+            log.fine("Verificando se mercado está aberto: " + mercadoId + "");
             boolean isOpen = horarioService.isOpen(mercadoId);
             return ResponseEntity.ok(Map.of("isOpen", isOpen));
         } catch (Exception e) {
-            log.error("Erro ao verificar status de abertura", e);
+            log.severe("Erro ao verificar status de abertura: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

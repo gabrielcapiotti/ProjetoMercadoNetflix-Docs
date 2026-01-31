@@ -165,7 +165,7 @@ public class FavoritoService {
      */
     @Transactional(readOnly = true)
     public Long contarFavoritosDomercado(Long mercadoId) {
-        log.debug("Contando favoritos do mercado ID: {}", mercadoId);
+        log.fine("Contando favoritos do mercado ID: " + mercadoId);
         return favoritoRepository.countByMercadoId(mercadoId);
     }
 
@@ -177,7 +177,7 @@ public class FavoritoService {
      * @return true se foi adicionado, false se foi removido
      */
     public Boolean toggleFavorito(Long mercadoId, User usuario) {
-        log.info("Alternando favorito para mercado ID: {} do usuário: {}", mercadoId, usuario.getEmail());
+        log.info("Alternando favorito para mercado ID: " + mercadoId + " do usuário: " + usuario.getEmail());
 
         if (verificarFavorito(mercadoId, usuario)) {
             // Remover favorito

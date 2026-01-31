@@ -239,7 +239,7 @@ public class AvaliacaoService {
     @Transactional(readOnly = true)
     public Page<Avaliacao> obterAvaliacoesPorUsuario(Long usuarioId, Pageable pageable) {
         log.fine("Buscando avaliações do usuário ID: " + usuarioId);
-        return avaliacaoRepository.findByUsuarioId(usuarioId, pageable);
+        return avaliacaoRepository.findByUserId(usuarioId, pageable);
     }
 
     /**
@@ -255,13 +255,13 @@ public class AvaliacaoService {
         mercadoService.getMercadoById(mercadoId); // Validar que mercado existe
 
         long total = avaliacaoRepository.countByMercadoId(mercadoId);
-        long cinco = avaliacaoRepository.countByMercadoIdAndRating(mercadoId, 5);
-        long quatro = avaliacaoRepository.countByMercadoIdAndRating(mercadoId, 4);
-        long tres = avaliacaoRepository.countByMercadoIdAndRating(mercadoId, 3);
-        long dois = avaliacaoRepository.countByMercadoIdAndRating(mercadoId, 2);
-        long um = avaliacaoRepository.countByMercadoIdAndRating(mercadoId, 1);
+        long cinco = avaliacaoRepository.countByMercadoIdAndEstrelas(mercadoId, 5);
+        long quatro = avaliacaoRepository.countByMercadoIdAndEstrelas(mercadoId, 4);
+        long tres = avaliacaoRepository.countByMercadoIdAndEstrelas(mercadoId, 3);
+        long dois = avaliacaoRepository.countByMercadoIdAndEstrelas(mercadoId, 2);
+        long um = avaliacaoRepository.countByMercadoIdAndEstrelas(mercadoId, 1);
 
-        Double media = avaliacaoRepository.findAverageRatingByMercadoId(mercadoId);
+        Double media = avaliacaoRepository.findAverageEstrelasByMercadoId(mercadoId);
 
         return RatingStatsResponse.builder()
                 .totalAvaliacoes(total)
@@ -312,10 +312,10 @@ public class AvaliacaoService {
      * @throws ValidationException se já existe avaliação
      */
     public void validarDuplicata(Long mercadoId, Long usuarioId) {
-        log.fine("Validando duplicata de avaliação. Mercado: {}, Usuário: " + mercadoId, usuarioId);
+        log.fine("Validando duplicata de avaliação. Mercado: " + mercadoId + ", Usuário: " + usuarioId);
 
-        if (avaliacaoRepository.existsByMercadoIdAndUsuarioId(mercadoId, usuarioId)) {
-            log.warning("Usuário {} já avaliou mercado " + usuarioId, mercadoId);
+        if (avaliacaoRepository.existsByMercadoIdAndUserId(mercadoId, usuarioId)) {
+            log.warning("Usuário " + usuarioId + " já avaliou mercado " + mercadoId);
             throw new ValidationException("Você já avaliou este mercado");
         }
     }

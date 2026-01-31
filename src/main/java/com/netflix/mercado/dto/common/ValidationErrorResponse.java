@@ -26,7 +26,7 @@ public class ValidationErrorResponse {
     /**
      * Classe interna para representar erro de campo
      */
-                    @Schema(description = "Erro de validação de um campo específico")
+    @Schema(description = "Erro de validação de um campo específico")
     public static class FieldError {
 
         @Schema(description = "Nome do campo com erro", example = "email")
@@ -41,6 +41,48 @@ public class ValidationErrorResponse {
 
         @Schema(description = "Código do erro de validação", example = "Email.invalid")
         private String codigo;
+
+        public FieldError() {
+        }
+
+        public FieldError(String field, Object rejectedValue, String mensagem, String codigo) {
+            this.field = field;
+            this.rejectedValue = rejectedValue;
+            this.mensagem = mensagem;
+            this.codigo = codigo;
+        }
+
+        public String getField() {
+            return this.field;
+        }
+
+        public void setField(String field) {
+            this.field = field;
+        }
+
+        public Object getRejectedValue() {
+            return this.rejectedValue;
+        }
+
+        public void setRejectedValue(Object rejectedValue) {
+            this.rejectedValue = rejectedValue;
+        }
+
+        public String getMensagem() {
+            return this.mensagem;
+        }
+
+        public void setMensagem(String mensagem) {
+            this.mensagem = mensagem;
+        }
+
+        public String getCodigo() {
+            return this.codigo;
+        }
+
+        public void setCodigo(String codigo) {
+            this.codigo = codigo;
+        }
     }
 
     public ValidationErrorResponse() {
@@ -92,22 +134,6 @@ public class ValidationErrorResponse {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public String getField() {
-        return this.field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
-
-    public Object getRejectedValue() {
-        return this.rejectedValue;
-    }
-
-    public void setRejectedValue(Object rejectedValue) {
-        this.rejectedValue = rejectedValue;
     }
 
 }

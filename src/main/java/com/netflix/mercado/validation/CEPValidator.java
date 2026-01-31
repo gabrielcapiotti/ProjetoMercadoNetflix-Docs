@@ -1,6 +1,5 @@
 package com.netflix.mercado.validation;
 
-import lombok.extern.slf4j.Slf4j;
 import com.netflix.mercado.validation.annotations.ValidCEP;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Validador customizado para CEP (Código de Endereçamento Postal) brasileiro.
@@ -19,9 +19,10 @@ import java.util.Set;
  * @author Netflix Mercados
  * @version 1.0
  */
-@Slf4j
 @Component
 public class CEPValidator implements ConstraintValidator<ValidCEP, String> {
+
+    private static final Logger log = Logger.getLogger(CEPValidator.class.getName());
 
     // CEPs conhecidos como inválidos
     private static final Set<String> INVALID_CEP_PATTERNS = new HashSet<>();
@@ -54,7 +55,7 @@ public class CEPValidator implements ConstraintValidator<ValidCEP, String> {
         try {
             return isValidCEP(value, context);
         } catch (Exception e) {
-            log.error("Erro ao validar CEP: {}", e.getMessage());
+            log.severe("Erro ao validar CEP: " + e.getMessage());
             addConstraintViolation(context, "Erro ao validar CEP");
             return false;
         }
@@ -95,7 +96,7 @@ public class CEPValidator implements ConstraintValidator<ValidCEP, String> {
             return false;
         }
 
-        log.debug("CEP validado com sucesso: {}", cep);
+        log.fine("CEP validado com sucesso: " + cep);
         return true;
     }
 
