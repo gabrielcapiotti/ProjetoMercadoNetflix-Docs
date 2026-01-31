@@ -56,7 +56,7 @@ public class FavoritoService {
         log.info("Adicionando mercado ID: {} aos favoritos do usuário: {}", mercadoId, usuario.getEmail());
 
         // Buscar mercado
-        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
 
         // Verificar se já está nos favoritos
         if (favoritoRepository.existsByUserAndMercado(usuario, mercado)) {
@@ -73,13 +73,12 @@ public class FavoritoService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "FAVORITO",
                 favorito.getId(),
                 "Mercado " + mercado.getNome() + " adicionado aos favoritos",
-                LocalDateTime.now()
+                null, null, null, null, null
         ));
 
         log.info("Favorito adicionado com sucesso. ID: {}", favorito.getId());
@@ -96,7 +95,7 @@ public class FavoritoService {
     public void removerFavorito(Long mercadoId, User usuario) {
         log.info("Removendo mercado ID: {} dos favoritos do usuário: {}", mercadoId, usuario.getEmail());
 
-        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
         
         Favorito favorito = favoritoRepository.findByUserAndMercado(usuario, mercado)
                 .orElseThrow(() -> {
@@ -108,13 +107,12 @@ public class FavoritoService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "DELETE",
+                AuditLog.TipoAcao.DELECAO,
                 "FAVORITO",
                 favorito.getId(),
                 "Favorito removido",
-                LocalDateTime.now()
+                null, null, null, null, null
         ));
 
         log.info("Favorito removido com sucesso. Mercado ID: {}", mercadoId);
@@ -143,7 +141,7 @@ public class FavoritoService {
     @Transactional(readOnly = true)
     public Boolean verificarFavorito(Long mercadoId, User usuario) {
         log.debug("Verificando se mercado ID: {} está nos favoritos do usuário: {}", mercadoId, usuario.getEmail());
-        Mercado mercado = mercadoService.getMercadoById(mercadoId);
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
         return favoritoRepository.existsByUserAndMercado(usuario, mercado);
     }
 
@@ -290,14 +288,9 @@ public class FavoritoService {
     }
 
     private FavoritoResponse convertToResponse(Favorito favorito) {
-        FavoritoResponse response = new FavoritoResponse();
-        response.setId(favorito.getId());
-        response.setMercadoId(favorito.getMercado().getId());
-        response.setMercadoNome(favorito.getMercado().getNome());
-        response.setUsuarioId(favorito.getUser().getId());
-        response.setPrioridade(favorito.getPrioridade());
-        response.setDataAdicao(favorito.getCreatedAt());
-        return response;
+        com.netflix.mercado.dto.mercado.MercadoResponse mercadoResponse = 
+            mercadoService.convertToResponse(favorito.getMercado());
+        return FavoritoResponse.fromEntity(favorito, mercadoResponse);
     }
 
 }

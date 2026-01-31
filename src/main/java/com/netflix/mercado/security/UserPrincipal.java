@@ -110,4 +110,11 @@ public class UserPrincipal implements UserDetails {
         return this.enabled;
     }
 
+    /**
+     * Retorna a entidade User associada
+     */
+    public User getUser() {
+        return this.user;
+    }
+
 }

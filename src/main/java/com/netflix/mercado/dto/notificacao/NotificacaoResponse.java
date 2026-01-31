@@ -98,4 +98,21 @@ public class NotificacaoResponse {
         this.readAt = readAt;
     }
 
+    /**
+     * Converte uma entidade Notificacao para NotificacaoResponse
+     */
+    public static NotificacaoResponse fromEntity(com.netflix.mercado.entity.Notificacao notificacao) {
+        if (notificacao == null) {
+            return null;
+        }
+        return new NotificacaoResponse(
+            notificacao.getId(),
+            notificacao.getTitulo(),
+            notificacao.getConteudo(),
+            notificacao.getTipo() != null ? notificacao.getTipo().name() : null,
+            notificacao.getLida(),
+            notificacao.getCreatedAt(),
+            notificacao.getDataLeitura()
+        );
+    }
 }

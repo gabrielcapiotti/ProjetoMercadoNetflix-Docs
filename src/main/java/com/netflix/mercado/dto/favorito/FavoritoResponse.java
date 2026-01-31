@@ -100,4 +100,21 @@ public class FavoritoResponse {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * Converte uma entidade Favorito para FavoritoResponse
+     */
+    public static FavoritoResponse fromEntity(com.netflix.mercado.entity.Favorito favorito, MercadoResponse mercadoResponse) {
+        if (favorito == null) {
+            return null;
+        }
+        return new FavoritoResponse(
+            favorito.getId(),
+            mercadoResponse,
+            favorito.getUser() != null ? favorito.getUser().getId() : null,
+            favorito.getObservacoes(),
+            favorito.getPrioridade(),
+            favorito.getCreatedAt(),
+            favorito.getUpdatedAt()
+        );
+    }
 }

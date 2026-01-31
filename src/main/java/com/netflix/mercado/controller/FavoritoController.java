@@ -25,14 +25,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/favoritos")
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Favoritos", description = "Gerenciamento de mercados favoritos")
 public class FavoritoController {
+
+    private static final Logger log = Logger.getLogger(FavoritoController.class.getName());
 
     private final FavoritoService favoritoService;
 
@@ -59,11 +61,11 @@ public class FavoritoController {
             @Valid @RequestBody CreateFavoritoRequest request) {
         try {
             User user = getCurrentUser();
-            log.info("Adicionando favorito para usuário: {}", user.getId());
+            log.info("Adicionando favorito para usuário: " + user.getId());
             FavoritoResponse response = favoritoService.createFavorito(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            log.error("Erro ao criar favorito", e);
+            log.severe("Erro ao criar favorito: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -89,11 +91,11 @@ public class FavoritoController {
     public ResponseEntity<List<FavoritoResponse>> listFavoritos() {
         try {
             User user = getCurrentUser();
-            log.debug("Listando favoritos do usuário: {}", user.getId());
+            log.info("Listando favoritos do usuário: " + user.getId());
             List<FavoritoResponse> response = favoritoService.listFavoritos(user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar favoritos", e);
+            log.severe("Erro ao listar favoritos: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -117,11 +119,11 @@ public class FavoritoController {
             @PathVariable Long mercadoId) {
         try {
             User user = getCurrentUser();
-            log.info("Removendo favorito {} do usuário: {}", mercadoId, user.getId());
+            log.info("Removendo favorito " + mercadoId + " do usuário: " + user.getId());
             favoritoService.deleteFavorito(mercadoId, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar favorito", e);
+            log.severe("Erro ao deletar favorito: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -149,7 +151,7 @@ public class FavoritoController {
             long count = favoritoService.countFavoritos(user);
             return ResponseEntity.ok(Map.of("count", count));
         } catch (Exception e) {
-            log.error("Erro ao contar favoritos", e);
+            log.severe("Erro ao contar favoritos: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -177,11 +179,11 @@ public class FavoritoController {
             @PathVariable Long mercadoId) {
         try {
             User user = getCurrentUser();
-            log.info("Toggle favorito {} para usuário: {}", mercadoId, user.getId());
+            log.info("Toggle favorito " + mercadoId + " para usuário: " + user.getId());
             boolean isFavorite = favoritoService.toggleFavorito(mercadoId, user);
             return ResponseEntity.ok(Map.of("isFavorite", isFavorite));
         } catch (Exception e) {
-            log.error("Erro ao fazer toggle de favorito", e);
+            log.severe("Erro ao fazer toggle de favorito: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -211,7 +213,7 @@ public class FavoritoController {
             boolean isFavorite = favoritoService.isFavorite(mercadoId, user);
             return ResponseEntity.ok(Map.of("isFavorite", isFavorite));
         } catch (Exception e) {
-            log.error("Erro ao verificar favorito", e);
+            log.severe("Erro ao verificar favorito: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

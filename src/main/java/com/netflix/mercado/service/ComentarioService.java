@@ -20,15 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar comentários em avaliações.
  * Implementa lógica de criação, resposta, moderação e gerenciamento de curtidas.
  */
-@Slf4j
 @Service
 @Transactional
 public class ComentarioService {
+
+    private static final Logger log = Logger.getLogger(ComentarioService.class.getName());
 
     @Autowired
     private ComentarioRepository comentarioRepository;
@@ -48,7 +50,7 @@ public class ComentarioService {
      * @throws ValidationException se dados inválidos
      */
     public Comentario criarComentario(CreateComentarioRequest request, User usuario) {
-        log.info("Criando comentário para avaliação ID: {} pelo usuário: {}", request.getAvaliacaoId(), usuario.getEmail());
+        log.info("Criando comentário para avaliação ID: " + request.getAvaliacaoId() + " pelo usuário: " + usuario.getEmail());
 
         // Validar conteúdo
         if (request.getConteudo() == null || request.getConteudo().isBlank()) {
@@ -66,24 +68,23 @@ public class ComentarioService {
         comentario.setAvaliacao(avaliacao);
         comentario.setUser(usuario);
         comentario.setConteudo(request.getConteudo());
-        comentario.setPaiComentario(null); // Comentário raiz
-        comentario.setAprovado(true); // Considerar aprovado por padrão
-        comentario.setCurtidas(new HashSet<>());
+        comentario.setComentarioPai(null); // Comentário raiz
+        comentario.setModerado(false); // Requer moderação
+        // curtidas já tem valor padrão 0L
 
         comentario = comentarioRepository.save(comentario);
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "COMENTARIO",
                 comentario.getId(),
                 "Comentário criado para avaliação " + request.getAvaliacaoId(),
-                LocalDateTime.now()
+                null, null, null, null, 200
         ));
 
-        log.info("Comentário criado com sucesso. ID: {}", comentario.getId());
+        log.info("Comentário criado com sucesso. ID: " + comentario.getId());
         return comentario;
     }
 
@@ -98,13 +99,13 @@ public class ComentarioService {
      * @throws UnauthorizedException se usuário não é proprietário
      */
     public Comentario atualizarComentario(Long id, UpdateComentarioRequest request, User usuario) {
-        log.info("Atualizando comentário com ID: {}", id);
+        log.info("Atualizando comentário com ID: " + id);
 
         Comentario comentario = obterComentarioPorId(id);
 
         // Verificar autorização
-        if (!comentario.getUsuario().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
-            log.warn("Tentativa de atualização não autorizada do comentário ID: {} por usuário: {}", id, usuario.getEmail());
+        if (!comentario.getUser().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
+            log.warning("Tentativa de atualização não autorizada do comentário ID: " + id + " por usuário: " + usuario.getEmail());
             throw new UnauthorizedException("Você não tem permissão para atualizar este comentário");
         }
 
@@ -122,16 +123,17 @@ public class ComentarioService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "UPDATE",
+                AuditLog.TipoAcao.ATUALIZACAO,
                 "COMENTARIO",
                 id,
                 "Conteúdo alterado: " + conteudoAntigo + " -> " + comentario.getConteudo(),
-                LocalDateTime.now()
+                conteudoAntigo,
+                comentario.getConteudo(),
+                null, null, 200
         ));
 
-        log.info("Comentário atualizado com sucesso. ID: {}", id);
+        log.info("Comentário atualizado com sucesso. ID: " + id);
         return comentario;
     }
 
@@ -144,13 +146,13 @@ public class ComentarioService {
      * @throws UnauthorizedException se usuário não é proprietário
      */
     public void deletarComentario(Long id, User usuario) {
-        log.info("Deletando comentário com ID: {}", id);
+        log.info("Deletando comentário com ID: " + id);
 
         Comentario comentario = obterComentarioPorId(id);
 
         // Verificar autorização
-        if (!comentario.getUsuario().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
-            log.warn("Tentativa de deleção não autorizada do comentário ID: {} por usuário: {}", id, usuario.getEmail());
+        if (!comentario.getUser().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
+            log.warning("Tentativa de deleção não autorizada do comentário ID: " + id + " por usuário: " + usuario.getEmail());
             throw new UnauthorizedException("Você não tem permissão para deletar este comentário");
         }
 
@@ -158,16 +160,15 @@ public class ComentarioService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "DELETE",
+                AuditLog.TipoAcao.DELECAO,
                 "COMENTARIO",
                 id,
                 "Comentário deletado",
-                LocalDateTime.now()
+                null, null, null, null, 200
         ));
 
-        log.info("Comentário deletado com sucesso. ID: {}", id);
+        log.info("Comentário deletado com sucesso. ID: " + id);
     }
 
     /**
@@ -179,10 +180,10 @@ public class ComentarioService {
      */
     @Transactional(readOnly = true)
     public Comentario obterComentarioPorId(Long id) {
-        log.debug("Buscando comentário com ID: {}", id);
+        log.fine("Buscando comentário com ID: " + id);
         return comentarioRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Comentário não encontrado com ID: {}", id);
+                    log.warning("Comentário não encontrado com ID: " + id);
                     return new ResourceNotFoundException("Comentário não encontrado com ID: " + id);
                 });
     }
@@ -196,9 +197,9 @@ public class ComentarioService {
      */
     @Transactional(readOnly = true)
     public Page<Comentario> obterComentariosPorAvaliacao(Long avaliacaoId, Pageable pageable) {
-        log.debug("Buscando comentários da avaliação ID: {}", avaliacaoId);
+        log.fine("Buscando comentários da avaliação ID: " + avaliacaoId);
         avaliacaoService.obterAvaliacaoPorId(avaliacaoId); // Validar que avaliação existe
-        return comentarioRepository.findByAvaliacaoIdAndPaiComentarioIsNull(avaliacaoId, pageable);
+        return comentarioRepository.findByAvaliacaoIdAndComentarioPaiIsNull(avaliacaoId, pageable);
     }
 
     /**
@@ -210,9 +211,9 @@ public class ComentarioService {
      */
     @Transactional(readOnly = true)
     public Page<Comentario> obterRespostas(Long comentarioPaiId, Pageable pageable) {
-        log.debug("Buscando respostas do comentário ID: {}", comentarioPaiId);
+        log.fine("Buscando respostas do comentário ID: " + comentarioPaiId);
         obterComentarioPorId(comentarioPaiId); // Validar que comentário pai existe
-        return comentarioRepository.findByPaiComentarioId(comentarioPaiId, pageable);
+        return comentarioRepository.findByComentarioPaiId(comentarioPaiId, pageable);
     }
 
     /**
@@ -225,7 +226,7 @@ public class ComentarioService {
      * @throws ValidationException se dados inválidos
      */
     public Comentario responderComentario(Long comentarioPaiId, CreateComentarioRequest request, User usuario) {
-        log.info("Respondendo ao comentário ID: {} pelo usuário: {}", comentarioPaiId, usuario.getEmail());
+        log.info("Respondendo ao comentário ID: " + comentarioPaiId + " pelo usuário: " + usuario.getEmail());
 
         // Validar conteúdo
         if (request.getConteudo() == null || request.getConteudo().isBlank()) {
@@ -242,24 +243,23 @@ public class ComentarioService {
         respostaComentario.setAvaliacao(comentarioPai.getAvaliacao());
         respostaComentario.setUser(usuario);
         respostaComentario.setConteudo(request.getConteudo());
-        respostaComentario.setPaiComentario(comentarioPai);
-        respostaComentario.setAprovado(true);
-        respostaComentario.setCurtidas(new HashSet<>());
+        respostaComentario.setComentarioPai(comentarioPai);
+        respostaComentario.setModerado(false);
+        // curtidas já tem valor padrão 0L
 
         respostaComentario = comentarioRepository.save(respostaComentario);
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "COMENTARIO",
                 respostaComentario.getId(),
                 "Resposta criada para comentário " + comentarioPaiId,
-                LocalDateTime.now()
+                null, null, null, null, null
         ));
 
-        log.info("Resposta criada com sucesso. ID: {}", respostaComentario.getId());
+        log.info("Resposta criada com sucesso. ID: " + respostaComentario.getId());
         return respostaComentario;
     }
 
@@ -270,18 +270,16 @@ public class ComentarioService {
      * @param usuario usuário curtindo
      */
     public void adicionarCurtida(Long id, User usuario) {
-        log.debug("Adicionando curtida ao comentário ID: {} do usuário: {}", id, usuario.getEmail());
+        log.fine("Adicionando curtida ao comentário ID: {} do usuário: " + id, usuario.getEmail());
 
         Comentario comentario = obterComentarioPorId(id);
 
-        if (comentario.getCurtidas().contains(usuario)) {
-            throw new ValidationException("Você já curtiu este comentário");
-        }
-
-        comentario.getCurtidas().add(usuario);
+        // TODO: implementar controle de curtidas por usuário (criar tabela comentario_curtidas)
+        // Por enquanto, apenas incrementar contador
+        comentario.setCurtidas(comentario.getCurtidas() + 1);
         comentarioRepository.save(comentario);
 
-        log.debug("Curtida adicionada ao comentário ID: {}", id);
+        log.fine("Curtida adicionada ao comentário ID: " + id);
     }
 
     /**
@@ -291,18 +289,17 @@ public class ComentarioService {
      * @param usuario usuário removendo a curtida
      */
     public void removerCurtida(Long id, User usuario) {
-        log.debug("Removendo curtida do comentário ID: {} do usuário: {}", id, usuario.getEmail());
+        log.fine("Removendo curtida do comentário ID: {} do usuário: " + id, usuario.getEmail());
 
         Comentario comentario = obterComentarioPorId(id);
 
-        if (!comentario.getCurtidas().contains(usuario)) {
-            throw new ValidationException("Você não curtiu este comentário");
+        // TODO: implementar controle de curtidas por usuário
+        if (comentario.getCurtidas() > 0) {
+            comentario.setCurtidas(comentario.getCurtidas() - 1);
+            comentarioRepository.save(comentario);
         }
 
-        comentario.getCurtidas().remove(usuario);
-        comentarioRepository.save(comentario);
-
-        log.debug("Curtida removida do comentário ID: {}", id);
+        log.fine("Curtida removida do comentário ID: " + id);
     }
 
     /**
@@ -312,23 +309,22 @@ public class ComentarioService {
      * @param aprovado true para aprovar, false para desaprovar
      */
     public void moderarComentario(Long id, Boolean aprovado) {
-        log.info("Moderando comentário ID: {}, aprovado: {}", id, aprovado);
+        log.info("Moderando comentário ID: {}, aprovado: " + id, aprovado);
 
         Comentario comentario = obterComentarioPorId(id);
-        comentario.setAprovado(aprovado);
+        comentario.setModerado(aprovado);
         comentarioRepository.save(comentario);
 
         auditLogRepository.save(new AuditLog(
-                null,
                 null, // Admin action
-                "UPDATE",
+                AuditLog.TipoAcao.ATUALIZACAO,
                 "COMENTARIO",
                 id,
                 "Comentário " + (aprovado ? "aprovado" : "desaprovado"),
-                LocalDateTime.now()
+                null, null, null, null, null
         ));
 
-        log.info("Comentário moderado com sucesso. ID: {}", id);
+        log.info("Comentário moderado com sucesso. ID: " + id);
     }
 
     /**

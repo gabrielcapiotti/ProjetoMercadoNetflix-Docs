@@ -33,15 +33,25 @@ public class RegisterRequest {
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Schema(description = "Nome completo do usuário", example = "João Silva Santos")
     private String fullName;
+
+    @NotBlank(message = "CPF não pode estar em branco")
+    @Schema(description = "CPF do usuário", example = "123.456.789-00")
+    private String cpf;
+
+    @Schema(description = "Telefone do usuário", example = "(11) 98765-4321")
+    private String phone;
+
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String email, String password, String confirmPassword, String fullName) {
+    public RegisterRequest(String username, String email, String password, String confirmPassword, String fullName, String cpf, String phone) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.fullName = fullName;
+        this.cpf = cpf;
+        this.phone = phone;
     }
 
     public String getUsername() {
@@ -82,6 +92,22 @@ public class RegisterRequest {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getCpf() {
+        return this.cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
 }

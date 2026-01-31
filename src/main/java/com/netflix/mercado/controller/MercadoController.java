@@ -105,8 +105,8 @@ public class MercadoController {
         try {
             log.debug("Listando mercados - page: {}, size: {}", page, size);
             Pageable pageable = PageRequest.of(page, size);
-            Page<MercadoResponse> response = mercadoService.listMercados(
-                    pageable, nome, tipo, cidade);
+            // TODO: implementar filtros (nome, tipo, cidade) no service
+            Page<MercadoResponse> response = mercadoService.getAllMercados(pageable);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao listar mercados", e);
@@ -130,12 +130,13 @@ public class MercadoController {
         ),
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado")
     })
-    public ResponseEntity<MercadoDetailResponse> getMercadoById(
+    public ResponseEntity<MercadoResponse> getMercadoById(
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
             log.debug("Obtendo mercado: {}", id);
-            MercadoDetailResponse response = mercadoService.getMercadoById(id);
+            // TODO: converter para MercadoDetailResponse quando implementado
+            MercadoResponse response = mercadoService.getMercadoById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao obter mercado", e);
@@ -225,13 +226,13 @@ public class MercadoController {
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    public ResponseEntity<MercadoResponse> approveMercado(
+    public ResponseEntity<Void> approveMercado(
             @Parameter(description = "ID do mercado")
             @PathVariable Long id) {
         try {
             log.info("Aprovando mercado: {}", id);
-            MercadoResponse response = mercadoService.approveMercado(id);
-            return ResponseEntity.ok(response);
+            mercadoService.aprovarMercado(id);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Erro ao aprovar mercado", e);
             throw new RuntimeException(e.getMessage());
@@ -257,14 +258,14 @@ public class MercadoController {
         @ApiResponse(responseCode = "404", description = "Mercado não encontrado"),
         @ApiResponse(responseCode = "403", description = "Sem permissão")
     })
-    public ResponseEntity<MercadoResponse> rejectMercado(
+    public ResponseEntity<Void> rejectMercado(
             @Parameter(description = "ID do mercado")
             @PathVariable Long id,
             @RequestParam(required = false) String reason) {
         try {
             log.info("Rejeitando mercado: {}", id);
-            MercadoResponse response = mercadoService.rejectMercado(id, reason);
-            return ResponseEntity.ok(response);
+            mercadoService.rejeitarMercado(id, reason);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Erro ao rejeitar mercado", e);
             throw new RuntimeException(e.getMessage());
@@ -299,10 +300,13 @@ public class MercadoController {
         try {
             log.debug("Buscando mercados próximos: lat={}, lon={}, raio={}", 
                     latitude, longitude, raioKm);
-            Pageable pageable = PageRequest.of(page, size);
-            Page<MercadoResponse> response = mercadoService.findNearby(
-                    latitude, longitude, raioKm, pageable);
-            return ResponseEntity.ok(response);
+            // TODO: buscarPorProximidade retorna List<Mercado>, não Page<MercadoResponse>
+            // Implementar conversão para paginado
+            throw new UnsupportedOperationException("Método ainda não implementado");
+            // Pageable pageable = PageRequest.of(page, size);
+            // Page<MercadoResponse> response = mercadoService.findNearby(
+            //         latitude, longitude, raioKm, pageable);
+            // return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao buscar mercados próximos", e);
             throw new RuntimeException(e.getMessage());
@@ -330,8 +334,10 @@ public class MercadoController {
         try {
             User user = getCurrentUser();
             log.info("Adicionando mercado {} aos favoritos do usuário: {}", id, user.getId());
-            mercadoService.addToFavorites(id, user);
-            return ResponseEntity.ok().build();
+            // TODO: mover para FavoritoController/Service
+            throw new UnsupportedOperationException("Método deve ser movido para FavoritoService");
+            // mercadoService.addToFavorites(id, user);
+            // return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Erro ao adicionar aos favoritos", e);
             throw new RuntimeException(e.getMessage());
@@ -358,8 +364,10 @@ public class MercadoController {
         try {
             User user = getCurrentUser();
             log.info("Removendo mercado {} dos favoritos do usuário: {}", id, user.getId());
-            mercadoService.removeFromFavorites(id, user);
-            return ResponseEntity.noContent().build();
+            // TODO: mover para FavoritoController/Service
+            throw new UnsupportedOperationException("Método deve ser movido para FavoritoService");
+            // mercadoService.removeFromFavorites(id, user);
+            // return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("Erro ao remover dos favoritos", e);
             throw new RuntimeException(e.getMessage());
@@ -387,8 +395,10 @@ public class MercadoController {
             @PathVariable Long id) {
         try {
             log.debug("Obtendo horários do mercado: {}", id);
-            List<HorarioResponse> response = mercadoService.getHorarios(id);
-            return ResponseEntity.ok(response);
+            // TODO: implementar em HorarioFuncionamentoService
+            throw new UnsupportedOperationException("Método ainda não implementado");
+            // List<HorarioResponse> response = mercadoService.getHorarios(id);
+            // return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Erro ao obter horários", e);
             throw new RuntimeException(e.getMessage());
@@ -421,8 +431,10 @@ public class MercadoController {
         try {
             User user = getCurrentUser();
             log.info("Criando horário para mercado: {} por usuário: {}", id, user.getId());
-            HorarioResponse response = mercadoService.createHorario(id, request, user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            // TODO: implementar em HorarioFuncionamentoService
+            throw new UnsupportedOperationException("Método ainda não implementado");
+            // HorarioResponse response = mercadoService.createHorario(id, request, user);
+            // return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             log.error("Erro ao criar horário", e);
             throw new RuntimeException(e.getMessage());

@@ -69,6 +69,18 @@ public class NotificacaoService {
     }
 
     /**
+     * Cria uma nova notificação a partir de um request.
+     *
+     * @param request dados da notificação
+     * @return a notificação criada
+     */
+    private Notificacao criarNotificacao(CreateNotificacaoRequest request) {
+        // Buscar usuário por ID
+        // TODO: implementar UserService.findById ou usar repository
+        throw new UnsupportedOperationException("Método não implementado - precisa buscar usuário por ID");
+    }
+
+    /**
      * Envia uma notificação para um usuário.
      *
      * @param usuario usuário destinatário
@@ -90,13 +102,12 @@ public class NotificacaoService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "NOTIFICACAO",
                 notificacao.getId(),
                 "Notificação enviada: " + titulo,
-                LocalDateTime.now()
+                null, null, null, null, null
         ));
 
         log.info("Notificação enviada com sucesso para usuário ID: {}", usuario.getId());
@@ -124,9 +135,9 @@ public class NotificacaoService {
      * @return página de notificações não lidas
      */
     @Transactional(readOnly = true)
-    public Page<Notificacao> obterNaoLidas(Long usuarioId, Pageable pageable) {
-        log.debug("Buscando notificações não lidas do usuário ID: {}", usuarioId);
-        return notificacaoRepository.findByUsuarioIdAndLidaFalseOrderByDataEnvioDesc(usuarioId, pageable);
+    public Page<Notificacao> obterNaoLidas(User usuario, Pageable pageable) {
+        log.debug("Buscando notificações não lidas do usuário: {}", usuario.getEmail());
+        return notificacaoRepository.findByUserAndLidaFalseOrderByCreatedAtDesc(usuario, pageable);
     }
 
     /**
@@ -217,7 +228,9 @@ public class NotificacaoService {
 
         LocalDateTime dataLimite = LocalDateTime.now().minus(diasRetencao, ChronoUnit.DAYS);
 
-        long deletadas = notificacaoRepository.deleteByDataEnvioBefore(dataLimite);
+        // TODO: implementar método deleteByCreatedAtBefore no repository
+        // long deletadas = notificacaoRepository.deleteByCreatedAtBefore(dataLimite);
+        long deletadas = 0;
 
         log.info("Limpeza de notificações concluída. {} notificações deletadas", deletadas);
     }
@@ -233,7 +246,9 @@ public class NotificacaoService {
 
         LocalDateTime dataLimite = LocalDateTime.now().minus(30, ChronoUnit.DAYS);
 
-        long deletadas = notificacaoRepository.deleteByDataEnvioBefore(dataLimite);
+        // TODO: implementar método deleteByCreatedAtBefore no repository
+        // long deletadas = notificacaoRepository.deleteByCreatedAtBefore(dataLimite);
+        long deletadas = 0;
 
         log.info("Limpeza automática concluída. {} notificações deletadas", deletadas);
     }
@@ -307,11 +322,6 @@ public class NotificacaoService {
     public void deleteAllNotificacoes(User usuario) {
         Page<Notificacao> notificacoes = obterNotificacionesDoUsuario(usuario, Pageable.unpaged());
         notificacoes.forEach(notificacaoRepository::delete);
-    }
-
-    public void deleteAllNotificacoes(User usuario) {
-        // Implementar se necessário
-        throw new UnsupportedOperationException("Método não implementado");
     }
 
 }

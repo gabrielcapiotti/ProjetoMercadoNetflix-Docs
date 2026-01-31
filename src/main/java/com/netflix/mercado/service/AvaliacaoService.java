@@ -20,15 +20,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 /**
  * Service responsável por gerenciar avaliações de mercados.
  * Implementa lógica de criação, atualização, exclusão e cálculo de estatísticas de avaliações.
  */
-@Slf4j
 @Service
 @Transactional
 public class AvaliacaoService {
+
+    private static final Logger log = Logger.getLogger(AvaliacaoService.class.getName());
 
     @Autowired
     private AvaliacaoRepository avaliacaoRepository;
@@ -51,15 +53,15 @@ public class AvaliacaoService {
      * @throws ValidationException se dados inválidos ou duplicata
      */
     public Avaliacao criarAvaliacao(CreateAvaliacaoRequest request, User usuario) {
-        log.info("Criando avaliação para mercado ID: {} pelo usuário: {}", request.getMercadoId(), usuario.getEmail());
+        log.info("Criando avaliação para mercado ID: " + request.getMercadoId() + " pelo usuário: " + usuario.getEmail());
 
-        // Validar rating
-        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
-            throw new ValidationException("Rating deve estar entre 1 e 5 estrelas");
+        // Validar estrelas
+        if (request.getEstrelas() == null || request.getEstrelas() < 1 || request.getEstrelas() > 5) {
+            throw new ValidationException("Estrelas deve estar entre 1 e 5");
         }
 
-        // Buscar mercado
-        Mercado mercado = mercadoService.getMercadoById(request.getMercadoId());
+        // Buscar mercado - usando getMercadoEntityById
+        Mercado mercado = mercadoService.getMercadoEntityById(request.getMercadoId());
 
         // Validar duplicata
         validarDuplicata(request.getMercadoId(), usuario.getId());
@@ -67,12 +69,10 @@ public class AvaliacaoService {
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setMercado(mercado);
         avaliacao.setUser(usuario);
-        avaliacao.setRating(request.getRating());
-        avaliacao.getTitulo(request.getTitulo());
-        avaliacao.setComentarioTitulo(request.getTitulo());
-        avaliacao.setDescricao(request.getDescricao());
-        avaliacao.setUtil(0);
-        avaliacao.setInutil(0);
+        avaliacao.setEstrelas(request.getEstrelas());
+        avaliacao.setComentario(request.getComentario());
+        avaliacao.setUteis(0L);
+        avaliacao.setInutils(0L);
 
         avaliacao = avaliacaoRepository.save(avaliacao);
 
@@ -81,16 +81,19 @@ public class AvaliacaoService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "CREATE",
+                AuditLog.TipoAcao.CRIACAO,
                 "AVALIACAO",
                 avaliacao.getId(),
-                String.format("Avaliação criada: %s estrelas para mercado %d", request.getRating(), request.getMercadoId()),
-                LocalDateTime.now()
+                String.format("Avaliação criada: %s estrelas para mercado %d", request.getEstrelas(), request.getMercadoId()),
+                null,
+                null,
+                null,
+                null,
+                200
         ));
 
-        log.info("Avaliação criada com sucesso. ID: {}", avaliacao.getId());
+        log.info("Avaliação criada com sucesso. ID: " + avaliacao.getId());
         return avaliacao;
     }
 
@@ -105,30 +108,27 @@ public class AvaliacaoService {
      * @throws UnauthorizedException se usuário não é proprietário
      */
     public Avaliacao atualizarAvaliacao(Long id, UpdateAvaliacaoRequest request, User usuario) {
-        log.info("Atualizando avaliação com ID: {}", id);
+        log.info("Atualizando avaliação com ID: " + id);
 
         Avaliacao avaliacao = obterAvaliacaoPorId(id);
 
         // Verificar autorização
-        if (!avaliacao.getUsuario().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
-            log.warn("Tentativa de atualização não autorizada da avaliação ID: {} por usuário: {}", id, usuario.getEmail());
+        if (!avaliacao.getUser().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
+            log.warning("Tentativa de atualização não autorizada da avaliação ID: " + id + " por usuário: " + usuario.getEmail());
             throw new UnauthorizedException("Você não tem permissão para atualizar esta avaliação");
         }
 
-        String valoresAnteriores = String.format("rating=%d, titulo=%s", avaliacao.getRating(), avaliacao.getComentarioTitulo());
+        String valoresAnteriores = String.format("estrelas=%d, comentario=%s", avaliacao.getEstrelas(), avaliacao.getComentario());
 
         // Atualizar campos
-        if (request.getRating() != null) {
-            if (request.getRating() < 1 || request.getRating() > 5) {
-                throw new ValidationException("Rating deve estar entre 1 e 5 estrelas");
+        if (request.getEstrelas() != null) {
+            if (request.getEstrelas() < 1 || request.getEstrelas() > 5) {
+                throw new ValidationException("Estrelas deve estar entre 1 e 5");
             }
-            avaliacao.setRating(request.getRating());
+            avaliacao.setEstrelas(request.getEstrelas());
         }
-        if (request.getTitulo() != null && !request.getTitulo().isBlank()) {
-            avaliacao.setComentarioTitulo(request.getTitulo());
-        }
-        if (request.getDescricao() != null) {
-            avaliacao.setDescricao(request.getDescricao());
+        if (request.getComentario() != null) {
+            avaliacao.setComentario(request.getComentario());
         }
 
         avaliacao = avaliacaoRepository.save(avaliacao);
@@ -136,20 +136,23 @@ public class AvaliacaoService {
         // Atualizar avaliação média do mercado
         mercadoService.atualizarAvaliacaoMedia(avaliacao.getMercado().getId());
 
-        String valoresNovos = String.format("rating=%d, titulo=%s", avaliacao.getRating(), avaliacao.getComentarioTitulo());
+        String valoresNovos = String.format("estrelas=%d, comentario=%s", avaliacao.getEstrelas(), avaliacao.getComentario());
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "UPDATE",
+                AuditLog.TipoAcao.ATUALIZACAO,
                 "AVALIACAO",
                 id,
                 "Alterações: " + valoresAnteriores + " -> " + valoresNovos,
-                LocalDateTime.now()
+                valoresAnteriores,
+                valoresNovos,
+                null,
+                null,
+                200
         ));
 
-        log.info("Avaliação atualizada com sucesso. ID: {}", id);
+        log.info("Avaliação atualizada com sucesso. ID: " + id);
         return avaliacao;
     }
 
@@ -162,13 +165,13 @@ public class AvaliacaoService {
      * @throws UnauthorizedException se usuário não é proprietário
      */
     public void deletarAvaliacao(Long id, User usuario) {
-        log.info("Deletando avaliação com ID: {}", id);
+        log.info("Deletando avaliação com ID: " + id);
 
         Avaliacao avaliacao = obterAvaliacaoPorId(id);
 
         // Verificar autorização
-        if (!avaliacao.getUsuario().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
-            log.warn("Tentativa de deleção não autorizada da avaliação ID: {} por usuário: {}", id, usuario.getEmail());
+        if (!avaliacao.getUser().getId().equals(usuario.getId()) && !isAdmin(usuario)) {
+            log.warning("Tentativa de deleção não autorizada da avaliação ID: " + id + " por usuário: " + usuario.getEmail());
             throw new UnauthorizedException("Você não tem permissão para deletar esta avaliação");
         }
 
@@ -180,16 +183,19 @@ public class AvaliacaoService {
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
-                null,
                 usuario,
-                "DELETE",
+                AuditLog.TipoAcao.DELECAO,
                 "AVALIACAO",
                 id,
                 "Avaliação deletada",
-                LocalDateTime.now()
+                null,
+                null,
+                null,
+                null,
+                200
         ));
 
-        log.info("Avaliação deletada com sucesso. ID: {}", id);
+        log.info("Avaliação deletada com sucesso. ID: " + id);
     }
 
     /**
@@ -201,10 +207,10 @@ public class AvaliacaoService {
      */
     @Transactional(readOnly = true)
     public Avaliacao obterAvaliacaoPorId(Long id) {
-        log.debug("Buscando avaliação com ID: {}", id);
+        log.fine("Buscando avaliação com ID: " + id);
         return avaliacaoRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Avaliação não encontrada com ID: {}", id);
+                    log.warning("Avaliação não encontrada com ID: " + id);
                     return new ResourceNotFoundException("Avaliação não encontrada com ID: " + id);
                 });
     }
@@ -218,7 +224,7 @@ public class AvaliacaoService {
      */
     @Transactional(readOnly = true)
     public Page<Avaliacao> obterAvaliacoesPorMercado(Long mercadoId, Pageable pageable) {
-        log.debug("Buscando avaliações do mercado ID: {}", mercadoId);
+        log.fine("Buscando avaliações do mercado ID: " + mercadoId);
         mercadoService.getMercadoById(mercadoId); // Validar que mercado existe
         return avaliacaoRepository.findByMercadoId(mercadoId, pageable);
     }
@@ -232,7 +238,7 @@ public class AvaliacaoService {
      */
     @Transactional(readOnly = true)
     public Page<Avaliacao> obterAvaliacoesPorUsuario(Long usuarioId, Pageable pageable) {
-        log.debug("Buscando avaliações do usuário ID: {}", usuarioId);
+        log.fine("Buscando avaliações do usuário ID: " + usuarioId);
         return avaliacaoRepository.findByUsuarioId(usuarioId, pageable);
     }
 
@@ -244,7 +250,7 @@ public class AvaliacaoService {
      */
     @Transactional(readOnly = true)
     public RatingStatsResponse calcularEstatisticas(Long mercadoId) {
-        log.debug("Calculando estatísticas de avaliações do mercado ID: {}", mercadoId);
+        log.fine("Calculando estatísticas de avaliações do mercado ID: " + mercadoId);
 
         mercadoService.getMercadoById(mercadoId); // Validar que mercado existe
 
@@ -274,13 +280,13 @@ public class AvaliacaoService {
      * @param id ID da avaliação
      */
     public void marcarComoUtil(Long id) {
-        log.debug("Marcando avaliação como útil. ID: {}", id);
+        log.fine("Marcando avaliação como útil. ID: " + id);
 
         Avaliacao avaliacao = obterAvaliacaoPorId(id);
         avaliacao.setUtil(avaliacao.getUtil() + 1);
         avaliacaoRepository.save(avaliacao);
 
-        log.debug("Avaliação marcada como útil. ID: {}", id);
+        log.fine("Avaliação marcada como útil. ID: " + id);
     }
 
     /**
@@ -289,13 +295,13 @@ public class AvaliacaoService {
      * @param id ID da avaliação
      */
     public void marcarComoInutil(Long id) {
-        log.debug("Marcando avaliação como inútil. ID: {}", id);
+        log.fine("Marcando avaliação como inútil. ID: " + id);
 
         Avaliacao avaliacao = obterAvaliacaoPorId(id);
         avaliacao.setInutil(avaliacao.getInutil() + 1);
         avaliacaoRepository.save(avaliacao);
 
-        log.debug("Avaliação marcada como inútil. ID: {}", id);
+        log.fine("Avaliação marcada como inútil. ID: " + id);
     }
 
     /**
@@ -306,10 +312,10 @@ public class AvaliacaoService {
      * @throws ValidationException se já existe avaliação
      */
     public void validarDuplicata(Long mercadoId, Long usuarioId) {
-        log.debug("Validando duplicata de avaliação. Mercado: {}, Usuário: {}", mercadoId, usuarioId);
+        log.fine("Validando duplicata de avaliação. Mercado: {}, Usuário: " + mercadoId, usuarioId);
 
         if (avaliacaoRepository.existsByMercadoIdAndUsuarioId(mercadoId, usuarioId)) {
-            log.warn("Usuário {} já avaliou mercado {}", usuarioId, mercadoId);
+            log.warning("Usuário {} já avaliou mercado " + usuarioId, mercadoId);
             throw new ValidationException("Você já avaliou este mercado");
         }
     }

@@ -72,7 +72,7 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setFullName(request.getFullName());
         user.setCpf(request.getCpf());
-        user.setPhoneNumber(request.getPhoneNumber());
+        user.setPhone(request.getPhone());
         user.setActive(true);
         user.setEmailVerified(false);
         user.setTwoFactorEnabled(false);
@@ -146,19 +146,19 @@ public class UserService {
 
         User user = findUserById(id);
 
-        String valoresAnteriores = String.format("nome=%s, telefone=%s", user.getFullName(), user.getPhoneNumber());
+        String valoresAnteriores = String.format("nome=%s, telefone=%s", user.getFullName(), user.getPhone());
 
         // Atualizar campos
-        if (request.getFullName() != null && !request.getFullName().isBlank()) {
-            user.setFullName(request.getFullName());
+        if (request.getNome() != null && !request.getNome().isBlank()) {
+            user.setFullName(request.getNome());
         }
-        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
-            user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getTelefone() != null && !request.getTelefone().isBlank()) {
+            user.setPhone(request.getTelefone());
         }
 
         user = userRepository.save(user);
 
-        String valoresNovos = String.format("nome=%s, telefone=%s", user.getFullName(), user.getPhoneNumber());
+        String valoresNovos = String.format("nome=%s, telefone=%s", user.getFullName(), user.getPhone());
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(

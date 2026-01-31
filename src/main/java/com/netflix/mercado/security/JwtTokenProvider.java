@@ -11,11 +11,13 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 public class JwtTokenProvider {
+
+    private static final Logger log = Logger.getLogger(JwtTokenProvider.class.getName());
 
     @Value("${jwt.secret:my-secret-key-for-jwt-token-provider-please-change-in-production}")
     private String jwtSecret;
@@ -97,10 +99,10 @@ public class JwtTokenProvider {
             Claims claims = getAllClaimsFromToken(token);
             return claims.getSubject();
         } catch (ExpiredJwtException e) {
-            log.warn("Token expirado ao extrair username: {}", e.getMessage());
+            log.warning("Token expirado ao extrair username: " + e.getMessage());
             return e.getClaims().getSubject();
         } catch (JwtException e) {
-            log.error("Erro ao extrair username do token: {}", e.getMessage());
+            log.severe("Erro ao extrair username do token: " + e.getMessage());
             return null;
         }
     }
@@ -117,7 +119,7 @@ public class JwtTokenProvider {
             Claims claims = getAllClaimsFromToken(token);
             return (List<String>) claims.get("roles", List.class);
         } catch (Exception e) {
-            log.error("Erro ao extrair roles do token: {}", e.getMessage());
+            log.severe("Erro ao extrair roles do token: " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -130,23 +132,23 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                .setSigningKey(key())
+            Jwts.parser()
+                .verifyWith(key())
                 .build()
                 .parseClaimsJws(token);
             return true;
         } catch (SecurityException e) {
-            log.error("Chave JWT inválida: {}", e.getMessage());
+            log.severe("Chave JWT inválida: " + e.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("JWT token inválido: {}", e.getMessage());
+            log.severe("JWT token inválido: " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("JWT token expirou: {}", e.getMessage());
+            log.severe("JWT token expirou: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("JWT token não suportado: {}", e.getMessage());
+            log.severe("JWT token não suportado: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims string vazio: {}", e.getMessage());
+            log.severe("JWT claims string vazio: " + e.getMessage());
         } catch (JwtException e) {
-            log.error("Erro ao validar JWT token: {}", e.getMessage());
+            log.severe("Erro ao validar JWT token: " + e.getMessage());
         }
         return false;
     }
@@ -164,7 +166,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims().getExpiration();
         } catch (Exception e) {
-            log.error("Erro ao extrair data de expiração: {}", e.getMessage());
+            log.severe("Erro ao extrair data de expiração: " + e.getMessage());
             return null;
         }
     }
@@ -180,7 +182,7 @@ public class JwtTokenProvider {
             Date expiration = getExpirationFromToken(token);
             return expiration != null && expiration.before(new Date());
         } catch (Exception e) {
-            log.error("Erro ao verificar expiração do token: {}", e.getMessage());
+            log.severe("Erro ao verificar expiração do token: " + e.getMessage());
             return true;
         }
     }
@@ -192,8 +194,8 @@ public class JwtTokenProvider {
      * @return Claims do token
      */
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(key())
+        return Jwts.parser()
+            .verifyWith(key())
             .build()
             .parseClaimsJws(token)
             .getBody();

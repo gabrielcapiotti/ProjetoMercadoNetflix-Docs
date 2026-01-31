@@ -24,14 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/notificacoes")
 @RequiredArgsConstructor
 @Transactional
 @Tag(name = "Notificações", description = "Gerenciamento de notificações do usuário")
 public class NotificacaoController {
+
+    private static final Logger log = Logger.getLogger(NotificacaoController.class.getName());
 
     private final NotificacaoService notificacaoService;
 
@@ -62,13 +64,13 @@ public class NotificacaoController {
             @RequestParam(required = false) Boolean unreadOnly) {
         try {
             User user = getCurrentUser();
-            log.debug("Listando notificações do usuário: {}", user.getId());
+            log.info("Listando notificações do usuário: " + user.getId());
             Pageable pageable = PageRequest.of(page, size);
             Page<NotificacaoResponse> response = notificacaoService
                     .listNotificacoes(user, pageable, unreadOnly);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao listar notificações", e);
+            log.severe("Erro ao listar notificações: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -96,7 +98,7 @@ public class NotificacaoController {
             long count = notificacaoService.countUnreadNotificacoes(user);
             return ResponseEntity.ok(Map.of("unreadCount", count));
         } catch (Exception e) {
-            log.error("Erro ao contar notificações não lidas", e);
+            log.severe("Erro ao contar notificações não lidas: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -124,11 +126,11 @@ public class NotificacaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Marcando notificação {} como lida", id);
+            log.info("Marcando notificação " + id + " como lida");
             NotificacaoResponse response = notificacaoService.markAsRead(id, user);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Erro ao marcar notificação como lida", e);
+            log.severe("Erro ao marcar notificação como lida: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -152,11 +154,11 @@ public class NotificacaoController {
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
-            log.info("Deletando notificação: {} para usuário: {}", id, user.getId());
+            log.info("Deletando notificação: " + id + " para usuário: " + user.getId());
             notificacaoService.deleteNotificacao(id, user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar notificação", e);
+            log.severe("Erro ao deletar notificação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -181,11 +183,11 @@ public class NotificacaoController {
     public ResponseEntity<Map<String, String>> markAllAsRead() {
         try {
             User user = getCurrentUser();
-            log.info("Marcando todas as notificações como lidas para usuário: {}", user.getId());
+            log.info("Marcando todas as notificações como lidas para usuário: " + user.getId());
             notificacaoService.markAllAsRead(user);
             return ResponseEntity.ok(Map.of("status", "Todas as notificações marcadas como lidas"));
         } catch (Exception e) {
-            log.error("Erro ao marcar todas as notificações como lidas", e);
+            log.severe("Erro ao marcar todas as notificações como lidas: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -206,11 +208,11 @@ public class NotificacaoController {
     public ResponseEntity<Void> deleteAllNotificacoes() {
         try {
             User user = getCurrentUser();
-            log.info("Deletando todas as notificações do usuário: {}", user.getId());
+            log.info("Deletando todas as notificações do usuário: " + user.getId());
             notificacaoService.deleteAllNotificacoes(user);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            log.error("Erro ao deletar todas as notificações", e);
+            log.severe("Erro ao deletar todas as notificações: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

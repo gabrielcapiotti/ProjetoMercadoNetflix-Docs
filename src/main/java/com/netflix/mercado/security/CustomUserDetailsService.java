@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
+    private static final Logger log = Logger.getLogger(CustomUserDetailsService.class.getName());
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -36,22 +38,22 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.debug("Carregando usuário com email: {}", email);
+        log.fine("Carregando usuário com email: " + email);
 
         // Buscar usuário no banco de dados
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> {
-                log.warn("Usuário não encontrado com email: {}", email);
+                log.warning("Usuário não encontrado com email: " + email);
                 return new UsernameNotFoundException("Usuário não encontrado com email: " + email);
             });
 
         // Verificar se o usuário está ativo
         if (!user.isActive()) {
-            log.warn("Tentativa de login com usuário inativo: {}", email);
+            log.warning("Tentativa de login com usuário inativo: " + email);
             throw new UsernameNotFoundException("Usuário inativo: " + email);
         }
 
-        log.debug("Usuário carregado com sucesso: {} com roles: {}", email, user.getRoles());
+        log.fine("Usuário carregado com sucesso: " + email + " com roles: " + user.getRoles());
 
         // Construir e retornar UserDetails com as informações do usuário
         return org.springframework.security.core.userdetails.User.builder()
@@ -75,11 +77,11 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Transactional(readOnly = true)
     public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
-        log.debug("Carregando usuário com ID: {}", userId);
+        log.fine("Carregando usuário com ID: " + userId);
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> {
-                log.warn("Usuário não encontrado com ID: {}", userId);
+                log.warning("Usuário não encontrado com ID: " + userId);
                 return new UsernameNotFoundException("Usuário não encontrado com ID: " + userId);
             });
 
@@ -95,15 +97,12 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(User user) {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            log.debug("Usuário {} sem roles, atribuindo role padrão USER", user.getEmail());
+            log.fine("Usuário " + user.getEmail() + " sem roles, atribuindo role padrão USER");
             return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
         return user.getRoles().stream()
-            .map(role -> {
-                String roleName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                return new SimpleGrantedAuthority(roleName);
-            })
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
             .collect(Collectors.toSet());
     }
 
@@ -124,7 +123,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             String roleName = role.startsWith("ROLE_") ? role.substring(5) : role;
             return user.getRoles() != null && user.getRoles().contains(roleName);
         } catch (Exception e) {
-            log.error("Erro ao verificar role do usuário: {}", e.getMessage());
+            log.severe("Erro ao verificar role do usuário: " + e.getMessage());
             return false;
         }
     }
