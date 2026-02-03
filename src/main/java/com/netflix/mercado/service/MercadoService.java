@@ -3,6 +3,7 @@ package com.netflix.mercado.service;
 import com.netflix.mercado.entity.Mercado;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.entity.AuditLog;
+import com.netflix.mercado.entity.Notificacao;
 import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
@@ -11,6 +12,7 @@ import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.mercado.CreateMercadoRequest;
 import com.netflix.mercado.dto.mercado.UpdateMercadoRequest;
 import com.netflix.mercado.dto.mercado.MercadoResponse;
+import com.netflix.mercado.dto.notificacao.CreateNotificacaoRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -79,6 +81,21 @@ public class MercadoService {
         // avaliacaoMedia e totalAvaliacoes já têm valores padrão
 
         mercado = mercadoRepository.save(mercado);
+
+        // ✅ NOVO: Notificar seller que seu mercado foi criado e aguarda aprovação
+        if (owner != null && owner.getId() != null) {
+            CreateNotificacaoRequest notifRequest = new CreateNotificacaoRequest();
+            notifRequest.setUsuarioId(owner.getId());
+            notifRequest.setTitulo("Mercado criado com sucesso");
+            notifRequest.setConteudo("Seu mercado '" + mercado.getNome() + "' foi criado e aguarda aprovação do admin.");
+            notifRequest.setTipo(Notificacao.TipoNotificacao.MERCADO.toString());
+            try {
+                notificacaoService.criarNotificacao(notifRequest);
+                log.info("Notificação de criação enviada para seller: " + owner.getEmail());
+            } catch (Exception e) {
+                log.warning("Erro ao enviar notificação de criação do mercado: " + e.getMessage());
+            }
+        }
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
@@ -280,6 +297,69 @@ public class MercadoService {
     }
 
     /**
+     * ✅ NOVO: Busca avançada com múltiplos filtros combinados.
+     *
+     * @param nome filtro por nome (opcional)
+     * @param cidade filtro por cidade (opcional)
+     * @param estado filtro por estado (opcional)
+     * @param ratingMínimo avaliação mínima (opcional)
+     * @param pageable paginação
+     * @return página de mercados que correspondem aos critérios
+     */
+    @Transactional(readOnly = true)
+    public Page<Mercado> buscarAvançada(String nome, String cidade, String estado, 
+                                         BigDecimal ratingMínimo, Pageable pageable) {
+        log.fine("Busca avançada - Nome: " + nome + ", Cidade: " + cidade + 
+                 ", Estado: " + estado + ", Rating mín: " + ratingMínimo);
+
+        if (nome != null && !nome.isBlank()) {
+            if (cidade != null && !cidade.isBlank()) {
+                if (estado != null && !estado.isBlank()) {
+                    if (ratingMínimo != null) {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+                                nome, cidade, estado, ratingMínimo, pageable);
+                    } else {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndActiveTrue(
+                                nome, cidade, estado, pageable);
+                    }
+                } else {
+                    if (ratingMínimo != null) {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+                                nome, cidade, ratingMínimo, pageable);
+                    } else {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndActiveTrue(
+                                nome, cidade, pageable);
+                    }
+                }
+            } else {
+                if (estado != null && !estado.isBlank()) {
+                    if (ratingMínimo != null) {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+                                nome, estado, ratingMínimo, pageable);
+                    } else {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndActiveTrue(
+                                nome, estado, pageable);
+                    }
+                } else {
+                    if (ratingMínimo != null) {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+                                nome, ratingMínimo, pageable);
+                    } else {
+                        return mercadoRepository.findByNomeContainingIgnoreCaseAndActiveTrue(nome, pageable);
+                    }
+                }
+            }
+        } else {
+            // Sem nome
+            if (ratingMínimo != null) {
+                return mercadoRepository.findByAvaliacaoMediaGreaterThanEqualAndActiveTrue(ratingMínimo, pageable);
+            } else {
+                return mercadoRepository.findAllByActiveTrue(pageable);
+            }
+        }
+    }
+
+    /**
      * Aprova um mercado (apenas admin).
      *
      * @param id ID do mercado
@@ -292,6 +372,21 @@ public class MercadoService {
         // mercado.setAprovado(true); // campo aprovado não existe
         mercado.setActive(true);
         mercadoRepository.save(mercado);
+
+        // ✅ NOVO: Notificar seller sobre aprovação
+        if (mercado.getCriadoPor() != null && mercado.getCriadoPor().getId() != null) {
+            CreateNotificacaoRequest notifRequest = new CreateNotificacaoRequest();
+            notifRequest.setUsuarioId(mercado.getCriadoPor().getId());
+            notifRequest.setTitulo("Mercado aprovado!");
+            notifRequest.setConteudo("Seu mercado '" + mercado.getNome() + "' foi aprovado e está disponível para compras.");
+            notifRequest.setTipo(Notificacao.TipoNotificacao.MERCADO.toString());
+            try {
+                notificacaoService.criarNotificacao(notifRequest);
+                log.info("Notificação de aprovação enviada para seller: " + mercado.getCriadoPor().getEmail());
+            } catch (Exception e) {
+                log.warning("Erro ao enviar notificação de aprovação: " + e.getMessage());
+            }
+        }
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
@@ -320,6 +415,25 @@ public class MercadoService {
         // mercado.setAprovado(false); // campo aprovado não existe
         mercado.setActive(false);
         mercadoRepository.save(mercado);
+
+        // ✅ NOVO: Notificar seller sobre rejeição
+        if (mercado.getCriadoPor() != null && mercado.getCriadoPor().getId() != null) {
+            CreateNotificacaoRequest notifRequest = new CreateNotificacaoRequest();
+            notifRequest.setUsuarioId(mercado.getCriadoPor().getId());
+            notifRequest.setTitulo("Mercado rejeitado");
+            String mensagem = "Seu mercado '" + mercado.getNome() + "' foi rejeitado";
+            if (motivo != null && !motivo.isBlank()) {
+                mensagem += ". Motivo: " + motivo;
+            }
+            notifRequest.setConteudo(mensagem);
+            notifRequest.setTipo(Notificacao.TipoNotificacao.MERCADO.toString());
+            try {
+                notificacaoService.criarNotificacao(notifRequest);
+                log.info("Notificação de rejeição enviada para seller: " + mercado.getCriadoPor().getEmail());
+            } catch (Exception e) {
+                log.warning("Erro ao enviar notificação de rejeição: " + e.getMessage());
+            }
+        }
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(

@@ -51,6 +51,13 @@ public class Comentario extends BaseEntity {
     @Column(name = "moderado", nullable = false)
     private Boolean moderado = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderado_por_id", foreignKey = @ForeignKey(name = "fk_comentario_moderador"))
+    private User moderadoPor;
+
+    @Column(name = "motivo_rejeicao", length = 500)
+    private String motivoRejeicao;
+
     public void adicionarResposta(Comentario resposta) {
         respostas.add(resposta);
         resposta.comentarioPai = this;
@@ -131,6 +138,22 @@ public class Comentario extends BaseEntity {
 
     public void setModerado(Boolean moderado) {
         this.moderado = moderado;
+    }
+
+    public User getModeradoPor() {
+        return this.moderadoPor;
+    }
+
+    public void setModeradoPor(User moderadoPor) {
+        this.moderadoPor = moderadoPor;
+    }
+
+    public String getMotivoRejeicao() {
+        return this.motivoRejeicao;
+    }
+
+    public void setMotivoRejeicao(String motivoRejeicao) {
+        this.motivoRejeicao = motivoRejeicao;
     }
 
 }

@@ -49,4 +49,7 @@ public interface PromocaoRepository extends JpaRepository<Promocao, Long> {
     
     @Query("UPDATE Promocao p SET p.ativa = false WHERE p.dataValidade < :agora AND p.active = true")
     long desativarPromocoesExpiradas(@Param("agora") LocalDateTime agora);
+
+    // ✅ NOVO: Métodos para relatórios
+    long countByMercadoAndAtiva(Mercado mercado, Boolean ativa);
 }

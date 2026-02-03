@@ -110,10 +110,8 @@ class AvaliacaoRepositoryTest {
         mercado2.setCidade("Rio de Janeiro");
         mercado2.setEstado("RJ");
         mercado2.setCep("20000-000");
-        mercado2.setLatitude(-22.9068);
-        mercado2.setLongitude(-43.1729);
-        mercado2.setHorarioAbertura(LocalTime.of(7, 0));
-        mercado2.setHorarioFechamento(LocalTime.of(23, 0));
+        mercado2.setLatitude(BigDecimal.valueOf(-22.9068));
+        mercado2.setLongitude(BigDecimal.valueOf(-43.1729));
         mercado2.setActive(true);
         mercado2 = entityManager.persistAndFlush(mercado2);
 

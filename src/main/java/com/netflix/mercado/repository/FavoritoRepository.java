@@ -36,4 +36,8 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
 
     // Método por ID para facilitar uso
     long countByMercadoId(Long mercadoId);
+
+    // ✅ NOVO: Alias para findByUser
+    @Query("SELECT f FROM Favorito f WHERE f.user = :usuario AND f.active = true ORDER BY f.prioridade DESC, f.createdAt DESC")
+    java.util.List<Favorito> findByUsuario(@Param("usuario") User usuario);
 }

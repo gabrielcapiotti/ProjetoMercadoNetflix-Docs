@@ -4,6 +4,7 @@ import com.netflix.mercado.entity.Avaliacao;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.entity.Mercado;
 import com.netflix.mercado.entity.AuditLog;
+import com.netflix.mercado.entity.Notificacao;
 import com.netflix.mercado.exception.ResourceNotFoundException;
 import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.exception.UnauthorizedException;
@@ -13,6 +14,7 @@ import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.AvaliacaoResponse;
 import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
+import com.netflix.mercado.dto.notificacao.CreateNotificacaoRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -79,6 +81,25 @@ public class AvaliacaoService {
 
         // Atualizar avaliação média do mercado
         mercadoService.atualizarAvaliacaoMedia(request.getMercadoId());
+
+        // ✅ NOVO: Notificar seller sobre nova avaliação
+        if (mercado.getCriadoPor() != null && mercado.getCriadoPor().getId() != null) {
+            CreateNotificacaoRequest notifRequest = new CreateNotificacaoRequest();
+            notifRequest.setUsuarioId(mercado.getCriadoPor().getId());
+            notifRequest.setTitulo("Nova avaliação recebida");
+            String mensagem = usuario.getFullName() + " avaliou seu mercado com " + request.getEstrelas() + " estrela(s)";
+            if (request.getComentario() != null && !request.getComentario().isBlank()) {
+                mensagem += ": \"" + request.getComentario() + "\"";
+            }
+            notifRequest.setConteudo(mensagem);
+            notifRequest.setTipo(Notificacao.TipoNotificacao.AVALIACAO.toString());
+            try {
+                notificacaoService.criarNotificacao(notifRequest);
+                log.info("Notificação de avaliação enviada para seller: " + mercado.getCriadoPor().getEmail());
+            } catch (Exception e) {
+                log.warning("Erro ao enviar notificação de avaliação: " + e.getMessage());
+            }
+        }
 
         // Registrar no audit log
         auditLogRepository.save(new AuditLog(
@@ -402,6 +423,81 @@ public class AvaliacaoService {
 
     public void setNotificacaoService(NotificacaoService notificacaoService) {
         this.notificacaoService = notificacaoService;
+    }
+
+    /**
+     * ✅ NOVO: Calcula estatísticas de avaliação de um mercado.
+     * Inclui distribuição por estrelas e percentual de aprovação.
+     *
+     * @param mercadoId ID do mercado
+     * @return RatingStatsResponse com todas as métricas
+     * @throws ResourceNotFoundException se mercado não existe
+     */
+    public RatingStatsResponse obterEstatisticasAvaliacao(Long mercadoId) {
+        log.info("Calculando estatísticas de avaliação para mercado ID: " + mercadoId);
+
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
+
+        // Buscar todas as avaliações do mercado (sem paginação)
+        Page<Avaliacao> avaliacoes = avaliacaoRepository.findByMercadoId(mercadoId, 
+            org.springframework.data.domain.PageRequest.of(0, 10000));
+
+        if (avaliacoes.isEmpty()) {
+            return RatingStatsResponse.builder()
+                    .totalAvaliacoes(0)
+                    .mediaAvaliacoes(0.0)
+                    .cincoEstrelas(0L)
+                    .quatroEstrelas(0L)
+                    .tresEstrelas(0L)
+                    .doisEstrelas(0L)
+                    .umEstrela(0L)
+                    .percentualAprovacao(0.0)
+                    .percentualCincoEstrelas(0.0)
+                    .percentualQuatroEstrelas(0.0)
+                    .percentualTresEstrelas(0.0)
+                    .percentualDoisEstrelas(0.0)
+                    .percentualUmEstrela(0.0)
+                    .build();
+        }
+
+        // Contar avaliações por número de estrelas
+        long cinco = avaliacoes.stream().filter(a -> a.getEstrelas() == 5).count();
+        long quatro = avaliacoes.stream().filter(a -> a.getEstrelas() == 4).count();
+        long tres = avaliacoes.stream().filter(a -> a.getEstrelas() == 3).count();
+        long dois = avaliacoes.stream().filter(a -> a.getEstrelas() == 2).count();
+        long um = avaliacoes.stream().filter(a -> a.getEstrelas() == 1).count();
+
+        int total = (int) avaliacoes.getTotalElements();
+
+        // Calcular percentuais
+        double percAceitacao = ((cinco + quatro) * 100.0) / total;
+        double perc5 = (cinco * 100.0) / total;
+        double perc4 = (quatro * 100.0) / total;
+        double perc3 = (tres * 100.0) / total;
+        double perc2 = (dois * 100.0) / total;
+        double perc1 = (um * 100.0) / total;
+
+        // Calcular média
+        double media = mercado.getAvaliacaoMedia().doubleValue();
+
+        log.info("Estatísticas calculadas - Total: " + total + ", Média: " + media + 
+                 ", Aprovação: " + String.format("%.2f", percAceitacao) + "%");
+
+        return RatingStatsResponse.builder()
+                .totalAvaliacoes(total)
+                .mediaAvaliacoes(media)
+                .cincoEstrelas(cinco)
+                .quatroEstrelas(quatro)
+                .tresEstrelas(tres)
+                .doisEstrelas(dois)
+                .umEstrela(um)
+                .percentualAprovacao(Math.round(percAceitacao * 100.0) / 100.0)
+                .percentualCincoEstrelas(Math.round(perc5 * 100.0) / 100.0)
+                .percentualQuatroEstrelas(Math.round(perc4 * 100.0) / 100.0)
+                .percentualTresEstrelas(Math.round(perc3 * 100.0) / 100.0)
+                .percentualDoisEstrelas(Math.round(perc2 * 100.0) / 100.0)
+                .percentualUmEstrela(Math.round(perc1 * 100.0) / 100.0)
+                .build();
     }
 
 }

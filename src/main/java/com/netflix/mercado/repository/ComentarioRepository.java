@@ -3,6 +3,7 @@ package com.netflix.mercado.repository;
 import com.netflix.mercado.entity.Comentario;
 import com.netflix.mercado.entity.Avaliacao;
 import com.netflix.mercado.entity.User;
+import com.netflix.mercado.entity.Mercado;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +34,9 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     @Query("SELECT c FROM Comentario c WHERE c.moderado = false AND c.active = true ORDER BY c.createdAt DESC")
     Page<Comentario> findUnmoderatedComentarios(Pageable pageable);
 
+    @Query("SELECT c FROM Comentario c WHERE c.moderado = false AND c.active = true ORDER BY c.createdAt DESC")
+    Page<Comentario> findByModeradoFalse(Pageable pageable);
+
     @Query("SELECT c FROM Comentario c WHERE c.curtidas >= :minCurtidas AND c.active = true ORDER BY c.curtidas DESC")
     Page<Comentario> findMostLikedComentarios(@Param("minCurtidas") Long minCurtidas, Pageable pageable);
 
@@ -44,4 +48,7 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
 
     @Query("SELECT c FROM Comentario c WHERE c.comentarioPai.id = :comentarioPaiId AND c.active = true")
     Page<Comentario> findByComentarioPaiId(@Param("comentarioPaiId") Long comentarioPaiId, Pageable pageable);
+
+    // ✅ NOVO: Contar comentários por mercado (via avaliação)
+    long countByAvaliacao_Mercado(Mercado mercado);
 }

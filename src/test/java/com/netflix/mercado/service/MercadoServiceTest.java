@@ -201,7 +201,7 @@ class MercadoServiceTest {
     @DisplayName("Deve buscar mercados próximos por geolocalização")
     void testBuscarMercadosProximos() {
         // Arrange
-        when(mercadoRepository.findMercadosProximos(
+        when(mercadoRepository.findByProximidade(
                 anyDouble(), 
                 anyDouble(), 
                 anyDouble()))

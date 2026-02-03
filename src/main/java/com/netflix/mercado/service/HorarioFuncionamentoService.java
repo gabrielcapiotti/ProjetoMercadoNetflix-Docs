@@ -59,11 +59,18 @@ public class HorarioFuncionamentoService {
         // Validar dados
         validarHorarios(request);
 
+        // ✅ NOVO: Validar sobreposição de horários
+        DiaSemana diaSemana = DiaSemana.valueOf(request.getDiaSemana());
+        LocalTime horaAbertura = LocalTime.parse(request.getHoraAbertura());
+        LocalTime horaFechamento = LocalTime.parse(request.getHoraFechamento());
+        
+        validarSobreposicaoHorarios(mercadoId, diaSemana, horaAbertura, horaFechamento);
+
         HorarioFuncionamento horario = new HorarioFuncionamento();
         horario.setMercado(mercado);
-        horario.setDiaSemana(DiaSemana.valueOf(request.getDiaSemana()));
-        horario.setHoraAbertura(LocalTime.parse(request.getHoraAbertura()));
-        horario.setHoraFechamento(LocalTime.parse(request.getHoraFechamento()));
+        horario.setDiaSemana(diaSemana);
+        horario.setHoraAbertura(horaAbertura);
+        horario.setHoraFechamento(horaFechamento);
         horario.setAberto(true);
 
         horario = horarioRepository.save(horario);
@@ -271,6 +278,53 @@ public class HorarioFuncionamentoService {
         if (request.getHoraAbertura().compareTo(request.getHoraFechamento()) >= 0) {
             throw new ValidationException("Hora de abertura deve ser anterior à hora de fechamento");
         }
+    }
+
+    /**
+     * ✅ NOVO: Valida se há sobreposição de horários no mesmo dia.
+     * Dois períodos se sobrepõem se: inicio1 < fim2 AND inicio2 < fim1
+     *
+     * @param mercadoId ID do mercado
+     * @param diaSemana dia da semana
+     * @param novaAbertura hora de abertura do novo período
+     * @param novaFechamento hora de fechamento do novo período
+     * @throws ValidationException se houver sobreposição
+     */
+    private void validarSobreposicaoHorarios(Long mercadoId, DiaSemana diaSemana, LocalTime novaAbertura, LocalTime novaFechamento) {
+        log.fine("Validando sobreposição de horários para mercado: " + mercadoId + ", dia: " + diaSemana);
+
+        List<HorarioFuncionamento> horariosExistentes = horarioRepository
+                .findByMercadoIdAndDiaSemana(mercadoId, diaSemana)
+                .stream()
+                .toList();
+
+        for (HorarioFuncionamento existente : horariosExistentes) {
+            if (temSobreposicao(existente.getHoraAbertura(), existente.getHoraFechamento(), novaAbertura, novaFechamento)) {
+                String mensagem = String.format(
+                        "Horário sobreposto! Já existe período de %s às %s no dia %s",
+                        existente.getHoraAbertura(),
+                        existente.getHoraFechamento(),
+                        diaSemana.name()
+                );
+                log.warning(mensagem);
+                throw new ValidationException(mensagem);
+            }
+        }
+    }
+
+    /**
+     * Verifica se dois períodos de tempo se sobrepõem.
+     * Períodos: [ab1, fe1) e [ab2, fe2)
+     * Sobrepõem se: ab1 < fe2 AND ab2 < fe1
+     *
+     * @param ab1 abertura período 1
+     * @param fe1 fechamento período 1
+     * @param ab2 abertura período 2
+     * @param fe2 fechamento período 2
+     * @return true se há sobreposição
+     */
+    private boolean temSobreposicao(LocalTime ab1, LocalTime fe1, LocalTime ab2, LocalTime fe2) {
+        return ab1.isBefore(fe2) && ab2.isBefore(fe1);
     }
 
     /**

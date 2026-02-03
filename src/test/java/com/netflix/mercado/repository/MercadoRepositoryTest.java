@@ -80,8 +80,8 @@ class MercadoRepositoryTest {
         mercadoDeleted.setCidade("Rio de Janeiro");
         mercadoDeleted.setEstado("RJ");
         mercadoDeleted.setCep("20000-000");
-        mercadoDeleted.setLatitude(-22.9068);
-        mercadoDeleted.setLongitude(-43.1729);
+        mercadoDeleted.setLatitude(BigDecimal.valueOf(-22.9068));
+        mercadoDeleted.setLongitude(BigDecimal.valueOf(-43.1729));
         mercadoDeleted.setAvaliacaoMedia(BigDecimal.valueOf(2.0));
         mercadoDeleted.setActive(false); // Soft deleted
         mercadoDeleted = entityManager.persistAndFlush(mercadoDeleted);

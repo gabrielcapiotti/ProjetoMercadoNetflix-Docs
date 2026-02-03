@@ -396,4 +396,80 @@ public class ComentarioService {
         this.avaliacaoService = avaliacaoService;
     }
 
+    /**
+     * ✅ NOVO: Aprova um comentário para publicação (apenas ADMIN/MODERADOR).
+     *
+     * @param comentarioId ID do comentário
+     * @param moderador usuário realizando a moderação
+     * @throws ResourceNotFoundException se comentário não existe
+     * @throws UnauthorizedException se não tem permissão
+     */
+    public void aprovarComentario(Long comentarioId, User moderador) {
+        log.info("Aprovando comentário ID: " + comentarioId + " por " + moderador.getEmail());
+
+        Comentario comentario = comentarioRepository.findById(comentarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comentário não encontrado"));
+
+        comentario.setModerado(true);
+        comentario.setModeradoPor(moderador);
+        comentario.setMotivoRejeicao(null);
+        comentarioRepository.save(comentario);
+
+        // Auditoria
+        auditLogRepository.save(new AuditLog(
+                moderador,
+                AuditLog.TipoAcao.ATUALIZACAO,
+                "COMENTARIO",
+                comentarioId,
+                "Comentário aprovado: " + comentario.getConteudo().substring(0, Math.min(50, comentario.getConteudo().length())),
+                null, null, null, null, null
+        ));
+
+        log.info("Comentário aprovado com sucesso. ID: " + comentarioId);
+    }
+
+    /**
+     * ✅ NOVO: Rejeita um comentário impedindo sua publicação (apenas ADMIN/MODERADOR).
+     *
+     * @param comentarioId ID do comentário
+     * @param motivo motivo da rejeição
+     * @param moderador usuário realizando a moderação
+     * @throws ResourceNotFoundException se comentário não existe
+     * @throws UnauthorizedException se não tem permissão
+     */
+    public void rejeitarComentario(Long comentarioId, String motivo, User moderador) {
+        log.info("Rejeitando comentário ID: " + comentarioId + " por " + moderador.getEmail());
+
+        Comentario comentario = comentarioRepository.findById(comentarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comentário não encontrado"));
+
+        comentario.setModerado(false);
+        comentario.setModeradoPor(moderador);
+        comentario.setMotivoRejeicao(motivo != null ? motivo : "Conteúdo inapropriado");
+        comentarioRepository.save(comentario);
+
+        // Auditoria
+        auditLogRepository.save(new AuditLog(
+                moderador,
+                AuditLog.TipoAcao.ATUALIZACAO,
+                "COMENTARIO",
+                comentarioId,
+                "Comentário rejeitado. Motivo: " + motivo,
+                null, null, null, null, null
+        ));
+
+        log.info("Comentário rejeitado com sucesso. ID: " + comentarioId);
+    }
+
+    /**
+     * ✅ NOVO: Lista comentários aguardando moderação.
+     *
+     * @param pageable paginação
+     * @return comentários não moderados
+     */
+    public Page<Comentario> listarComentariosAguardandoModeração(Pageable pageable) {
+        log.info("Listando comentários aguardando moderação");
+        return comentarioRepository.findByModeradoFalse(pageable);
+    }
+
 }

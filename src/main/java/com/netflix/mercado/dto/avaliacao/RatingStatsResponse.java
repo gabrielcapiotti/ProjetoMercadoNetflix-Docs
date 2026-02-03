@@ -37,4 +37,28 @@ public class RatingStatsResponse {
     @Schema(description = "Quantidade de avaliações com 1 estrela", example = "2")
     @JsonProperty("umEstrela")
     private Long umEstrela;
+
+    @Schema(description = "Percentual de aprovação (4-5 estrelas)", example = "73.81")
+    @JsonProperty("percentualAprovacao")
+    private Double percentualAprovacao;
+
+    @Schema(description = "Percentual de 5 estrelas", example = "45.24")
+    @JsonProperty("percentualCincoEstrelas")
+    private Double percentualCincoEstrelas;
+
+    @Schema(description = "Percentual de 4 estrelas", example = "28.57")
+    @JsonProperty("percentualQuatroEstrelas")
+    private Double percentualQuatroEstrelas;
+
+    @Schema(description = "Percentual de 3 estrelas", example = "14.29")
+    @JsonProperty("percentualTresEstrelas")
+    private Double percentualTresEstrelas;
+
+    @Schema(description = "Percentual de 2 estrelas", example = "7.14")
+    @JsonProperty("percentualDoisEstrelas")
+    private Double percentualDoisEstrelas;
+
+    @Schema(description = "Percentual de 1 estrela", example = "4.76")
+    @JsonProperty("percentualUmEstrela")
+    private Double percentualUmEstrela;
 }

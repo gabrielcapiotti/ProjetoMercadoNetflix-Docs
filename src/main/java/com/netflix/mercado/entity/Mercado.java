@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMax;
@@ -117,6 +119,10 @@ public class Mercado extends BaseEntity {
 
     @OneToMany(mappedBy = "mercado", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<HorarioFuncionamento> horariosFuncionamento = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "criado_por_id", nullable = true)
+    private User criadoPor;
 
     public void atualizarAvaliacaoMedia(BigDecimal novaAvaliacao) {
         if (this.totalAvaliacoes == 0) {
@@ -337,6 +343,14 @@ public class Mercado extends BaseEntity {
 
     public void setHorariosFuncionamento(Set<HorarioFuncionamento> horariosFuncionamento) {
         this.horariosFuncionamento = horariosFuncionamento;
+    }
+
+    public User getCriadoPor() {
+        return this.criadoPor;
+    }
+
+    public void setCriadoPor(User criadoPor) {
+        this.criadoPor = criadoPor;
     }
 
 }

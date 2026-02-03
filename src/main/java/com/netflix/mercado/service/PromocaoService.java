@@ -13,6 +13,7 @@ import com.netflix.mercado.dto.promocao.CreatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.UpdatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.PromocaoResponse;
 import com.netflix.mercado.dto.promocao.ValidatePromocaoResponse;
+import com.netflix.mercado.dto.promocao.PromocaoStatisticsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -443,6 +444,116 @@ public class PromocaoService {
 
     public void setMercadoService(MercadoService mercadoService) {
         this.mercadoService = mercadoService;
+    }
+
+    /**
+     * ✅ NOVO: Valida uma promoção de forma robusta antes de aplicar em uma compra.
+     * Verifica todas as condições: validade, utilização, mínimo de compra, status ativo.
+     *
+     * @param codigo código da promoção
+     * @param valorCompra valor da compra para aplicação
+     * @return detalhes da validação e desconto calculado
+     */
+    @Transactional(readOnly = true)
+    public ValidatePromocaoResponse validarPromocaoRobusta(String codigo, BigDecimal valorCompra) {
+        log.info("Validando promoção: " + codigo + " para compra de R$ " + valorCompra);
+
+        Promocao promocao = promocaoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new ResourceNotFoundException("Promoção não encontrada: " + codigo));
+
+        // Validação 1: Status ativo
+        if (!promocao.getAtiva()) {
+            return ValidatePromocaoResponse.builder()
+                    .valida(false)
+                    .motivo("Promoção inativa")
+                    .desconto(BigDecimal.ZERO)
+                    .build();
+        }
+
+        // Validação 2: Data de início
+        LocalDateTime agora = LocalDateTime.now();
+        if (promocao.getDataInicio() != null && agora.isBefore(promocao.getDataInicio())) {
+            long diasAteInicio = ChronoUnit.DAYS.between(agora, promocao.getDataInicio());
+            return ValidatePromocaoResponse.builder()
+                    .valida(false)
+                    .motivo("Promoção ainda não começou. Disponível em " + diasAteInicio + " dias")
+                    .desconto(BigDecimal.ZERO)
+                    .build();
+        }
+
+        // Validação 3: Data de expiração
+        if (agora.isAfter(promocao.getDataValidade())) {
+            return ValidatePromocaoResponse.builder()
+                    .valida(false)
+                    .motivo("Promoção expirada")
+                    .desconto(BigDecimal.ZERO)
+                    .build();
+        }
+
+        // Validação 4: Utilizações restantes
+        if (promocao.getUtilizacoesAtuais() >= promocao.getMaxUtilizacoes()) {
+            return ValidatePromocaoResponse.builder()
+                    .valida(false)
+                    .motivo("Limite de utilizações atingido")
+                    .desconto(BigDecimal.ZERO)
+                    .build();
+        }
+
+        // Validação 5: Valor mínimo de compra
+        if (valorCompra.compareTo(promocao.getValorMinimoCompra()) < 0) {
+            return ValidatePromocaoResponse.builder()
+                    .valida(false)
+                    .motivo("Compra mínima de R$ " + promocao.getValorMinimoCompra() + " não atingida")
+                    .desconto(BigDecimal.ZERO)
+                    .build();
+        }
+
+        // Calcular desconto
+        BigDecimal desconto = promocao.calcularDesconto(valorCompra);
+
+        log.info("Promoção válida. Desconto: R$ " + desconto);
+
+        return ValidatePromocaoResponse.builder()
+                .valida(true)
+                .motivo("Promoção aplicada com sucesso")
+                .desconto(desconto)
+                .utilizacoesRestantes((int) (promocao.getMaxUtilizacoes() - promocao.getUtilizacoesAtuais() - 1))
+                .build();
+    }
+
+    /**
+     * ✅ NOVO: Obtém estatísticas de uma promoção.
+     *
+     * @param promocaoId ID da promoção
+     * @return estatísticas de uso
+     */
+    @Transactional(readOnly = true)
+    public PromocaoStatisticsResponse obterEstatisticas(Long promocaoId) {
+        log.info("Obtendo estatísticas da promoção ID: " + promocaoId);
+
+        Promocao promocao = promocaoRepository.findById(promocaoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Promoção não encontrada"));
+
+        boolean ativa = promocao.ehValida();
+        long utilizacoesRestantes = promocao.getMaxUtilizacoes() - promocao.getUtilizacoesAtuais();
+        double percentualUso = (promocao.getUtilizacoesAtuais() * 100.0) / promocao.getMaxUtilizacoes();
+
+        log.info("Estatísticas: Utilizações: " + promocao.getUtilizacoesAtuais() + 
+                 ", Restantes: " + utilizacoesRestantes + ", % uso: " + String.format("%.2f", percentualUso));
+
+        return PromocaoStatisticsResponse.builder()
+                .promocaoId(promocaoId)
+                .codigo(promocao.getCodigo())
+                .ativa(ativa)
+                .utilizacoesAtuais(promocao.getUtilizacoesAtuais())
+                .maxUtilizacoes(promocao.getMaxUtilizacoes())
+                .utilizacoesRestantes(utilizacoesRestantes)
+                .percentualUso(Math.round(percentualUso * 100.0) / 100.0)
+                .dataValidade(promocao.getDataValidade())
+                .diasAtéExpiração(ChronoUnit.DAYS.between(LocalDateTime.now(), promocao.getDataValidade()))
+                .percentualDesconto(promocao.getPercentualDesconto())
+                .valorDescontoMaximo(promocao.getValorDescontoMaximo())
+                .build();
     }
 
 }

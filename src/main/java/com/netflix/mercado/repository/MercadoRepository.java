@@ -34,6 +34,47 @@ public interface MercadoRepository extends JpaRepository<Mercado, Long> {
     @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.avaliacaoMedia >= :minAvaliacao")
     Page<Mercado> findByAvaliacaoMediaGreaterThanEqual(@Param("minAvaliacao") BigDecimal minAvaliacao, Pageable pageable);
 
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.avaliacaoMedia >= :ratingMin")
+    Page<Mercado> findByAvaliacaoMediaGreaterThanEqualAndActiveTrue(@Param("ratingMin") BigDecimal ratingMin, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true")
+    Page<Mercado> findAllByActiveTrue(Pageable pageable);
+
+    // ✅ NOVO: Métodos para busca avançada com múltiplos filtros
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.cidade LIKE %:cidade% AND m.estado LIKE %:estado% AND m.avaliacaoMedia >= :ratingMin")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+            @Param("nome") String nome, @Param("cidade") String cidade, @Param("estado") String estado, 
+            @Param("ratingMin") BigDecimal ratingMin, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.cidade LIKE %:cidade% AND m.estado LIKE %:estado%")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndActiveTrue(
+            @Param("nome") String nome, @Param("cidade") String cidade, @Param("estado") String estado, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.cidade LIKE %:cidade% AND m.avaliacaoMedia >= :ratingMin")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+            @Param("nome") String nome, @Param("cidade") String cidade, 
+            @Param("ratingMin") BigDecimal ratingMin, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.cidade LIKE %:cidade%")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndCidadeContainingIgnoreCaseAndActiveTrue(
+            @Param("nome") String nome, @Param("cidade") String cidade, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.estado LIKE %:estado% AND m.avaliacaoMedia >= :ratingMin")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+            @Param("nome") String nome, @Param("estado") String estado, 
+            @Param("ratingMin") BigDecimal ratingMin, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.estado LIKE %:estado%")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndEstadoContainingIgnoreCaseAndActiveTrue(
+            @Param("nome") String nome, @Param("estado") String estado, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome% AND m.avaliacaoMedia >= :ratingMin")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndAvaliacaoMediaGreaterThanEqualAndActiveTrue(
+            @Param("nome") String nome, @Param("ratingMin") BigDecimal ratingMin, Pageable pageable);
+
+    @Query("SELECT m FROM Mercado m WHERE m.active = true AND m.nome LIKE %:nome%")
+    Page<Mercado> findByNomeContainingIgnoreCaseAndActiveTrue(@Param("nome") String nome, Pageable pageable);
+
     @Query(value = "SELECT * FROM mercados m WHERE m.active = true AND " +
             "SQRT(POW(m.latitude - :latitude, 2) + POW(m.longitude - :longitude, 2)) * 111 <= :raio " +
             "ORDER BY SQRT(POW(m.latitude - :latitude, 2) + POW(m.longitude - :longitude, 2)) * 111",
