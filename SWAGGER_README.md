@@ -29,13 +29,14 @@ POST /api/v1/auth/login
 - ✅ **OpenApiConfig.java** - Configuração completa do OpenAPI
 - ✅ **application.yml** - Propriedades Springdoc configuradas
 
-### 📚 Documentação (5 Guias Completos)
+### 📚 Documentação (7 Guias Completos)
 1. **SWAGGER_INDEX.md** ⭐ [COMECE AQUI] - Índice visual de tudo
 2. **SWAGGER_SETUP_COMPLETE.md** 🚀 Resumo executivo e URLs
 3. **SWAGGER_CHECKLIST.md** ✅ Checklist de implementação
 4. **SWAGGER_DOCUMENTATION_GUIDE.md** 📖 Guia completo (60+ páginas)
 5. **SWAGGER_TEMPLATES.md** 📋 Templates prontos para copiar
 6. **EXEMPLO_CONTROLLER_COMPLETO.md** 💡 Exemplo prático real
+7. **SWAGGER_API_REFERENCE_FASE3.md** 📘 Referência dos novos endpoints
 
 ---
 
@@ -99,11 +100,12 @@ POST /api/v1/auth/login
 | Configuração Base | ✅ Completo | 100% |
 | Swagger UI | ✅ Funcional | 100% |
 | Documentação | ✅ Completa | 100% |
-| Controllers | ⚠️ Parcial | 30% |
+| Controllers (Fase 3) | ✅ Completo | 100% |
+| Controllers (Legado) | ⚠️ Parcial | 30% |
 | DTOs | ⚠️ Parcial | 10% |
 | Testes | ❌ Pendente | 0% |
 
-**Status Geral:** 40% Completo
+**Status Geral:** 60% Completo
 
 ---
 

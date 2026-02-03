@@ -100,6 +100,11 @@ http://localhost:8080/swagger-ui.html
   - Horários
   - Notificações
   - Promoções
+  - Aplicação de Promoções
+  - Recomendações
+  - Relatórios
+  - Tendências
+  - Validação de Dados
 
 ### ✅ Propriedades Swagger (application.yml)
 - ✅ Swagger UI habilitado em `/swagger-ui.html`

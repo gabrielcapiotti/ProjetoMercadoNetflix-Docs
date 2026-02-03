@@ -1,0 +1,520 @@
+{
+  "info": {
+    "name": "Netflix Mercados API",
+    "description": "Coleção Postman com endpoints da Fase 3 (Promoções, Recomendações, Relatórios, Tendências e Validação).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth (opcional)",
+      "item": [
+        {
+          "name": "Login (obter accessToken)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"{{authPassword}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aplicação de Promoções",
+      "item": [
+        {
+          "name": "Aplicar promoção",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/promocoes/aplicacao/aplicar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "promocoes", "aplicacao", "aplicar"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoPromocao\": \"PROMO10\",\n  \"valorCompra\": 199.90\n}"
+            }
+          }
+        },
+        {
+          "name": "Validar promoção",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/promocoes/aplicacao/validar/{{codigoPromocao}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "promocoes", "aplicacao", "validar", "{{codigoPromocao}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recomendações",
+      "item": [
+        {
+          "name": "Recomendações personalizadas",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recomendacoes/personalizadas?limite={{limiteRecomendacoes}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "recomendacoes", "personalizadas"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteRecomendacoes}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Recomendações por localização",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recomendacoes/por-localizacao?limite={{limiteRecomendacoes}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "recomendacoes", "por-localizacao"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteRecomendacoes}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Recomendações não visitados",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/recomendacoes/nao-visitados?limite={{limiteRecomendacoes}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "recomendacoes", "nao-visitados"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteRecomendacoes}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        {
+          "name": "Relatório geral",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/relatorios/geral",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "relatorios", "geral"]
+            }
+          }
+        },
+        {
+          "name": "Relatório de mercado",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/relatorios/mercado/{{mercadoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "relatorios", "mercado", "{{mercadoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Ranking de mercados",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/relatorios/ranking?limite={{limiteRanking}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "relatorios", "ranking"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteRanking}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mercados com poucas avaliações",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/relatorios/poucas-avaliacoes?avaliacaoMinima={{avaliacaoMinima}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "relatorios", "poucas-avaliacoes"],
+              "query": [
+                {
+                  "key": "avaliacaoMinima",
+                  "value": "{{avaliacaoMinima}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Relatório de comentários",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/relatorios/comentarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "relatorios", "comentarios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tendências",
+      "item": [
+        {
+          "name": "Análise geral de tendências",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tendencias/geral",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tendencias", "geral"]
+            }
+          }
+        },
+        {
+          "name": "Mercados emergentes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tendencias/emergentes?limite={{limiteEmergentes}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tendencias", "emergentes"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteEmergentes}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mercados consolidados",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tendencias/consolidados?limite={{limiteConsolidados}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tendencias", "consolidados"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteConsolidados}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Melhor performance",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tendencias/melhor-performance?limite={{limiteMelhorPerformance}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tendencias", "melhor-performance"],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "{{limiteMelhorPerformance}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crescimento médio",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tendencias/crescimento-medio",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tendencias", "crescimento-medio"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validação de Dados",
+      "item": [
+        {
+          "name": "Validar email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/validacao/email?email={{emailValidacao}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "validacao", "email"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{emailValidacao}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validar URL",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/validacao/url?url={{urlValidacao}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "validacao", "url"],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "{{urlValidacao}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sanitizar texto",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/validacao/sanitizar?texto={{textoValidacao}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "validacao", "sanitizar"],
+              "query": [
+                {
+                  "key": "texto",
+                  "value": "{{textoValidacao}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

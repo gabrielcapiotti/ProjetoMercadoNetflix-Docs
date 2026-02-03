@@ -22,6 +22,7 @@ ProjetoMercadoNetflix-Docs/
     ├── SWAGGER_CHECKLIST.md ✅ Checklist de implementação
     ├── SWAGGER_DOCUMENTATION_GUIDE.md 📖 Guia completo (60+ páginas)
     ├── SWAGGER_TEMPLATES.md 📋 Templates prontos para copiar
+        ├── SWAGGER_API_REFERENCE_FASE3.md 📘 Referência dos novos endpoints
     └── EXEMPLO_CONTROLLER_COMPLETO.md 💡 Exemplo prático real
 ```
 
@@ -181,6 +182,25 @@ http://localhost:8080/swagger-ui.html
 
 **Tamanho:** ~500 linhas  
 **Tempo de leitura:** 30 minutos
+
+---
+
+### 📘 SWAGGER_API_REFERENCE_FASE3.md
+**Quando usar:** Para consultar a documentação dos novos endpoints (promoções, recomendações, relatórios, tendências e validação)
+
+**Contém:**
+- ✅ Endpoints da Fase 3 organizados por tag
+- ✅ Exemplos de request/response
+- ✅ Regras de autenticação e roles
+- ✅ Códigos de resposta resumidos
+
+**Melhor para:**
+- Consulta rápida de endpoints recentes
+- Validação de payloads e respostas
+- Uso em demos e testes manuais
+
+**Tamanho:** ~300 linhas  
+**Tempo de leitura:** 15 minutos
 
 ---
 
