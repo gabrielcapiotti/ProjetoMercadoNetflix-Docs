@@ -95,6 +95,11 @@ public class HorarioFuncionamento extends BaseEntity {
         }
         return ChronoUnit.MINUTES.between(agora, horaAbertura);
     }
+
+    public boolean isAberto() {
+        return this.aberto != null && this.aberto;
+    }
+
     public HorarioFuncionamento() {
     }
 

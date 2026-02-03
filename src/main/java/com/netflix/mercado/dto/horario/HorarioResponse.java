@@ -113,4 +113,20 @@ public class HorarioResponse {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * Método factory para criar HorarioResponse a partir de HorarioFuncionamento
+     */
+    public static HorarioResponse from(com.netflix.mercado.entity.HorarioFuncionamento horario) {
+        return new HorarioResponse(
+            horario.getId(),
+            horario.getDiaSemana() != null ? horario.getDiaSemana().name() : null,
+            horario.getHoraAbertura() != null ? horario.getHoraAbertura().toString() : null,
+            horario.getHoraFechamento() != null ? horario.getHoraFechamento().toString() : null,
+            horario.getAberto(),
+            horario.getObservacoes(),
+            horario.getCreatedAt(),
+            horario.getUpdatedAt()
+        );
+    }
+
 }

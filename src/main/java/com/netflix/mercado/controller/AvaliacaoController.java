@@ -4,6 +4,7 @@ import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.AvaliacaoResponse;
 import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
+import com.netflix.mercado.entity.Avaliacao;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
 import com.netflix.mercado.service.AvaliacaoService;
@@ -98,8 +99,8 @@ public class AvaliacaoController {
         try {
             log.fine("Listando avaliações - page: " + size + ", size: ");
             Pageable pageable = PageRequest.of(page, size);
-            Page<AvaliacaoResponse> response = avaliacaoService.listAvaliacoes(pageable);
-            return ResponseEntity.ok(response);
+            Page<AvaliacaoResponse> avaliacoes = avaliacaoService.listAvaliacoes(pageable);
+            return ResponseEntity.ok(avaliacoes);
         } catch (Exception e) {
             log.severe("Erro ao listar avaliações: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -127,8 +128,8 @@ public class AvaliacaoController {
             @PathVariable Long id) {
         try {
             log.fine("Obtendo avaliação: " + id + "");
-            AvaliacaoResponse response = avaliacaoService.getAvaliacaoById(id);
-            return ResponseEntity.ok(response);
+            Avaliacao avaliacao = avaliacaoService.getAvaliacaoById(id);
+            return ResponseEntity.ok(AvaliacaoResponse.from(avaliacao));
         } catch (Exception e) {
             log.severe("Erro ao obter avaliação: " + e.getMessage());
             throw new RuntimeException(e.getMessage());

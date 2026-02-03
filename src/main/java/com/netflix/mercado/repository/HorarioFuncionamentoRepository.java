@@ -25,4 +25,11 @@ public interface HorarioFuncionamentoRepository extends JpaRepository<HorarioFun
 
     @Query("SELECT h FROM HorarioFuncionamento h WHERE h.mercado = :mercado AND h.aberto = true AND h.active = true")
     List<HorarioFuncionamento> findOpenHorariosByMercado(@Param("mercado") Mercado mercado);
+
+    @Query("SELECT h FROM HorarioFuncionamento h WHERE h.mercado.id = :mercadoId AND h.active = true ORDER BY h.diaSemana")
+    List<HorarioFuncionamento> findByMercadoId(@Param("mercadoId") Long mercadoId);
+
+    @Query("SELECT h FROM HorarioFuncionamento h WHERE h.mercado.id = :mercadoId AND h.diaSemana = :diaSemana AND h.active = true")
+    Optional<HorarioFuncionamento> findByMercadoIdAndDiaSemana(@Param("mercadoId") Long mercadoId, 
+                                                                @Param("diaSemana") HorarioFuncionamento.DiaSemana diaSemana);
 }

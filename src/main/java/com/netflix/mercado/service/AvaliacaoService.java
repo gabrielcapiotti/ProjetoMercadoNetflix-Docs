@@ -11,6 +11,7 @@ import com.netflix.mercado.repository.AvaliacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
 import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.AvaliacaoResponse;
 import com.netflix.mercado.dto.avaliacao.RatingStatsResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -331,12 +332,14 @@ public class AvaliacaoService {
     }
 
     // Aliases em inglês para compatibilidade com Controllers
-    public Avaliacao createAvaliacao(CreateAvaliacaoRequest request, User usuario) {
-        return criarAvaliacao(request, usuario);
+    public AvaliacaoResponse createAvaliacao(CreateAvaliacaoRequest request, User usuario) {
+        Avaliacao avaliacao = criarAvaliacao(request, usuario);
+        return AvaliacaoResponse.from(avaliacao);
     }
 
-    public Avaliacao updateAvaliacao(Long id, UpdateAvaliacaoRequest request, User usuario) {
-        return atualizarAvaliacao(id, request, usuario);
+    public AvaliacaoResponse updateAvaliacao(Long id, UpdateAvaliacaoRequest request, User usuario) {
+        Avaliacao avaliacao = atualizarAvaliacao(id, request, usuario);
+        return AvaliacaoResponse.from(avaliacao);
     }
 
     public void deleteAvaliacao(Long id, User usuario) {
@@ -347,12 +350,12 @@ public class AvaliacaoService {
         return obterAvaliacaoPorId(id);
     }
 
-    public Page<Avaliacao> listAvaliacoes(Pageable pageable) {
-        return avaliacaoRepository.findAll(pageable);
+    public Page<AvaliacaoResponse> listAvaliacoes(Pageable pageable) {
+        return avaliacaoRepository.findAll(pageable).map(AvaliacaoResponse::from);
     }
 
-    public Page<Avaliacao> listAvaliacoesByMercado(Long mercadoId, Pageable pageable) {
-        return obterAvaliacoesPorMercado(mercadoId, pageable);
+    public Page<AvaliacaoResponse> listAvaliacoesByMercado(Long mercadoId, Pageable pageable) {
+        return obterAvaliacoesPorMercado(mercadoId, pageable).map(AvaliacaoResponse::from);
     }
 
     public RatingStatsResponse getRatingStats(Long mercadoId) {

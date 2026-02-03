@@ -122,6 +122,16 @@ public class JwtTokenProvider {
     }
 
     /**
+     * Extrai o email do JWT token (alias para extractUsername)
+     *
+     * @param token JWT token
+     * @return Email contido no token
+     */
+    public String getEmailFromToken(String token) {
+        return extractUsername(token);
+    }
+
+    /**
      * Extrai os roles do JWT token
      *
      * @param token JWT token

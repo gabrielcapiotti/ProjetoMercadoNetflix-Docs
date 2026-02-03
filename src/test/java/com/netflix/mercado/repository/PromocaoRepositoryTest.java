@@ -55,10 +55,8 @@ class PromocaoRepositoryTest {
         mercado.setCidade("São Paulo");
         mercado.setEstado("SP");
         mercado.setCep("01000-000");
-        mercado.setLatitude(-23.5505);
-        mercado.setLongitude(-46.6333);
-        mercado.setHorarioAbertura(LocalTime.of(8, 0));
-        mercado.setHorarioFechamento(LocalTime.of(22, 0));
+        mercado.setLatitude(BigDecimal.valueOf(-23.5505));
+        mercado.setLongitude(BigDecimal.valueOf(-46.6333));
         mercado.setActive(true);
         mercado = entityManager.persistAndFlush(mercado);
 

@@ -50,11 +50,9 @@ class MercadoRepositoryTest {
         mercado1.setCidade("São Paulo");
         mercado1.setEstado("SP");
         mercado1.setCep("01000-000");
-        mercado1.setLatitude(-23.5505);
-        mercado1.setLongitude(-46.6333);
+        mercado1.setLatitude(BigDecimal.valueOf(-23.5505));
+        mercado1.setLongitude(BigDecimal.valueOf(-46.6333));
         mercado1.setAvaliacaoMedia(BigDecimal.valueOf(4.5));
-        mercado1.setHorarioAbertura(LocalTime.of(8, 0));
-        mercado1.setHorarioFechamento(LocalTime.of(22, 0));
         mercado1.setActive(true);
         mercado1 = entityManager.persistAndFlush(mercado1);
 
@@ -67,11 +65,9 @@ class MercadoRepositoryTest {
         mercado2.setCidade("São Paulo");
         mercado2.setEstado("SP");
         mercado2.setCep("02000-000");
-        mercado2.setLatitude(-23.5605);
-        mercado2.setLongitude(-46.6433);
+        mercado2.setLatitude(BigDecimal.valueOf(-23.5605));
+        mercado2.setLongitude(BigDecimal.valueOf(-46.6433));
         mercado2.setAvaliacaoMedia(BigDecimal.valueOf(3.8));
-        mercado2.setHorarioAbertura(LocalTime.of(7, 0));
-        mercado2.setHorarioFechamento(LocalTime.of(23, 0));
         mercado2.setActive(true);
         mercado2 = entityManager.persistAndFlush(mercado2);
 

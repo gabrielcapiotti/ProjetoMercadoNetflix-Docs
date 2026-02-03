@@ -145,7 +145,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
             return false;
         }
 
-        log.fine("Senha validada com sucesso (comprimento: " + password.length( + ")"));
+        log.fine("Senha validada com sucesso (comprimento: " + password.length() + ")");
         return true;
     }
 

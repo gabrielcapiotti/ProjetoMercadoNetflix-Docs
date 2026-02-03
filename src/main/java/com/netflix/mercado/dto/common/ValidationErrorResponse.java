@@ -2,10 +2,12 @@ package com.netflix.mercado.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "Resposta de erro de validação com detalhes de campos")
+@Builder
 public class ValidationErrorResponse {
 
     @Schema(description = "Mensagem geral de erro", example = "Erro de validação")

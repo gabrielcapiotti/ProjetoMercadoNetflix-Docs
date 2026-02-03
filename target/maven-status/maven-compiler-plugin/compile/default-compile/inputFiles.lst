@@ -31,9 +31,11 @@
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/avaliacao/AvaliacaoResponse.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/common/ApiResponse.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/mercado/CreateMercadoRequest.java
+/workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/validation/annotations/PasswordMatches.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/security/JwtAuthenticationFilter.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/notificacao/NotificacaoResponse.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/service/HorarioFuncionamentoService.java
+/workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/validation/PasswordMatchesValidator.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/dto/common/PageResponse.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/validation/annotations/ValidPhone.java
 /workspaces/ProjetoMercadoNetflix-Docs/src/main/java/com/netflix/mercado/service/MercadoService.java

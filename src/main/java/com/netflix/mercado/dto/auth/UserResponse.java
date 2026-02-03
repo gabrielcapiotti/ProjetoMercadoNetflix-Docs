@@ -1,6 +1,7 @@
 package com.netflix.mercado.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.netflix.mercado.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -110,6 +111,26 @@ public class UserResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Método factory para criar UserResponse a partir de User
+     */
+    public static UserResponse from(User user) {
+        Set<String> roleNames = user.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(java.util.stream.Collectors.toSet());
+        
+        return new UserResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getEmail(), // username é o email
+            user.getFullName(),
+            roleNames,
+            user.isActive(),
+            user.getCreatedAt(),
+            user.getUpdatedAt()
+        );
     }
 
 }

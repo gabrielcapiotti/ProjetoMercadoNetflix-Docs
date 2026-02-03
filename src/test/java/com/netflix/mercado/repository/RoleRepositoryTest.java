@@ -39,19 +39,19 @@ class RoleRepositoryTest {
     @BeforeEach
     void setUp() {
         customerRole = new Role();
-        customerRole.setName("ROLE_CUSTOMER");
+        customerRole.setName(Role.RoleName.USER);
         customerRole.setDescription("Cliente do sistema");
         customerRole.setActive(true);
         customerRole = entityManager.persistAndFlush(customerRole);
 
         adminRole = new Role();
-        adminRole.setName("ROLE_ADMIN");
+        adminRole.setName(Role.RoleName.ADMIN);
         adminRole.setDescription("Administrador do sistema");
         adminRole.setActive(true);
         adminRole = entityManager.persistAndFlush(adminRole);
 
         merchantRole = new Role();
-        merchantRole.setName("ROLE_MERCHANT");
+        merchantRole.setName(Role.RoleName.SELLER);
         merchantRole.setDescription("Dono de mercado");
         merchantRole.setActive(true);
         merchantRole = entityManager.persistAndFlush(merchantRole);
@@ -68,11 +68,11 @@ class RoleRepositoryTest {
     @DisplayName("Deve encontrar role por nome com sucesso")
     void testFindByNameSuccess() {
         // When
-        Optional<Role> result = roleRepository.findByName("ROLE_CUSTOMER");
+        Optional<Role> result = roleRepository.findByName(Role.RoleName.USER);
 
         // Then
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo("ROLE_CUSTOMER");
+        assertThat(result.get().getName()).isEqualTo(Role.RoleName.USER);
         assertThat(result.get().getDescription()).isEqualTo("Cliente do sistema");
         assertThat(result.get().getActive()).isTrue();
     }
@@ -81,7 +81,7 @@ class RoleRepositoryTest {
     @DisplayName("Não deve encontrar role por nome inexistente")
     void testFindByNameNotFound() {
         // When
-        Optional<Role> result = roleRepository.findByName("ROLE_INEXISTENTE");
+        Optional<Role> result = roleRepository.findByName(Role.RoleName.MODERATOR);
 
         // Then
         assertThat(result).isEmpty();
@@ -96,7 +96,7 @@ class RoleRepositoryTest {
         // Then
         assertThat(result).hasSize(3);
         assertThat(result).extracting(Role::getName)
-                .containsExactlyInAnyOrder("ROLE_CUSTOMER", "ROLE_ADMIN", "ROLE_MERCHANT");
+                .containsExactlyInAnyOrder(Role.RoleName.USER, Role.RoleName.ADMIN, Role.RoleName.SELLER);
         assertThat(result).allMatch(Role::getActive);
     }
 

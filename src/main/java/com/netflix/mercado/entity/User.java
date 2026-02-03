@@ -253,6 +253,14 @@ public class User extends BaseEntity {
         return this.passwordHash;
     }
 
+    public void setPassword(String password) {
+        this.passwordHash = password;
+    }
+
+    public String getUsername() {
+        return this.email; // Username é o email
+    }
+
     public boolean isActive() {
         return this.getActive();
     }

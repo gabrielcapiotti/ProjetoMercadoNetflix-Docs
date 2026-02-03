@@ -4,6 +4,7 @@ import com.netflix.mercado.dto.promocao.CreatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.UpdatePromocaoRequest;
 import com.netflix.mercado.dto.promocao.PromocaoResponse;
 import com.netflix.mercado.dto.promocao.ValidatePromocaoResponse;
+import com.netflix.mercado.entity.Promocao;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
 import com.netflix.mercado.service.PromocaoService;
@@ -66,8 +67,8 @@ public class PromocaoController {
         try {
             User user = getCurrentUser();
             log.info("Criando promoção para mercado: " + mercadoId + " por usuário: " + user.getId());
-            PromocaoResponse response = promocaoService.createPromocao(mercadoId, request, user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            Promocao promocao = promocaoService.createPromocao(mercadoId, request, user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(PromocaoResponse.from(promocao));
         } catch (Exception e) {
             log.severe("Erro ao criar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -100,9 +101,9 @@ public class PromocaoController {
         try {
             log.fine("Listando promoções do mercado: " + mercadoId + "");
             Pageable pageable = PageRequest.of(page, size);
-            Page<PromocaoResponse> response = promocaoService
+            Page<Promocao> promocoes = promocaoService
                     .listPromocoesByMercado(mercadoId, onlyActive, pageable);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(promocoes.map(PromocaoResponse::from));
         } catch (Exception e) {
             log.severe("Erro ao listar promoções: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -130,8 +131,8 @@ public class PromocaoController {
             @PathVariable Long id) {
         try {
             log.fine("Obtendo promoção: " + id);
-            PromocaoResponse response = promocaoService.getPromocaoById(id);
-            return ResponseEntity.ok(response);
+            Promocao promocao = promocaoService.getPromocaoById(id);
+            return ResponseEntity.ok(PromocaoResponse.from(promocao));
         } catch (Exception e) {
             log.severe("Erro ao obter promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -164,8 +165,8 @@ public class PromocaoController {
         try {
             User user = getCurrentUser();
             log.info("Atualizando promoção: " + id + " por usuário: " + user.getId());
-            PromocaoResponse response = promocaoService.updatePromocao(id, request, user);
-            return ResponseEntity.ok(response);
+            Promocao promocao = promocaoService.updatePromocao(id, request, user);
+            return ResponseEntity.ok(PromocaoResponse.from(promocao));
         } catch (Exception e) {
             log.severe("Erro ao atualizar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -243,21 +244,20 @@ public class PromocaoController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Promoção aplicada com sucesso",
-            content = @Content(schema = @Schema(implementation = PromocaoResponse.class))
+            description = "Promoção aplicada com sucesso"
         ),
         @ApiResponse(responseCode = "404", description = "Promoção não encontrada"),
         @ApiResponse(responseCode = "410", description = "Promoção expirada ou inativa"),
         @ApiResponse(responseCode = "429", description = "Limite de uso atingido")
     })
-    public ResponseEntity<PromocaoResponse> applyPromocao(
+    public ResponseEntity<Void> applyPromocao(
             @Parameter(description = "ID da promoção")
             @PathVariable Long id) {
         try {
             User user = getCurrentUser();
             log.info("Aplicando promoção " + id + " para usuário: " + user.getId());
-            PromocaoResponse response = promocaoService.applyPromocao(id, user);
-            return ResponseEntity.ok(response);
+            promocaoService.applyPromocao(id, user);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.severe("Erro ao aplicar promoção: " + e.getMessage());
             throw new RuntimeException(e.getMessage());

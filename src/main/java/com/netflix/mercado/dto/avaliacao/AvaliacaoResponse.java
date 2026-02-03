@@ -136,4 +136,22 @@ public class AvaliacaoResponse {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * Método factory para criar AvaliacaoResponse a partir de Avaliacao
+     */
+    public static AvaliacaoResponse from(com.netflix.mercado.entity.Avaliacao avaliacao) {
+        return new AvaliacaoResponse(
+            avaliacao.getId(),
+            avaliacao.getUser() != null ? avaliacao.getUser().getId() : null,
+            avaliacao.getUser() != null ? avaliacao.getUser().getEmail() : null,
+            avaliacao.getMercado() != null ? avaliacao.getMercado().getId() : null,
+            avaliacao.getMercado() != null ? avaliacao.getMercado().getNome() : null,
+            avaliacao.getEstrelas(),
+            avaliacao.getComentario(),
+            avaliacao.getUteis().intValue(),
+            avaliacao.getCreatedAt(),
+            avaliacao.getUpdatedAt()
+        );
+    }
+
 }

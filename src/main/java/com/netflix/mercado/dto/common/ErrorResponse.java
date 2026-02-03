@@ -2,9 +2,11 @@ package com.netflix.mercado.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Schema(description = "Resposta de erro padronizada")
+@Builder
 public class ErrorResponse {
 
     @Schema(description = "Código do erro", example = "RECURSO_NAO_ENCONTRADO")

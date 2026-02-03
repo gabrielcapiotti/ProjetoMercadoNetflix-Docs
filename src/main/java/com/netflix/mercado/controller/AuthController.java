@@ -125,7 +125,7 @@ public class AuthController {
             @Valid @RequestBody RefreshTokenRequest request) {
         try {
             log.info("Renovando JWT token");
-            JwtAuthenticationResponse response = authService.refreshToken(request);
+            JwtAuthenticationResponse response = authService.refreshToken(request.getRefreshToken());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.severe("Erro ao renovar token: " + e.getMessage());

@@ -41,4 +41,7 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     Page<Comentario> findByAvaliacaoIdAndComentarioPaiIsNull(@Param("avaliacaoId") Long avaliacaoId, Pageable pageable);
     
     Page<Comentario> findByUserId(Long userId, Pageable pageable);
+
+    @Query("SELECT c FROM Comentario c WHERE c.comentarioPai.id = :comentarioPaiId AND c.active = true")
+    Page<Comentario> findByComentarioPaiId(@Param("comentarioPaiId") Long comentarioPaiId, Pageable pageable);
 }

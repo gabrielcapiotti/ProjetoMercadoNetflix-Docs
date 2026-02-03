@@ -97,7 +97,7 @@ public class RefreshTokenService {
         }
 
         // Verificar se foi revogado
-        if (refreshToken.isRevogado()) {
+        if (refreshToken.getRevogado() != null && refreshToken.getRevogado()) {
             log.warning("Refresh token foi revogado");
             return false;
         }

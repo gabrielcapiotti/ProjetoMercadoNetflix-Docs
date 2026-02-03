@@ -4,6 +4,7 @@ import com.netflix.mercado.dto.horario.CreateHorarioRequest;
 import com.netflix.mercado.dto.horario.UpdateHorarioRequest;
 import com.netflix.mercado.dto.horario.HorarioResponse;
 import com.netflix.mercado.dto.horario.MercadoStatusResponse;
+import com.netflix.mercado.entity.HorarioFuncionamento;
 import com.netflix.mercado.entity.User;
 import com.netflix.mercado.security.UserPrincipal;
 import com.netflix.mercado.service.HorarioFuncionamentoService;

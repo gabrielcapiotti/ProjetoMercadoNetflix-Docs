@@ -50,13 +50,13 @@ class UserRepositoryTest {
     void setUp() {
         // Criar roles
         customerRole = new Role();
-        customerRole.setName("ROLE_CUSTOMER");
+        customerRole.setName(Role.RoleName.USER);
         customerRole.setDescription("Cliente");
         customerRole.setActive(true);
         customerRole = entityManager.persistAndFlush(customerRole);
 
         adminRole = new Role();
-        adminRole.setName("ROLE_ADMIN");
+        adminRole.setName(Role.RoleName.ADMIN);
         adminRole.setDescription("Administrador");
         adminRole.setActive(true);
         adminRole = entityManager.persistAndFlush(adminRole);

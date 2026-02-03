@@ -291,7 +291,7 @@ public class PromocaoService {
                 .valida(true)
                 .desconto(promocao.getPercentualDesconto())
                 .mensagem("Promoção válida")
-                .utilizacoesRestantes(promocao.getMaxUtilizacoes() - promocao.getUtilizacoesAtuais())
+                .utilizacoesRestantes((int)(promocao.getMaxUtilizacoes() - promocao.getUtilizacoesAtuais()))
                 .build();
     }
 

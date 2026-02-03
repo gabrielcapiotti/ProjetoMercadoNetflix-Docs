@@ -172,8 +172,9 @@ public class HorarioFuncionamentoService {
         LocalDateTime agora = LocalDateTime.now();
         DayOfWeek diaAtual = agora.getDayOfWeek();
         LocalTime horaAtual = agora.toLocalTime();
+        HorarioFuncionamento.DiaSemana diaSemanaAtual = converterDayOfWeekParaDiaSemana(diaAtual);
 
-        HorarioFuncionamento horario = horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, diaAtual.toString())
+        HorarioFuncionamento horario = horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, diaSemanaAtual)
                 .orElse(null);
 
         if (horario == null || !horario.isAberto()) {
@@ -203,8 +204,9 @@ public class HorarioFuncionamentoService {
         // Procurar nos próximos 7 dias
         for (int i = 0; i < 7; i++) {
             DayOfWeek dia = agora.plusDays(i).getDayOfWeek();
+            HorarioFuncionamento.DiaSemana diaSemana = converterDayOfWeekParaDiaSemana(dia);
 
-            HorarioFuncionamento horario = horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, dia.toString())
+            HorarioFuncionamento horario = horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, diaSemana)
                     .orElse(null);
 
             if (horario != null && horario.isAberto()) {
@@ -225,14 +227,15 @@ public class HorarioFuncionamentoService {
      */
     @Transactional(readOnly = true)
     public List<HorarioFuncionamento> obterHorariosDia(Long mercadoId, String diaSemana) {
-        log.fine("Buscando horários do mercado ID: " + diaSemana + " para o dia: ");
+        log.fine("Buscando horários do mercado ID: " + mercadoId + " para o dia: " + diaSemana);
 
         // Validar que mercado existe
         mercadoService.getMercadoById(mercadoId);
 
-        return horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, diaSemana)
-                .stream()
-                .toList();
+        HorarioFuncionamento.DiaSemana dia = HorarioFuncionamento.DiaSemana.valueOf(diaSemana.toUpperCase());
+        return horarioRepository.findByMercadoIdAndDiaSemana(mercadoId, dia)
+                .map(List::of)
+                .orElse(List.of());
     }
 
     /**
@@ -265,7 +268,7 @@ public class HorarioFuncionamentoService {
         }
 
         // Validar que abertura é antes do fechamento
-        if (!request.getHoraAbertura().isBefore(request.getHoraFechamento())) {
+        if (request.getHoraAbertura().compareTo(request.getHoraFechamento()) >= 0) {
             throw new ValidationException("Hora de abertura deve ser anterior à hora de fechamento");
         }
     }
@@ -277,24 +280,20 @@ public class HorarioFuncionamentoService {
      * @return DTO HorarioResponse
      */
     private HorarioResponse convertToResponse(HorarioFuncionamento horario) {
-        return new HorarioResponse(
-                horario.getId(),
-                horario.getDiaSemana(),
-                horario.getHoraAbertura(),
-                horario.getHoraFechamento(),
-                horario.isAberto()
-        );
+        return HorarioResponse.from(horario);
     }
     public HorarioFuncionamentoService() {
     }
 
     // Aliases em inglês para compatibilidade com Controllers
-    public HorarioFuncionamento createHorario(Long mercadoId, CreateHorarioRequest request, User usuario) {
-        return criarHorario(mercadoId, request);
+    public HorarioResponse createHorario(Long mercadoId, CreateHorarioRequest request, User usuario) {
+        HorarioFuncionamento horario = criarHorario(mercadoId, request);
+        return HorarioResponse.from(horario);
     }
 
-    public HorarioFuncionamento updateHorario(Long id, UpdateHorarioRequest request, User usuario) {
-        return atualizarHorario(id, request);
+    public HorarioResponse updateHorario(Long id, UpdateHorarioRequest request, User usuario) {
+        HorarioFuncionamento horario = atualizarHorario(id, request);
+        return HorarioResponse.from(horario);
     }
 
     public void deleteHorario(Long id, User usuario) {
@@ -303,6 +302,21 @@ public class HorarioFuncionamentoService {
 
     public List<HorarioResponse> listHorarios(Long mercadoId) {
         return obterHorariosPorMercado(mercadoId);
+    }
+
+    /**
+     * Converte DayOfWeek do Java para DiaSemana do sistema
+     */
+    private HorarioFuncionamento.DiaSemana converterDayOfWeekParaDiaSemana(DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case MONDAY -> HorarioFuncionamento.DiaSemana.SEGUNDA;
+            case TUESDAY -> HorarioFuncionamento.DiaSemana.TERCA;
+            case WEDNESDAY -> HorarioFuncionamento.DiaSemana.QUARTA;
+            case THURSDAY -> HorarioFuncionamento.DiaSemana.QUINTA;
+            case FRIDAY -> HorarioFuncionamento.DiaSemana.SEXTA;
+            case SATURDAY -> HorarioFuncionamento.DiaSemana.SABADO;
+            case SUNDAY -> HorarioFuncionamento.DiaSemana.DOMINGO;
+        };
     }
 
     public HorarioFuncionamentoService(HorarioFuncionamentoRepository horarioRepository, AuditLogRepository auditLogRepository, MercadoService mercadoService) {
@@ -333,6 +347,53 @@ public class HorarioFuncionamentoService {
 
     public void setMercadoService(MercadoService mercadoService) {
         this.mercadoService = mercadoService;
+    }
+
+    /**
+     * Obtém o status da loja (aberta/fechada)
+     */
+    public MercadoStatusResponse getLojaStatus(Long mercadoId) {
+        Mercado mercado = mercadoService.getMercadoEntityById(mercadoId);
+        
+        LocalDateTime agora = LocalDateTime.now();
+        LocalTime horaAtual = agora.toLocalTime();
+        DayOfWeek diaAtual = agora.getDayOfWeek();
+        HorarioFuncionamento.DiaSemana diaSemanaAtual = converterDayOfWeekParaDiaSemana(diaAtual);
+        
+        boolean isOpen = horarioRepository
+                .findByMercadoIdAndDiaSemana(mercadoId, diaSemanaAtual)
+                .stream()
+                .anyMatch(h -> horaAtual.isAfter(h.getHoraAbertura()) && horaAtual.isBefore(h.getHoraFechamento()));
+        
+        List<HorarioResponse> horarios = horarioRepository
+                .findByMercadoIdAndDiaSemana(mercadoId, diaSemanaAtual)
+                .stream()
+                .map(HorarioResponse::from)
+                .toList();
+        
+        String mensagem = isOpen ? "Aberto - Fecha às " + (horarios.isEmpty() ? "N/A" : horarios.get(0).getHoraFechamento()) 
+                                 : "Fechado";
+        
+        MercadoStatusResponse response = new MercadoStatusResponse();
+        response.setAberto(isOpen);
+        response.setHorariosHoje(horarios);
+        response.setMensagem(mensagem);
+        return response;
+    }
+
+    /**
+     * Verifica se a loja está aberta no momento
+     */
+    public boolean isOpen(Long mercadoId) {
+        LocalDateTime agora = LocalDateTime.now();
+        LocalTime horaAtual = agora.toLocalTime();
+        DayOfWeek diaAtual = agora.getDayOfWeek();
+        HorarioFuncionamento.DiaSemana diaSemanaAtual = converterDayOfWeekParaDiaSemana(diaAtual);
+        
+        return horarioRepository
+                .findByMercadoIdAndDiaSemana(mercadoId, diaSemanaAtual)
+                .stream()
+                .anyMatch(h -> horaAtual.isAfter(h.getHoraAbertura()) && horaAtual.isBefore(h.getHoraFechamento()));
     }
 
 }

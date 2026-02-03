@@ -53,4 +53,6 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
     Double findAverageEstrelasByMercadoId(@Param("mercadoId") Long mercadoId);
     
     boolean existsByMercadoIdAndUserId(Long mercadoId, Long userId);
+
+    long countByMercadoId(Long mercadoId);
 }

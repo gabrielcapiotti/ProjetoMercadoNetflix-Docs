@@ -178,4 +178,25 @@ public class PromocaoResponse {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * Método factory para criar PromocaoResponse a partir de Promocao
+     */
+    public static PromocaoResponse from(com.netflix.mercado.entity.Promocao promocao) {
+        return new PromocaoResponse(
+            promocao.getId(),
+            promocao.getCodigo(),
+            promocao.getDescricao(),
+            promocao.getPercentualDesconto(),
+            promocao.getValorDescontoMaximo(),
+            promocao.getValorMinimoCompra(),
+            promocao.getAtiva(),
+            promocao.getUtilizacoesAtuais().intValue(),
+            promocao.getMaxUtilizacoes().intValue(),
+            promocao.getDataInicio(),
+            promocao.getDataValidade(),
+            promocao.getCreatedAt(),
+            promocao.getUpdatedAt()
+        );
+    }
+
 }

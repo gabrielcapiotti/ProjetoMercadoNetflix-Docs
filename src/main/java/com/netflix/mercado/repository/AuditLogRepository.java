@@ -32,4 +32,7 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     @Query("SELECT COUNT(a) FROM AuditLog a WHERE a.user = :user AND a.active = true")
     long countByUser(@Param("user") User user);
+
+    @Query("SELECT a.acao as tipo, COUNT(a) as quantidade FROM AuditLog a WHERE a.createdAt BETWEEN :inicio AND :fim AND a.active = true GROUP BY a.acao")
+    List<Object> findAtividadesPorTipo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 }

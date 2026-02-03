@@ -54,7 +54,7 @@ class AvaliacaoRepositoryTest {
     void setUp() {
         // Criar role
         Role customerRole = new Role();
-        customerRole.setName("ROLE_CUSTOMER");
+        customerRole.setName(Role.RoleName.USER);
         customerRole.setDescription("Cliente");
         customerRole.setActive(true);
         customerRole = entityManager.persistAndFlush(customerRole);
@@ -96,10 +96,8 @@ class AvaliacaoRepositoryTest {
         mercado1.setCidade("São Paulo");
         mercado1.setEstado("SP");
         mercado1.setCep("01000-000");
-        mercado1.setLatitude(-23.5505);
-        mercado1.setLongitude(-46.6333);
-        mercado1.setHorarioAbertura(LocalTime.of(8, 0));
-        mercado1.setHorarioFechamento(LocalTime.of(22, 0));
+        mercado1.setLatitude(BigDecimal.valueOf(-23.5505));
+        mercado1.setLongitude(BigDecimal.valueOf(-46.6333));
         mercado1.setActive(true);
         mercado1 = entityManager.persistAndFlush(mercado1);
 

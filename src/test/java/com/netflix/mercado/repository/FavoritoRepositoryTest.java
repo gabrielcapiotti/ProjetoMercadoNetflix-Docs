@@ -50,7 +50,7 @@ class FavoritoRepositoryTest {
     void setUp() {
         // Criar role
         Role customerRole = new Role();
-        customerRole.setName("ROLE_CUSTOMER");
+        customerRole.setName(Role.RoleName.USER);
         customerRole.setDescription("Cliente");
         customerRole.setActive(true);
         customerRole = entityManager.persistAndFlush(customerRole);

@@ -80,7 +80,7 @@ public class UserService {
         user.setTwoFactorEnabled(false);
 
         // Adicionar role padrão (USER)
-        Role userRole = roleRepository.findByName(Role.RoleName.ROLE_USER)
+        Role userRole = roleRepository.findByName(Role.RoleName.USER)
                 .orElseThrow(() -> new ResourceNotFoundException("Role USER não encontrada"));
         user.setRoles(Set.of(userRole));
 
@@ -192,13 +192,13 @@ public class UserService {
         User user = findUserById(id);
 
         // Validar senha atual
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())) {
             log.warning("Tentativa de alteração de senha com senha atual incorreta para ID: " + id );
             throw new ValidationException("Senha atual está incorreta");
         }
 
         // Validar que nova senha é diferente da atual
-        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+        if (request.getOldPassword().equals(request.getNewPassword())) {
             throw new ValidationException("Nova senha não pode ser igual à senha atual");
         }
 
@@ -282,17 +282,17 @@ public class UserService {
      * @return DTO UserResponse
      */
     private UserResponse convertToResponse(User user) {
+        Set<String> roleNames = user.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toSet());
+        
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
+                user.getEmail(), // username é o email
                 user.getFullName(),
-                user.getPhoneNumber(),
+                roleNames,
                 user.isActive(),
-                user.isEmailVerified(),
-                user.isTwoFactorEnabled(),
-                user.getRoles().stream()
-                        .map(Role::getName)
-                        .collect(Collectors.toSet()),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

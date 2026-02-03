@@ -11,6 +11,7 @@ import com.netflix.mercado.dto.common.ErrorResponse;
 import com.netflix.mercado.dto.common.ValidationErrorResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -39,9 +40,11 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
-                .message(ex.getMessage())
+                .mensagem(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .path(request.getDescription(false).replace("uri=", ""))
+                .codigo("RECURSO_NAO_ENCONTRADO")
+                .detalhes("")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -62,10 +65,10 @@ public class GlobalExceptionHandler {
 
         ValidationErrorResponse errorResponse = ValidationErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message(ex.getMessage())
+                .mensagem(ex.getMessage())
                 .timestamp(LocalDateTime.now())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .errors(ex.getErrors())
+                .erros(new ArrayList<>())
+                .codigo("VALIDATION_ERROR")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -86,9 +89,11 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.UNAUTHORIZED.value())
-                .message(ex.getMessage())
+                .mensagem(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .path(request.getDescription(false).replace("uri=", ""))
+                .codigo("ACESSO_NEGADO")
+                .detalhes("")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
@@ -107,19 +112,12 @@ public class GlobalExceptionHandler {
 
         log.warning("Erro na validação dos argumentos da requisição");
 
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String message = error.getDefaultMessage();
-            errors.put(fieldName, message);
-        });
-
         ValidationErrorResponse errorResponse = ValidationErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
-                .message("Erro na validação dos campos")
+                .mensagem("Erro na validação dos campos")
                 .timestamp(LocalDateTime.now())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .errors(errors)
+                .erros(new ArrayList<>())
+                .codigo("VALIDATION_ERROR")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -140,9 +138,11 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("Erro interno do servidor. Contacte o suporte.")
+                .mensagem("Erro interno do servidor. Contacte o suporte.")
                 .timestamp(LocalDateTime.now())
                 .path(request.getDescription(false).replace("uri=", ""))
+                .codigo("INTERNAL_SERVER_ERROR")
+                .detalhes("")
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
