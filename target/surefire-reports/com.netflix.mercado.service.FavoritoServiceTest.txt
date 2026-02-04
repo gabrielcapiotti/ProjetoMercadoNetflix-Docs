@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.service.FavoritoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.294 s <<< FAILURE! -- in com.netflix.mercado.service.FavoritoServiceTest
+com.netflix.mercado.service.FavoritoServiceTest.testRemoveFavorito -- Time elapsed: 0.265 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.repository.AuditLogRepository.save(Object)" because "this.auditLogRepository" is null
+	at com.netflix.mercado.service.FavoritoService.removerFavorito(FavoritoService.java:107)
+	at com.netflix.mercado.service.FavoritoServiceTest.testRemoveFavorito(FavoritoServiceTest.java:106)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.FavoritoServiceTest.testAddFavorito -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.repository.AuditLogRepository.save(Object)" because "this.auditLogRepository" is null
+	at com.netflix.mercado.service.FavoritoService.adicionarFavorito(FavoritoService.java:73)
+	at com.netflix.mercado.service.FavoritoServiceTest.testAddFavorito(FavoritoServiceTest.java:77)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.FavoritoServiceTest.testToggleFavorito -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.repository.AuditLogRepository.save(Object)" because "this.auditLogRepository" is null
+	at com.netflix.mercado.service.FavoritoService.adicionarFavorito(FavoritoService.java:73)
+	at com.netflix.mercado.service.FavoritoService.toggleFavorito(FavoritoService.java:186)
+	at com.netflix.mercado.service.FavoritoServiceTest.testToggleFavorito(FavoritoServiceTest.java:213)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

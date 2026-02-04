@@ -58,7 +58,7 @@ class TwoFactorCodeRepositoryTest {
         user.setFullName("Test User");
         user.setCpf("11111111111");
         user.setPhone("11111111111");
-        user.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setTwoFactorEnabled(true);
         user.setActive(true);
         Set<Role> roles = new HashSet<>();
@@ -70,7 +70,7 @@ class TwoFactorCodeRepositoryTest {
         codigoValido = new TwoFactorCode();
         codigoValido.setUser(user);
         codigoValido.setCodigo("123456");
-        codigoValido.setExpiryDate(LocalDateTime.now().plusMinutes(5));
+        codigoValido.setDataExpiracao(LocalDateTime.now().plusMinutes(5));
         codigoValido.setUtilizado(false);
         codigoValido.setTentativas(0);
         codigoValido.setActive(true);
@@ -80,7 +80,7 @@ class TwoFactorCodeRepositoryTest {
         codigoExpirado = new TwoFactorCode();
         codigoExpirado.setUser(user);
         codigoExpirado.setCodigo("654321");
-        codigoExpirado.setExpiryDate(LocalDateTime.now().minusMinutes(10));
+        codigoExpirado.setDataExpiracao(LocalDateTime.now().minusMinutes(10));
         codigoExpirado.setUtilizado(false);
         codigoExpirado.setTentativas(0);
         codigoExpirado.setActive(true);
@@ -98,7 +98,7 @@ class TwoFactorCodeRepositoryTest {
     @DisplayName("Deve encontrar código 2FA válido")
     void testFindByCodigo() {
         // When
-        Optional<TwoFactorCode> result = twoFactorCodeRepository.findByCodigoAndActiveTrue("123456");
+        Optional<TwoFactorCode> result = twoFactorCodeRepository.findByCodigo("123456");
 
         // Then
         assertThat(result).isPresent();
@@ -110,14 +110,13 @@ class TwoFactorCodeRepositoryTest {
     @DisplayName("Deve buscar códigos válidos do usuário")
     void testFindValidCodigosByUser() {
         // When
-        List<TwoFactorCode> result = twoFactorCodeRepository.findValidCodesByUser(
-                user.getId(), LocalDateTime.now());
+        List<TwoFactorCode> result = twoFactorCodeRepository.findValidCodigosByUser(user);
 
         // Then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(codigoValido.getId());
         assertThat(result).allMatch(c -> !c.getUtilizado());
-        assertThat(result).allMatch(c -> c.getExpiryDate().isAfter(LocalDateTime.now()));
+        assertThat(result).allMatch(c -> c.getDataExpiracao().isAfter(LocalDateTime.now()));
     }
 
     @Test
@@ -127,7 +126,7 @@ class TwoFactorCodeRepositoryTest {
         TwoFactorCode codigoNovo = new TwoFactorCode();
         codigoNovo.setUser(user);
         codigoNovo.setCodigo("999888");
-        codigoNovo.setExpiryDate(LocalDateTime.now().plusMinutes(10));
+        codigoNovo.setDataExpiracao(LocalDateTime.now().plusMinutes(10));
         codigoNovo.setUtilizado(false);
         codigoNovo.setTentativas(0);
         codigoNovo.setActive(true);
@@ -135,8 +134,8 @@ class TwoFactorCodeRepositoryTest {
         entityManager.clear();
 
         // When
-        Optional<TwoFactorCode> result = twoFactorCodeRepository.findLatestValidCode(
-                user.getId(), LocalDateTime.now());
+        Optional<TwoFactorCode> result = twoFactorCodeRepository.findLatestValidCodigoForUser(
+            user, LocalDateTime.now());
 
         // Then
         assertThat(result).isPresent();
@@ -147,12 +146,12 @@ class TwoFactorCodeRepositoryTest {
     @DisplayName("Deve buscar códigos expirados")
     void testFindExpiredCodigos() {
         // When
-        List<TwoFactorCode> result = twoFactorCodeRepository.findExpiredCodes(LocalDateTime.now());
+        List<TwoFactorCode> result = twoFactorCodeRepository.findExpiredCodigos(LocalDateTime.now());
 
         // Then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(codigoExpirado.getId());
-        assertThat(result).allMatch(c -> c.getExpiryDate().isBefore(LocalDateTime.now()));
+        assertThat(result).allMatch(c -> c.getDataExpiracao().isBefore(LocalDateTime.now()));
     }
 
     @Test

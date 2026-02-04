@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -62,7 +63,7 @@ class FavoritoRepositoryTest {
         user.setFullName("Test User");
         user.setCpf("11111111111");
         user.setPhone("11111111111");
-        user.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setActive(true);
         Set<Role> roles = new HashSet<>();
         roles.add(customerRole);
@@ -72,10 +73,12 @@ class FavoritoRepositoryTest {
         // Criar mercados
         mercado1 = new Mercado();
         mercado1.setNome("Mercado A");
+        mercado1.setDescricao("Mercado A para testes de favoritos");
         mercado1.setCnpj("11111111000111");
         mercado1.setEmail("mercadoa@example.com");
         mercado1.setTelefone("1111111111");
         mercado1.setEndereco("Rua A, 100");
+        mercado1.setBairro("Centro");
         mercado1.setCidade("São Paulo");
         mercado1.setEstado("SP");
         mercado1.setCep("01000-000");
@@ -86,10 +89,12 @@ class FavoritoRepositoryTest {
 
         mercado2 = new Mercado();
         mercado2.setNome("Mercado B");
+        mercado2.setDescricao("Mercado B para testes de favoritos");
         mercado2.setCnpj("22222222000222");
         mercado2.setEmail("mercadob@example.com");
         mercado2.setTelefone("2222222222");
         mercado2.setEndereco("Rua B, 200");
+        mercado2.setBairro("Centro");
         mercado2.setCidade("Rio de Janeiro");
         mercado2.setEstado("RJ");
         mercado2.setCep("20000-000");
@@ -125,7 +130,7 @@ class FavoritoRepositoryTest {
     @DisplayName("Deve verificar se favorito existe")
     void testExistsByUserAndMercado() {
         // When
-        boolean exists = favoritoRepository.existsByUserAndMercadoAndActiveTrue(user, mercado1);
+        boolean exists = favoritoRepository.existsByUserAndMercado(user, mercado1);
 
         // Then
         assertThat(exists).isTrue();
@@ -141,6 +146,8 @@ class FavoritoRepositoryTest {
         mercadoNaoFavoritado.setEmail("mercadoc@example.com");
         mercadoNaoFavoritado.setTelefone("3333333333");
         mercadoNaoFavoritado.setEndereco("Rua C, 300");
+        mercadoNaoFavoritado.setDescricao("Mercado C para testes de favoritos");
+        mercadoNaoFavoritado.setBairro("Centro");
         mercadoNaoFavoritado.setCidade("Brasília");
         mercadoNaoFavoritado.setEstado("DF");
         mercadoNaoFavoritado.setCep("70000-000");
@@ -160,7 +167,7 @@ class FavoritoRepositoryTest {
     @DisplayName("Deve contar favoritos do usuário")
     void testCountByUser() {
         // When
-        long count = favoritoRepository.countByUserAndActiveTrue(user);
+        long count = favoritoRepository.countByUser(user);
 
         // Then
         assertThat(count).isEqualTo(2);
@@ -176,7 +183,7 @@ class FavoritoRepositoryTest {
         user2.setFullName("Test User 2");
         user2.setCpf("22222222222");
         user2.setPhone("22222222222");
-        user2.setDateOfBirth(LocalDate.of(1992, 2, 2));
+        user2.setBirthDate(LocalDate.of(1992, 2, 2));
         user2.setActive(true);
         Role customerRole = entityManager.find(Role.class, 1L);
         Set<Role> roles = new HashSet<>();

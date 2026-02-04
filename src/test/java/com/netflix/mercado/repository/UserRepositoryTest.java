@@ -68,7 +68,7 @@ class UserRepositoryTest {
         activeUser.setFullName("João Silva");
         activeUser.setCpf("12345678901");
         activeUser.setPhone("11987654321");
-        activeUser.setDateOfBirth(LocalDate.of(1990, 5, 15));
+        activeUser.setBirthDate(LocalDate.of(1990, 5, 15));
         activeUser.setEmailVerified(true);
         activeUser.setTwoFactorEnabled(false);
         activeUser.setActive(true);
@@ -87,7 +87,7 @@ class UserRepositoryTest {
         deletedUser.setFullName("Maria Santos");
         deletedUser.setCpf("98765432109");
         deletedUser.setPhone("11912345678");
-        deletedUser.setDateOfBirth(LocalDate.of(1985, 8, 20));
+        deletedUser.setBirthDate(LocalDate.of(1985, 8, 20));
         deletedUser.setEmailVerified(false);
         deletedUser.setTwoFactorEnabled(false);
         deletedUser.setActive(false); // Soft deleted
@@ -167,7 +167,7 @@ class UserRepositoryTest {
         anotherUser.setFullName("Pedro Costa");
         anotherUser.setCpf("11122233344");
         anotherUser.setPhone("11999887766");
-        anotherUser.setDateOfBirth(LocalDate.of(1995, 3, 10));
+        anotherUser.setBirthDate(LocalDate.of(1995, 3, 10));
         anotherUser.setActive(true);
         Set<Role> roles = new HashSet<>();
         roles.add(customerRole);
@@ -204,7 +204,7 @@ class UserRepositoryTest {
         unverifiedUser.setFullName("Novo Usuário");
         unverifiedUser.setCpf("55566677788");
         unverifiedUser.setPhone("11933334444");
-        unverifiedUser.setDateOfBirth(LocalDate.of(2000, 1, 1));
+        unverifiedUser.setBirthDate(LocalDate.of(2000, 1, 1));
         unverifiedUser.setEmailVerified(false);
         unverifiedUser.setActive(true);
         Set<Role> roles = new HashSet<>();
@@ -285,7 +285,7 @@ class UserRepositoryTest {
         adminUser.setFullName("Admin User");
         adminUser.setCpf("99988877766");
         adminUser.setPhone("11944445555");
-        adminUser.setDateOfBirth(LocalDate.of(1980, 12, 31));
+        adminUser.setBirthDate(LocalDate.of(1980, 12, 31));
         adminUser.setActive(true);
         Set<Role> adminRoles = new HashSet<>();
         adminRoles.add(adminRole);

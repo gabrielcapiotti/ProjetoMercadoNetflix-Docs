@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.service.AvaliacaoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.455 s <<< FAILURE! -- in com.netflix.mercado.service.AvaliacaoServiceTest
+com.netflix.mercado.service.AvaliacaoServiceTest.testDeleteAvaliacao -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.service.MercadoService.atualizarAvaliacaoMedia(java.lang.Long)" because "this.mercadoService" is null
+	at com.netflix.mercado.service.AvaliacaoService.deletarAvaliacao(AvaliacaoService.java:204)
+	at com.netflix.mercado.service.AvaliacaoServiceTest.testDeleteAvaliacao(AvaliacaoServiceTest.java:204)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.AvaliacaoServiceTest.testUpdateAvaliacao -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.service.MercadoService.atualizarAvaliacaoMedia(java.lang.Long)" because "this.mercadoService" is null
+	at com.netflix.mercado.service.AvaliacaoService.atualizarAvaliacao(AvaliacaoService.java:159)
+	at com.netflix.mercado.service.AvaliacaoServiceTest.testUpdateAvaliacao(AvaliacaoServiceTest.java:189)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.AvaliacaoServiceTest.testCreateAvaliacao -- Time elapsed: 0.008 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.netflix.mercado.service.MercadoService.getMercadoEntityById(java.lang.Long)" because "this.mercadoService" is null
+	at com.netflix.mercado.service.AvaliacaoService.criarAvaliacao(AvaliacaoService.java:67)
+	at com.netflix.mercado.service.AvaliacaoServiceTest.testCreateAvaliacao(AvaliacaoServiceTest.java:86)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

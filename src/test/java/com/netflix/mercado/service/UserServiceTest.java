@@ -60,7 +60,7 @@ class UserServiceTest {
         testUser.setEmail("test@example.com");
         testUser.setFullName("Test User");
         testUser.setCpf("12345678900");
-        testUser.setPhoneNumber("11999999999");
+        // Removido: testUser.setPhoneNumber - campo não existe mais
         testUser.setActive(true);
         testUser.setEmailVerified(false);
         testUser.setTwoFactorEnabled(false);
@@ -72,12 +72,12 @@ class UserServiceTest {
         registerRequest.setPassword("password123");
         registerRequest.setFullName("Test User");
         registerRequest.setCpf("12345678900");
-        registerRequest.setPhoneNumber("11999999999");
+        // Removido: registerRequest.setPhoneNumber - campo não existe mais
 
         // Configurar role padrão
         userRole = new Role();
         userRole.setId(1L);
-        userRole.setName("ROLE_USER");
+        userRole.setName(Role.RoleName.USER);
     }
 
     /**
@@ -88,7 +88,7 @@ class UserServiceTest {
         // Arrange
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByCpf(anyString())).thenReturn(false);
-        when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(userRole));
+        when(roleRepository.findByName(any(Role.RoleName.class))).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");
         when(userRepository.save(any(User.class))).thenReturn(testUser);
         when(auditLogRepository.save(any(AuditLog.class))).thenReturn(new AuditLog());
@@ -178,8 +178,9 @@ class UserServiceTest {
     void testChangePasswordSuccess() {
         // Arrange
         ChangePasswordRequest changeRequest = new ChangePasswordRequest();
-        changeRequest.setCurrentPassword("password123");
+        changeRequest.setOldPassword("password123");
         changeRequest.setNewPassword("newPassword456");
+        changeRequest.setConfirmPassword("newPassword456");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(passwordEncoder.matches("password123", "encoded_password")).thenReturn(true);
@@ -203,8 +204,9 @@ class UserServiceTest {
     void testChangePasswordWrongOldPassword() {
         // Arrange
         ChangePasswordRequest changeRequest = new ChangePasswordRequest();
-        changeRequest.setCurrentPassword("wrongPassword");
+        changeRequest.setOldPassword("wrongPassword");
         changeRequest.setNewPassword("newPassword456");
+        changeRequest.setConfirmPassword("newPassword456");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(passwordEncoder.matches("wrongPassword", "encoded_password")).thenReturn(false);
@@ -256,20 +258,20 @@ class UserServiceTest {
     }
 
     /**
-     * Teste: Soft delete de usuário
+     * Teste: Desabilitar autenticação de dois fatores
      */
     @Test
-    void testSoftDeleteUser() {
+    void testDisableTwoFactor() {
         // Arrange
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(testUser);
         when(auditLogRepository.save(any(AuditLog.class))).thenReturn(new AuditLog());
 
         // Act
-        userService.softDeleteUser(1L);
+        userService.disableTwoFactor(1L);
 
         // Assert
-        assertThat(testUser.isActive()).isFalse();
+        assertThat(testUser.isTwoFactorEnabled()).isFalse();
         verify(userRepository, times(1)).save(any(User.class));
         verify(auditLogRepository, times(1)).save(any(AuditLog.class));
     }

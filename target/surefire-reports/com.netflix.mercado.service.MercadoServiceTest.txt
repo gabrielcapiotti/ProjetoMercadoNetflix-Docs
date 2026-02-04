@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.service.MercadoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.169 s <<< FAILURE! -- in com.netflix.mercado.service.MercadoServiceTest
+com.netflix.mercado.service.MercadoServiceTest.testDeleteMercado -- Time elapsed: 0.003 s <<< ERROR!
+com.netflix.mercado.exception.UnauthorizedException: Você não tem permissão para deletar este mercado
+	at com.netflix.mercado.service.MercadoService.deleteMercado(MercadoService.java:199)
+	at com.netflix.mercado.service.MercadoServiceTest.testDeleteMercado(MercadoServiceTest.java:143)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.MercadoServiceTest.testUpdateMercado -- Time elapsed: 0.004 s <<< ERROR!
+com.netflix.mercado.exception.UnauthorizedException: Você não tem permissão para atualizar este mercado
+	at com.netflix.mercado.service.MercadoService.updateMercado(MercadoService.java:132)
+	at com.netflix.mercado.service.MercadoServiceTest.testUpdateMercado(MercadoServiceTest.java:127)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.service.MercadoServiceTest.testListAllMercados -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "org.springframework.data.domain.Page.map(java.util.function.Function)" because the return value of "com.netflix.mercado.repository.MercadoRepository.findAllActive(org.springframework.data.domain.Pageable)" is null
+	at com.netflix.mercado.service.MercadoService.getAllMercados(MercadoService.java:256)
+	at com.netflix.mercado.service.MercadoServiceTest.testListAllMercados(MercadoServiceTest.java:161)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

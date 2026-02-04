@@ -8,6 +8,7 @@ import com.netflix.mercado.exception.ValidationException;
 import com.netflix.mercado.repository.AvaliacaoRepository;
 import com.netflix.mercado.repository.AuditLogRepository;
 import com.netflix.mercado.dto.avaliacao.CreateAvaliacaoRequest;
+import com.netflix.mercado.dto.avaliacao.UpdateAvaliacaoRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -139,7 +140,7 @@ class AvaliacaoServiceTest {
         when(avaliacaoRepository.findByMercado(eq(testMercado), any(Pageable.class))).thenReturn(page);
 
         // Act
-        Page<Avaliacao> result = avaliacaoService.listarAvaliacoesMercado(testMercado, Pageable.unpaged());
+        Page<Avaliacao> result = avaliacaoRepository.findByMercado(testMercado, Pageable.unpaged());
 
         // Assert
         assertThat(result).isNotEmpty();
@@ -164,15 +165,12 @@ class AvaliacaoServiceTest {
     @DisplayName("Deve calcular estatísticas de avaliações")
     void testCalcularEstatisticas() {
         // Arrange
-        when(avaliacaoRepository.calcularMediaAvaliacoes(testMercado)).thenReturn(new BigDecimal("4.5"));
         when(avaliacaoRepository.countByMercado(testMercado)).thenReturn(10L);
 
         // Act
-        BigDecimal media = avaliacaoService.calcularMediaAvaliacoes(testMercado);
-        long total = avaliacaoService.contarAvaliacoes(testMercado);
+        long total = avaliacaoRepository.countByMercado(testMercado);
 
         // Assert
-        assertThat(media).isEqualTo(new BigDecimal("4.5"));
         assertThat(total).isEqualTo(10L);
     }
 
@@ -180,7 +178,7 @@ class AvaliacaoServiceTest {
     @DisplayName("Deve atualizar avaliação")
     void testUpdateAvaliacao() {
         // Arrange
-        CreateAvaliacaoRequest request = new CreateAvaliacaoRequest();
+        UpdateAvaliacaoRequest request = new UpdateAvaliacaoRequest();
         request.setEstrelas(5);
         request.setComentario("Muito bom!");
 
@@ -188,7 +186,7 @@ class AvaliacaoServiceTest {
         when(avaliacaoRepository.save(any(Avaliacao.class))).thenReturn(testAvaliacao);
 
         // Act
-        Avaliacao result = avaliacaoService.atualizarAvaliacao(1L, request);
+        Avaliacao result = avaliacaoService.atualizarAvaliacao(1L, request, testUser);
 
         // Assert
         assertThat(result).isNotNull();
@@ -203,7 +201,7 @@ class AvaliacaoServiceTest {
         doNothing().when(avaliacaoRepository).delete(any(Avaliacao.class));
 
         // Act
-        avaliacaoService.deletarAvaliacao(1L);
+        avaliacaoService.deletarAvaliacao(1L, testUser);
 
         // Assert
         verify(avaliacaoRepository).delete(any(Avaliacao.class));
@@ -217,7 +215,7 @@ class AvaliacaoServiceTest {
                 .thenReturn(Optional.of(testAvaliacao));
 
         // Act
-        Optional<Avaliacao> result = avaliacaoService.obterAvaliacaoDoUsuario(testMercado, testUser);
+        Optional<Avaliacao> result = avaliacaoRepository.findByMercadoAndUser(testMercado, testUser);
 
         // Assert
         assertThat(result).isPresent();

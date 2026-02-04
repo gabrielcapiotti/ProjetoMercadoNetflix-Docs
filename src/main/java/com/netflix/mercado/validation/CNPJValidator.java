@@ -137,6 +137,9 @@ public class CNPJValidator implements ConstraintValidator<ValidCNPJ, String> {
      * @param message mensagem de erro
      */
     private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+        if (context == null) {
+            return;
+        }
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
                 .addConstraintViolation();

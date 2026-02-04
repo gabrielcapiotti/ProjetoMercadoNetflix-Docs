@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.service.ComentarioServiceTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.252 s <<< FAILURE! -- in com.netflix.mercado.service.ComentarioServiceTest
+com.netflix.mercado.service.ComentarioServiceTest.testDeleteComentario -- Time elapsed: 0.016 s <<< FAILURE!
+Wanted but not invoked:
+comentarioRepository.save(
+    <any com.netflix.mercado.entity.Comentario>
+);
+-> at com.netflix.mercado.service.ComentarioServiceTest.testDeleteComentario(ComentarioServiceTest.java:205)
+
+However, there were exactly 2 interactions with this mock:
+comentarioRepository.findById(1L);
+-> at com.netflix.mercado.service.ComentarioService.obterComentarioPorId(ComentarioService.java:185)
+
+comentarioRepository.delete(
+    com.netflix.mercado.entity.Comentario@458c1202
+);
+-> at com.netflix.mercado.service.ComentarioService.deletarComentario(ComentarioService.java:160)
+
+
+	at com.netflix.mercado.service.ComentarioServiceTest.testDeleteComentario(ComentarioServiceTest.java:205)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

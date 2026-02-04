@@ -60,7 +60,7 @@ class AuditLogRepositoryTest {
         user.setFullName("Test User");
         user.setCpf("11111111111");
         user.setPhone("11111111111");
-        user.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setActive(true);
         Set<Role> roles = new HashSet<>();
         roles.add(customerRole);

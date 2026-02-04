@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 import java.util.Arrays;
@@ -38,6 +41,9 @@ class ComentarioServiceTest {
 
     @Mock
     private AuditLogRepository auditLogRepository;
+
+    @Mock
+    private AvaliacaoService avaliacaoService;
 
     @InjectMocks
     private ComentarioService comentarioService;
@@ -61,7 +67,7 @@ class ComentarioServiceTest {
         testComentario.setId(1L);
         testComentario.setAvaliacao(testAvaliacao);
         testComentario.setUser(testUser);
-        testComentario.setTexto("Comentário de teste");
+        testComentario.setConteudo("Comentário de teste");
         testComentario.setRespostas(new HashSet<>());
         testComentario.setCurtidas(0L);
     }
@@ -72,8 +78,9 @@ class ComentarioServiceTest {
         // Arrange
         CreateComentarioRequest request = new CreateComentarioRequest();
         request.setAvaliacaoId(1L);
-        request.setTexto("Novo comentário");
+        request.setConteudo("Novo comentário");
 
+        when(avaliacaoService.obterAvaliacaoPorId(1L)).thenReturn(testAvaliacao);
         when(comentarioRepository.save(any(Comentario.class))).thenReturn(testComentario);
         when(auditLogRepository.save(any(AuditLog.class))).thenReturn(new AuditLog());
 
@@ -117,16 +124,19 @@ class ComentarioServiceTest {
         // Arrange
         Comentario comentario2 = new Comentario();
         comentario2.setId(2L);
-        comentario2.setTexto("Outro comentário");
+        comentario2.setConteudo("Outro comentário");
 
-        when(comentarioRepository.findByAvaliacaoId(1L)).thenReturn(Arrays.asList(testComentario, comentario2));
+        Page<Comentario> page = new PageImpl<>(Arrays.asList(testComentario, comentario2));
+        when(avaliacaoService.obterAvaliacaoPorId(1L)).thenReturn(testAvaliacao);
+        when(comentarioRepository.findByAvaliacaoIdAndComentarioPaiIsNull(eq(1L), any(Pageable.class)))
+            .thenReturn(page);
 
         // Act
-        var result = comentarioService.listarComentariosPorAvaliacao(1L);
+        Page<Comentario> result = comentarioService.obterComentariosPorAvaliacao(1L, Pageable.unpaged());
 
         // Assert
         assertThat(result).isNotEmpty();
-        verify(comentarioRepository).findByAvaliacaoId(1L);
+        verify(comentarioRepository).findByAvaliacaoIdAndComentarioPaiIsNull(eq(1L), any(Pageable.class));
     }
 
     @Test
@@ -134,7 +144,7 @@ class ComentarioServiceTest {
     void testUpdateComentario() {
         // Arrange
         UpdateComentarioRequest request = new UpdateComentarioRequest();
-        request.setTexto("Comentário atualizado");
+        request.setConteudo("Comentário atualizado");
 
         when(comentarioRepository.findById(1L)).thenReturn(Optional.of(testComentario));
         when(comentarioRepository.save(any(Comentario.class))).thenReturn(testComentario);
@@ -157,7 +167,7 @@ class ComentarioServiceTest {
         outroUser.setEmail("outro@example.com");
 
         UpdateComentarioRequest request = new UpdateComentarioRequest();
-        request.setTexto("Tentativa de atualização");
+        request.setConteudo("Tentativa de atualização");
 
         when(comentarioRepository.findById(1L)).thenReturn(Optional.of(testComentario));
 
@@ -174,7 +184,7 @@ class ComentarioServiceTest {
         when(comentarioRepository.save(any(Comentario.class))).thenReturn(testComentario);
 
         // Act
-        comentarioService.adicionarCurtida(1L);
+        comentarioService.adicionarCurtida(1L, testUser);
 
         // Assert
         verify(comentarioRepository).save(any(Comentario.class));
@@ -199,13 +209,13 @@ class ComentarioServiceTest {
     @DisplayName("Deve contar comentários da avaliação")
     void testCountComentarios() {
         // Arrange
-        when(comentarioRepository.countByAvaliacaoId(1L)).thenReturn(3L);
+        when(comentarioRepository.countByAvaliacao(testAvaliacao)).thenReturn(3L);
 
         // Act
-        long result = comentarioService.contarComentariosPorAvaliacao(1L);
+        long result = comentarioRepository.countByAvaliacao(testAvaliacao);
 
         // Assert
         assertThat(result).isEqualTo(3L);
-        verify(comentarioRepository).countByAvaliacaoId(1L);
+        verify(comentarioRepository).countByAvaliacao(testAvaliacao);
     }
 }

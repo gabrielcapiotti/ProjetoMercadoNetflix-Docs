@@ -122,6 +122,9 @@ public class PhoneValidator implements ConstraintValidator<ValidPhone, String> {
      * @param message mensagem de erro
      */
     private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+        if (context == null) {
+            return;
+        }
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
                 .addConstraintViolation();

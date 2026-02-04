@@ -70,7 +70,7 @@ class FavoritoServiceTest {
     void testAddFavorito() {
         // Arrange
         when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(favoritoRepository.existsByUserAndMercado(testUser, testMercado)).thenReturn(false);
         when(favoritoRepository.save(any(Favorito.class))).thenReturn(testFavorito);
 
         // Act
@@ -86,7 +86,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve lançar exceção ao adicionar favorito duplicado")
     void testAddFavoritoDuplicate() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.of(testFavorito));
+        when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.existsByUserAndMercado(testUser, testMercado)).thenReturn(true);
 
         // Act & Assert
         assertThatThrownBy(() -> favoritoService.adicionarFavorito(1L, testUser))
@@ -97,7 +98,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve remover favorito com sucesso")
     void testRemoveFavorito() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.of(testFavorito));
+        when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.findByUserAndMercado(testUser, testMercado)).thenReturn(Optional.of(testFavorito));
         doNothing().when(favoritoRepository).delete(any(Favorito.class));
 
         // Act
@@ -111,7 +113,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve lançar exceção ao remover favorito inexistente")
     void testRemoveFavoritoNotFound() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.findByUserAndMercado(testUser, testMercado)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> favoritoService.removerFavorito(1L, testUser))
@@ -128,7 +131,8 @@ class FavoritoServiceTest {
         favorito2.setPrioridade(2);
 
         List<Favorito> favoritos = Arrays.asList(testFavorito, favorito2);
-        when(favoritoRepository.findByUserId(1L)).thenReturn(favoritos);
+        when(favoritoRepository.findByUser(eq(testUser), any(Pageable.class)))
+            .thenReturn(new PageImpl<>(favoritos));
 
         // Act
         List<Favorito> result = favoritoService.obterFavoritosComPrioridade(testUser);
@@ -142,7 +146,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve verificar se mercado é favorito")
     void testIsFavorito() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.of(testFavorito));
+        when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.existsByUserAndMercado(testUser, testMercado)).thenReturn(true);
 
         // Act
         Boolean result = favoritoService.verificarFavorito(1L, testUser);
@@ -155,7 +160,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve verificar que mercado não é favorito")
     void testIsNotFavorito() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.existsByUserAndMercado(testUser, testMercado)).thenReturn(false);
 
         // Act
         Boolean result = favoritoService.verificarFavorito(1L, testUser);
@@ -186,7 +192,7 @@ class FavoritoServiceTest {
     @DisplayName("Deve contar favoritos do usuário")
     void testCountFavoritos() {
         // Arrange
-        when(favoritoRepository.countByUserId(1L)).thenReturn(3L);
+        when(favoritoRepository.countByUser(testUser)).thenReturn(3L);
 
         // Act
         Long result = favoritoService.contarFavoritosDoUsuario(testUser);
@@ -199,8 +205,8 @@ class FavoritoServiceTest {
     @DisplayName("Deve fazer toggle de favorito")
     void testToggleFavorito() {
         // Arrange
-        when(favoritoRepository.findByMercadoIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
         when(mercadoService.getMercadoEntityById(1L)).thenReturn(testMercado);
+        when(favoritoRepository.existsByUserAndMercado(testUser, testMercado)).thenReturn(false);
         when(favoritoRepository.save(any(Favorito.class))).thenReturn(testFavorito);
 
         // Act

@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.validation.ValidadoresCustomizadosTest
+-------------------------------------------------------------------------------
+Tests run: 30, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 1.263 s <<< FAILURE! -- in com.netflix.mercado.validation.ValidadoresCustomizadosTest
+com.netflix.mercado.validation.ValidadoresCustomizadosTest.testTelefoneInvalidoTamanho -- Time elapsed: 0.015 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:63)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:36)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:31)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:231)
+	at com.netflix.mercado.validation.ValidadoresCustomizadosTest.testTelefoneInvalidoTamanho(ValidadoresCustomizadosTest.java:177)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.netflix.mercado.validation.ValidadoresCustomizadosTest.testTelefoneInvalidoDigitosRepetidos -- Time elapsed: 0.005 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:63)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:36)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:31)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:231)
+	at com.netflix.mercado.validation.ValidadoresCustomizadosTest.testTelefoneInvalidoDigitosRepetidos(ValidadoresCustomizadosTest.java:183)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

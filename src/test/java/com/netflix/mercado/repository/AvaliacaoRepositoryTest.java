@@ -66,7 +66,7 @@ class AvaliacaoRepositoryTest {
         user1.setFullName("User One");
         user1.setCpf("11111111111");
         user1.setPhone("11111111111");
-        user1.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        user1.setBirthDate(LocalDate.of(1990, 1, 1));
         user1.setActive(true);
         Set<Role> roles1 = new HashSet<>();
         roles1.add(customerRole);
@@ -79,7 +79,7 @@ class AvaliacaoRepositoryTest {
         user2.setFullName("User Two");
         user2.setCpf("22222222222");
         user2.setPhone("22222222222");
-        user2.setDateOfBirth(LocalDate.of(1992, 2, 2));
+        user2.setBirthDate(LocalDate.of(1992, 2, 2));
         user2.setActive(true);
         Set<Role> roles2 = new HashSet<>();
         roles2.add(customerRole);
@@ -89,10 +89,12 @@ class AvaliacaoRepositoryTest {
         // Criar mercados
         mercado1 = new Mercado();
         mercado1.setNome("Mercado A");
+        mercado1.setDescricao("Mercado A para testes de avaliações");
         mercado1.setCnpj("11111111000111");
         mercado1.setEmail("mercadoa@example.com");
         mercado1.setTelefone("1111111111");
         mercado1.setEndereco("Rua A, 100");
+        mercado1.setBairro("Centro");
         mercado1.setCidade("São Paulo");
         mercado1.setEstado("SP");
         mercado1.setCep("01000-000");
@@ -103,10 +105,12 @@ class AvaliacaoRepositoryTest {
 
         mercado2 = new Mercado();
         mercado2.setNome("Mercado B");
+        mercado2.setDescricao("Mercado B para testes de avaliações");
         mercado2.setCnpj("22222222000222");
         mercado2.setEmail("mercadob@example.com");
         mercado2.setTelefone("2222222222");
         mercado2.setEndereco("Rua B, 200");
+        mercado2.setBairro("Centro");
         mercado2.setCidade("Rio de Janeiro");
         mercado2.setEstado("RJ");
         mercado2.setCep("20000-000");

@@ -164,7 +164,7 @@ class PromocaoRepositoryTest {
     @DisplayName("Deve buscar promoções esgotadas")
     void testFindExhaustedPromocoes() {
         // When
-        List<Promocao> result = promocaoRepository.findExhaustedPromotions();
+        List<Promocao> result = promocaoRepository.findExhaustedPromocoes();
 
         // Then
         assertThat(result).isNotEmpty();

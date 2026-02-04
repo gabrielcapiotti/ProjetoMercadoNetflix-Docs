@@ -1,32 +1,31 @@
 package com.netflix.mercado.validation;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @DisplayName("Testes dos Validadores Customizados")
 public class ValidadoresCustomizadosTest {
 
-    @Autowired
     private Validator validator;
-
-    @Autowired
     private CPFValidator cpfValidator;
-
-    @Autowired
     private CNPJValidator cnpjValidator;
-
-    @Autowired
     private PhoneValidator phoneValidator;
+
+    @BeforeEach
+    void setUp() {
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
+        cpfValidator = new CPFValidator();
+        cnpjValidator = new CNPJValidator();
+        phoneValidator = new PhoneValidator();
+    }
 
     // ═══════════════════════════════════════════════════════════════════════
     // TESTES CPFValidator
@@ -259,10 +258,10 @@ public class ValidadoresCustomizadosTest {
     // ═══════════════════════════════════════════════════════════════════════
 
     public static class UsuarioTestDTO {
-        @ValidCPF
+        @com.netflix.mercado.validation.annotations.ValidCPF
         private String cpf;
         
-        @ValidPhone
+        @com.netflix.mercado.validation.annotations.ValidPhone
         private String telefone;
         
         // Getters e Setters
@@ -284,7 +283,7 @@ public class ValidadoresCustomizadosTest {
     }
 
     public static class MercadoTestDTO {
-        @ValidCNPJ
+        @com.netflix.mercado.validation.annotations.ValidCNPJ
         private String cnpj;
         
         // Getters e Setters

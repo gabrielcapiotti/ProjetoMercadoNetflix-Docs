@@ -75,7 +75,7 @@ class AuthServiceTest {
         testUser.setEmail("test@example.com");
         testUser.setFullName("Test User");
         testUser.setCpf("12345678900");
-        testUser.setPhoneNumber("11999999999");
+        // Removido: testUser.setPhoneNumber - campo não existe mais
         testUser.setActive(true);
         testUser.setEmailVerified(false);
         testUser.setTwoFactorEnabled(false);
@@ -87,7 +87,7 @@ class AuthServiceTest {
         registerRequest.setPassword("password123");
         registerRequest.setFullName("Test User");
         registerRequest.setCpf("12345678900");
-        registerRequest.setPhoneNumber("11999999999");
+        // Removido: registerRequest.setPhoneNumber - campo não existe mais
 
         // Configurar request de login
         loginRequest = new LoginRequest();
@@ -99,7 +99,7 @@ class AuthServiceTest {
         refreshToken.setId(1L);
         refreshToken.setToken("refresh_token_123");
         refreshToken.setUser(testUser);
-        refreshToken.setExpiryDate(LocalDateTime.now().plusDays(7));
+        // Removido: refreshToken.setExpiryDate - campo não existe mais
 
         // Configurar autenticação
         authentication = new UsernamePasswordAuthenticationToken(
@@ -242,14 +242,14 @@ class AuthServiceTest {
     void testValidateTokenSuccess() {
         // Arrange
         String token = "valid_jwt_token";
-        when(jwtTokenProvider.validarToken(token)).thenReturn(true);
+        when(jwtTokenProvider.validateToken(token)).thenReturn(true);
 
         // Act
-        boolean isValid = authService.validarToken(token);
+        boolean isValid = authService.validateToken(token);
 
         // Assert
         assertThat(isValid).isTrue();
-        verify(jwtTokenProvider, times(1)).validarToken(token);
+        verify(jwtTokenProvider, times(1)).validateToken(token);
     }
 
     /**
@@ -259,14 +259,14 @@ class AuthServiceTest {
     void testValidateTokenInvalid() {
         // Arrange
         String token = "invalid_jwt_token";
-        when(jwtTokenProvider.validarToken(token)).thenReturn(false);
+        when(jwtTokenProvider.validateToken(token)).thenReturn(false);
 
         // Act
-        boolean isValid = authService.validarToken(token);
+        boolean isValid = authService.validateToken(token);
 
         // Assert
         assertThat(isValid).isFalse();
-        verify(jwtTokenProvider, times(1)).validarToken(token);
+        verify(jwtTokenProvider, times(1)).validateToken(token);
     }
 
 }

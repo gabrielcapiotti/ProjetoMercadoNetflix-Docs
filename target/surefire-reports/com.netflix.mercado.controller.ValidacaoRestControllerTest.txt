@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.netflix.mercado.controller.ValidacaoRestControllerTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.936 s -- in com.netflix.mercado.controller.ValidacaoRestControllerTest

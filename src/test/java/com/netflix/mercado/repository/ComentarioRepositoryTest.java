@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ class ComentarioRepositoryTest {
         user.setFullName("Test User");
         user.setCpf("11111111111");
         user.setPhone("11111111111");
-        user.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setActive(true);
         Set<Role> roles = new HashSet<>();
         roles.add(customerRole);
@@ -70,10 +71,12 @@ class ComentarioRepositoryTest {
         // Criar mercado
         mercado = new Mercado();
         mercado.setNome("Mercado Teste");
+        mercado.setDescricao("Mercado de testes para comentários");
         mercado.setCnpj("11111111000111");
         mercado.setEmail("mercado@example.com");
         mercado.setTelefone("1111111111");
         mercado.setEndereco("Rua Teste, 100");
+        mercado.setBairro("Centro");
         mercado.setCidade("São Paulo");
         mercado.setEstado("SP");
         mercado.setCep("01000-000");
@@ -96,9 +99,9 @@ class ComentarioRepositoryTest {
         comentarioRaiz = new Comentario();
         comentarioRaiz.setAvaliacao(avaliacao);
         comentarioRaiz.setUser(user);
-        comentarioRaiz.setTexto("Comentário principal");
+        comentarioRaiz.setConteudo("Comentário principal");
         comentarioRaiz.setModerado(true);
-        comentarioRaiz.setCurtidas(10);
+        comentarioRaiz.setCurtidas(10L);
         comentarioRaiz.setActive(true);
         comentarioRaiz = entityManager.persistAndFlush(comentarioRaiz);
 
@@ -107,9 +110,9 @@ class ComentarioRepositoryTest {
         resposta1.setAvaliacao(avaliacao);
         resposta1.setUser(user);
         resposta1.setComentarioPai(comentarioRaiz);
-        resposta1.setTexto("Primeira resposta");
+        resposta1.setConteudo("Primeira resposta");
         resposta1.setModerado(true);
-        resposta1.setCurtidas(5);
+        resposta1.setCurtidas(5L);
         resposta1.setActive(true);
         resposta1 = entityManager.persistAndFlush(resposta1);
 
@@ -117,9 +120,9 @@ class ComentarioRepositoryTest {
         resposta2.setAvaliacao(avaliacao);
         resposta2.setUser(user);
         resposta2.setComentarioPai(comentarioRaiz);
-        resposta2.setTexto("Segunda resposta");
+        resposta2.setConteudo("Segunda resposta");
         resposta2.setModerado(false);
-        resposta2.setCurtidas(2);
+        resposta2.setCurtidas(2L);
         resposta2.setActive(true);
         resposta2 = entityManager.persistAndFlush(resposta2);
 
@@ -174,8 +177,7 @@ class ComentarioRepositoryTest {
     @DisplayName("Deve buscar comentários mais curtidos")
     void testFindMostLikedComentarios() {
         // When
-        Page<Comentario> result = comentarioRepository.findByAvaliacaoAndActiveTrue(
-                avaliacao, PageRequest.of(0, 10));
+        Page<Comentario> result = comentarioRepository.findMostLikedComentarios(5L, PageRequest.of(0, 10));
 
         // Then
         assertThat(result).isNotEmpty();
@@ -186,8 +188,8 @@ class ComentarioRepositoryTest {
     @DisplayName("Deve listar comentários por avaliação")
     void testFindByAvaliacao() {
         // When
-        Page<Comentario> result = comentarioRepository.findByAvaliacaoAndActiveTrue(
-                avaliacao, PageRequest.of(0, 10));
+        Page<Comentario> result = comentarioRepository.findByAvaliacao(
+            avaliacao, PageRequest.of(0, 10));
 
         // Then
         assertThat(result).isNotEmpty();
@@ -213,9 +215,9 @@ class ComentarioRepositoryTest {
         respostaNested.setAvaliacao(avaliacao);
         respostaNested.setUser(user);
         respostaNested.setComentarioPai(resposta1);
-        respostaNested.setTexto("Resposta aninhada");
+        respostaNested.setConteudo("Resposta aninhada");
         respostaNested.setModerado(true);
-        respostaNested.setCurtidas(1);
+        respostaNested.setCurtidas(1L);
         respostaNested.setActive(true);
         entityManager.persistAndFlush(respostaNested);
         entityManager.clear();
@@ -251,8 +253,8 @@ class ComentarioRepositoryTest {
     @DisplayName("Deve buscar apenas comentários ativos")
     void testFindOnlyActiveComentarios() {
         // When
-        Page<Comentario> result = comentarioRepository.findByAvaliacaoAndActiveTrue(
-                avaliacao, PageRequest.of(0, 10));
+        Page<Comentario> result = comentarioRepository.findByAvaliacao(
+            avaliacao, PageRequest.of(0, 10));
 
         // Then
         assertThat(result.getContent()).allMatch(Comentario::getActive);
@@ -262,13 +264,13 @@ class ComentarioRepositoryTest {
     @DisplayName("Deve calcular total de curtidas")
     void testCalcularCurtidas() {
         // When
-        Page<Comentario> result = comentarioRepository.findByAvaliacaoAndActiveTrue(
-                avaliacao, PageRequest.of(0, 10));
+        Page<Comentario> result = comentarioRepository.findByAvaliacao(
+            avaliacao, PageRequest.of(0, 10));
 
         // Then
-        int totalCurtidas = result.getContent().stream()
-                .mapToInt(Comentario::getCurtidas)
-                .sum();
-        assertThat(totalCurtidas).isEqualTo(17); // 10 + 5 + 2
+        long totalCurtidas = result.getContent().stream()
+            .mapToLong(Comentario::getCurtidas)
+            .sum();
+        assertThat(totalCurtidas).isEqualTo(17L); // 10 + 5 + 2
     }
 }
